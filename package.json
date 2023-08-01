@@ -4,6 +4,7 @@
   "description": "eCommerce",
   "main": "index.js",
   "scripts": {
+    "prepare": "husky install",
     "dev": "webpack --mode=development",
     "prod": "webpack --mode=production",
     "serve": "webpack serve --mode=development",
