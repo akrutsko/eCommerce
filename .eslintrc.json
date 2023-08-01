@@ -4,7 +4,8 @@
     "browser": true,
     "es2022": true,
     "commonjs": true,
-    "node": true
+    "node": true,
+    "jest": true
   },
   "extends": [
     "plugin:import/typescript",
@@ -34,5 +35,20 @@
   },
   "ignorePatterns": [
     "webpack.config.js"
+  ],
+  "overrides": [
+    {
+      "files": [
+        "tests/**/*.test.ts"
+      ],
+      "plugins": [
+        "jest",
+        "jest-dom"
+      ],
+      "extends": [
+        "plugin:jest/recommended",
+        "plugin:jest-dom/recommended"
+      ]
+    }
   ]
 }
