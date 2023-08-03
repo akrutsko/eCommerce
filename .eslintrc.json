@@ -31,11 +31,15 @@
     "@typescript-eslint/no-non-null-assertion": "error",
     "class-methods-use-this": "off",
     "import/extensions": "off",
-    "import/prefer-default-export": "off"
+    "import/prefer-default-export": "off",
+    "import/no-extraneous-dependencies": [
+      "error",
+      {
+        "devDependencies": true
+      }
+    ]
   },
-  "ignorePatterns": [
-    "webpack.config.js"
-  ],
+  "ignorePatterns": [],
   "overrides": [
     {
       "files": [
