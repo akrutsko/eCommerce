@@ -4,7 +4,7 @@ import {
   type HttpMiddlewareOptions,
 } from '@commercetools/sdk-client-v2';
 
-export const projectKey = 'peakpulse';
+const projectKey = 'peakpulse';
 const baseHost = 'https://api.europe-west1.gcp.commercetools.com';
 const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 const clientId = 'BMrv0PEWYmDqlVSQmAso81HV';
@@ -35,4 +35,4 @@ const ctpClient = new ClientBuilder()
   .withLoggerMiddleware()
   .build();
 
-export default ctpClient;
+export { ctpClient, projectKey };
