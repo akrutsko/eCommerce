@@ -39,7 +39,9 @@
       }
     ]
   },
-  "ignorePatterns": [],
+  "ignorePatterns": [
+    "webpack.config.js"
+  ],
   "overrides": [
     {
       "files": [
