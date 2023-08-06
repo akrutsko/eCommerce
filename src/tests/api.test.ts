@@ -6,14 +6,13 @@ beforeEach(() => {
   fetchMock.resetMocks();
 });
 
-describe('Tests for getting products ', () => {
-  // 1
-  test('Get 1 pade of products', async () => {
+describe('Tests for getting products and products types ', () => {
+  test('Get 1 page of products', async () => {
     const products = await getProducts();
     expect(products.statusCode).toBe(200);
   });
-  // 2
-  test('Get 1 pade of product types', async () => {
+
+  test('Get 1 page of product types', async () => {
     const productTypes = await getProductTypes();
     expect(productTypes.statusCode).toBe(200);
   });

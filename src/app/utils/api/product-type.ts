@@ -2,12 +2,7 @@ import { ClientResponse, ProductTypePagedQueryResponse } from '@commercetools/pl
 import apiRoot from './api-root';
 
 async function getProductTypes(): Promise<ClientResponse<ProductTypePagedQueryResponse>> {
-  try {
-    const productTypes = await apiRoot.productTypes().get().execute();
-    return productTypes;
-  } catch (error) {
-    return error as Promise<ClientResponse<ProductTypePagedQueryResponse>>;
-  }
+  return apiRoot.productTypes().get().execute();
 }
 
 export default getProductTypes;
