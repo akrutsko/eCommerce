@@ -6,7 +6,7 @@ beforeEach(() => {
   fetchMock.resetMocks();
 });
 
-describe('Tests for getting products and products types ', () => {
+describe('Tests for getting products and products types', () => {
   test('Get 1 page of products', async () => {
     const products = await getProducts();
     expect(products.statusCode).toBe(200);
