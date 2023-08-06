@@ -5,22 +5,27 @@ import {
 } from '@commercetools/sdk-client-v2';
 
 export const projectKey = 'peakpulse';
+const baseHost = 'https://api.europe-west1.gcp.commercetools.com';
+const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
+const clientId = 'BMrv0PEWYmDqlVSQmAso81HV';
+const clientSecret = 'CDqe_LrMv8wt3men-OczcN5tCUBcNxse';
+const scopes = [
+  'view_products:peakpulse manage_my_payments:peakpulse manage_my_quote_requests:peakpulse manage_my_business_units:peakpulse manage_my_profile:peakpulse view_types:peakpulse manage_my_shopping_lists:peakpulse manage_my_quotes:peakpulse create_anonymous_token:peakpulse view_categories:peakpulse manage_my_orders:peakpulse view_published_products:peakpulse',
+];
 
 const authMiddlewareOptions: AuthMiddlewareOptions = {
-  host: 'https://auth.europe-west1.gcp.commercetools.com',
+  host: authHost,
   projectKey,
   credentials: {
-    clientId: 'BMrv0PEWYmDqlVSQmAso81HV',
-    clientSecret: 'CDqe_LrMv8wt3men-OczcN5tCUBcNxse',
+    clientId,
+    clientSecret,
   },
-  scopes: [
-    'view_products:peakpulse manage_my_payments:peakpulse manage_my_quote_requests:peakpulse manage_my_business_units:peakpulse manage_my_profile:peakpulse view_types:peakpulse manage_my_shopping_lists:peakpulse manage_my_quotes:peakpulse create_anonymous_token:peakpulse view_categories:peakpulse manage_my_orders:peakpulse view_published_products:peakpulse',
-  ],
+  scopes,
   fetch,
 };
 
 const httpMiddlewareOptions: HttpMiddlewareOptions = {
-  host: 'https://api.europe-west1.gcp.commercetools.com',
+  host: baseHost,
   fetch,
 };
 
