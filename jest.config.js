@@ -9,4 +9,5 @@ module.exports = {
   collectCoverageFrom: ['src/**/*.ts'],
   coverageDirectory: 'coverage',
   setupFilesAfterEnv: ['./src/tests/jest.setup.js'],
+  silent: true,
 };
