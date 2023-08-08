@@ -89,8 +89,7 @@ describe('Test class methods of ElementCreator', () => {
 
     elementCreator.setHandler('click', clickHandler);
 
-    const element = elementCreator.getElement();
-    element.click();
+    elementCreator.getElement().click();
 
     expect(eventHandled).toBeTruthy();
   });
