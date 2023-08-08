@@ -23,7 +23,7 @@ describe('Test constuctors of ElementCreator', () => {
     const inputValue = 'Hello, Jest!';
 
     const inputCreator = new ElementInputCreator({
-      tag: 'input',
+      tag: '',
       type: inputType,
       value: inputValue,
       classes: ['input-class'],
@@ -43,7 +43,7 @@ test('Should create a button element with specified text, classes and disabled a
   const disabled = true;
 
   const buttonCreator = new ElementButtonCreator({
-    tag: 'button',
+    tag: '',
     text,
     disabled,
     classes: ['button-class'],

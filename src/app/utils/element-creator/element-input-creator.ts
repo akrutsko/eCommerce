@@ -3,8 +3,12 @@ import { ElementCreator } from './element-creator';
 
 export class ElementInputCreator<T extends HTMLInputElement> extends ElementCreator<T> {
   constructor(params: ElementInputParams) {
-    super(params);
-    this.setInputElementProperties(params);
+    const modifiedParams: ElementInputParams = {
+      ...params,
+      tag: 'input',
+    };
+    super(modifiedParams);
+    this.setInputElementProperties(modifiedParams);
   }
 
   private setInputElementProperties(params: ElementInputParams): void {
