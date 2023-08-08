@@ -1,4 +1,4 @@
-import { ElementParams } from '../../types/utils-interfaces';
+import { ElementParams } from '../../types/element-type';
 
 export class ElementCreator<T extends HTMLElement> {
   private element;
@@ -11,7 +11,7 @@ export class ElementCreator<T extends HTMLElement> {
     const element = document.createElement(params.tag);
 
     if (params.classes) {
-      element.classList.add(...params.classes);
+      element.className = params.classes;
     }
     if (params.text) {
       element.textContent = params.text;

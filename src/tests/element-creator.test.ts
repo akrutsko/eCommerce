@@ -8,14 +8,14 @@ describe('Test constuctors of ElementCreator', () => {
     const divCreator = new ElementCreator({
       tag: 'div',
       text,
-      classes: ['div-class'],
+      classes: 'div-class',
     });
 
     const divElement = divCreator.getElement();
 
     expect(divElement.tagName).toBe('DIV');
-    expect(divElement.textContent).toBe(text);
-    expect(divElement.classList.contains('div-class')).toBe(true);
+    expect(divElement).toHaveTextContent(text);
+    expect(divElement).toHaveClass('div-class');
   });
 
   test('Should create an input element with specified classes, type and value', () => {
@@ -26,15 +26,15 @@ describe('Test constuctors of ElementCreator', () => {
       tag: '',
       type: inputType,
       value: inputValue,
-      classes: ['input-class'],
+      classes: 'input-class',
     });
 
     const inputElement = inputCreator.getElement();
 
     expect(inputElement.tagName).toBe('INPUT');
     expect(inputElement.type).toBe(inputType);
-    expect(inputElement.value).toBe(inputValue);
-    expect(inputElement.classList.contains('input-class')).toBe(true);
+    expect(inputElement).toHaveValue(inputValue);
+    expect(inputElement).toHaveClass('input-class');
   });
 });
 
@@ -46,15 +46,15 @@ test('Should create a button element with specified text, classes and disabled a
     tag: '',
     text,
     disabled,
-    classes: ['button-class'],
+    classes: 'button-class',
   });
 
   const buttonElement = buttonCreator.getElement();
 
   expect(buttonElement.tagName).toBe('BUTTON');
-  expect(buttonElement.textContent).toBe(text);
-  expect(buttonElement.disabled).toBe(disabled);
-  expect(buttonElement.classList.contains('button-class')).toBe(true);
+  expect(buttonElement).toHaveTextContent(text);
+  expect(buttonElement).toBeDisabled();
+  expect(buttonElement).toHaveClass('button-class');
 });
 
 describe('Test class methods of ElementCreator', () => {
@@ -63,23 +63,23 @@ describe('Test class methods of ElementCreator', () => {
 
     const elementCreator = new ElementCreator({
       tag: 'div',
-      classes: ['initial-class'],
+      classes: 'initial-class',
     });
 
     elementCreator.addClasses(classesToAdd);
 
     const element = elementCreator.getElement();
 
-    expect(element.classList.contains('initial-class')).toBe(true);
-    expect(element.classList.contains('class1')).toBe(true);
-    expect(element.classList.contains('class2')).toBe(true);
+    expect(element).toHaveClass('initial-class');
+    expect(element).toHaveClass('class1');
+    expect(element).toHaveClass('class2');
   });
 
   test('Should set event handler on the element', () => {
     let eventHandled = false;
 
-    const elementCreator = new ElementCreator({
-      tag: 'button',
+    const elementCreator = new ElementButtonCreator({
+      tag: '',
       text: 'Click me',
     });
 
@@ -90,13 +90,8 @@ describe('Test class methods of ElementCreator', () => {
     elementCreator.setHandler('click', clickHandler);
 
     const element = elementCreator.getElement();
+    element.click();
 
-    const clickEvent = new Event('click', {
-      bubbles: true,
-      cancelable: true,
-    });
-    element.dispatchEvent(clickEvent);
-
-    expect(eventHandled).toBe(true);
+    expect(eventHandled).toBeTruthy();
   });
 });
