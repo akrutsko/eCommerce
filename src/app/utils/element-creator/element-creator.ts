@@ -1,4 +1,4 @@
-import { ElementParams } from '../../types/element-params-type';
+import { ElementParams } from '../../types/utils-interfaces';
 
 export class ElementCreator<T extends HTMLElement> {
   private element;

@@ -1,4 +1,4 @@
-import { ElementButtonParams } from '../../types/element-button-params-type';
+import { ElementButtonParams } from '../../types/utils-interfaces';
 import { ElementCreator } from './element-creator';
 
 export class ElementButtonCreator<T extends HTMLButtonElement> extends ElementCreator<T> {
