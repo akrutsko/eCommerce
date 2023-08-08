@@ -1,4 +1,4 @@
-import { ElementInputParams } from '../../types/element-type';
+import { ElementInputParams } from '../../types/element-params-type';
 import { ElementCreator } from './element-creator';
 
 export class ElementInputCreator<T extends HTMLInputElement> extends ElementCreator<T> {
