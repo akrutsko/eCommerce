@@ -3,19 +3,10 @@ import { ElementCreator } from './element-creator';
 
 export class ElementButtonCreator<T extends HTMLButtonElement> extends ElementCreator<T> {
   constructor(params: ElementButtonParams) {
-    const modifiedParams: ElementButtonParams = {
-      ...params,
-      tag: 'button',
-    };
-    super(modifiedParams);
-    this.setButtonElementProperties(modifiedParams);
-  }
-
-  private setButtonElementProperties(params: ElementButtonParams): void {
-    const buttonElement = this.getElement();
+    super({ ...params, tag: 'button' });
 
     if (params.disabled) {
-      buttonElement.disabled = params.disabled;
+      this.element.disabled = params.disabled;
     }
   }
 }

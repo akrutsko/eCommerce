@@ -1,7 +1,7 @@
 import { ElementParams } from '../../types/element-params-type';
 
 export class ElementCreator<T extends HTMLElement> {
-  private element;
+  protected element;
 
   constructor(params: ElementParams) {
     this.element = this.createElement(params);
