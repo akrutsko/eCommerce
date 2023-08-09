@@ -3,7 +3,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  font-family: 'Ubuntu', sans-serif;
+  font-family: "Ubuntu", sans-serif;
   color: var(--secondary-color);
 }
 

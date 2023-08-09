@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Ubuntu:wght@400;500;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Ubuntu:wght@400;500;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -10,8 +10,8 @@
     --secondary-color: #393e4d;
     --tertiary-color: rgba(57, 62, 77, 0.6);
     --bg-color: #f1efef;
-    --main-font-family: 'Ubuntu', sans-serif;
-    --secondary-font-family: 'Open Sans', sans-serif;
+    --main-font-family: "Ubuntu", sans-serif;
+    --secondary-font-family: "Open Sans", sans-serif;
   }
 }
 
