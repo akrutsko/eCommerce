@@ -6,17 +6,17 @@ export interface ElementParams {
   id?: string;
 }
 
-export interface ElementInputParams extends ElementParams {
+export interface ElementInputParams extends Partial<ElementParams> {
   type?: string;
   value?: string;
   name?: string;
   placeholder?: string;
 }
 
-export interface ElementButtonParams extends ElementParams {
+export interface ElementButtonParams extends Partial<ElementParams> {
   disabled?: boolean;
 }
 
-export interface ElementAnchorParams extends ElementParams {
+export interface ElementAnchorParams extends Partial<ElementParams> {
   href: string;
 }

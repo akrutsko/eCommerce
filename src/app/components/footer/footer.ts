@@ -43,13 +43,11 @@ export class Footer {
     const companyWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const companyHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Company' });
     const aboutLink = new ElementAnchorCreator({
-      tag: 'a',
       href: '#',
       classes: 'text-[10px]',
       text: 'About us',
     });
     const contactLink = new ElementAnchorCreator({
-      tag: 'a',
       href: '#',
       classes: 'text-[10px]',
       text: 'Contact',
@@ -59,13 +57,11 @@ export class Footer {
     const socialWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const socialHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Social' });
     const instagramLink = new ElementAnchorCreator({
-      tag: 'a',
       href: '#',
       classes: 'text-[10px]',
       text: 'Instagram',
     });
     const facebookLink = new ElementAnchorCreator({
-      tag: 'a',
       href: '#',
       classes: 'text-[10px]',
       text: 'Facebook',
@@ -75,13 +71,11 @@ export class Footer {
     const productsWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const productsHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Prodcuts' });
     const categoriesLink = new ElementAnchorCreator({
-      tag: 'a',
       href: '#',
       classes: 'text-[10px]',
       text: 'Categories',
     });
     const sellersLink = new ElementAnchorCreator({
-      tag: 'a',
       href: '#',
       classes: 'text-[10px]',
       text: 'Top sellers',
@@ -90,13 +84,11 @@ export class Footer {
 
     const form = new ElementCreator({ tag: 'form', classes: 'search-form' });
     const input = new ElementInputCreator({
-      tag: '',
       type: 'search',
       name: 'search',
       placeholder: 'search',
     });
     const submitButton = new ElementButtonCreator({
-      tag: '',
       classes: 'absolute right-0 top-0 focus:outline-none',
       html: searchIcon,
     });
