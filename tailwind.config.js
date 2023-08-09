@@ -9,6 +9,10 @@ module.exports = {
         "tertiary-color": "var(--tertiary-color)",
         "bg-color": "var(--bg-color)"
       },
+      fontFamily: {
+        "--main-font-family": "'Ubuntu', sans-serif",
+        "--secondary-font-family": "'Open Sans', sans- serif",
+      }
     },
   },
   plugins: [],
