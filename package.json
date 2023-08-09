@@ -10,7 +10,7 @@
     "serve": "webpack serve --mode=development",
     "lint": "eslint ./src --ext .ts",
     "lint:fix": "eslint ./src --ext .ts --fix",
-    "prettier": "prettier ./src/**/*.{ts,js,css} --write",
+    "prettier": "prettier ./**/*.{ts,js,css} --write",
     "test": "jest"
   },
   "repository": {
