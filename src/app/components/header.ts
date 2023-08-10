@@ -13,7 +13,10 @@ class Header {
   }
 
   createView(): void {
-    const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between py-5 gap-8' });
+    const nav = new ElementCreator({
+      tag: 'nav',
+      classes: 'w-full flex items-center justify-between py-5 gap-8',
+    });
     this.headerView.appendNode(nav);
 
     const logoSvg = `<svg width="147" height="66" viewBox="0 0 147 66" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -27,81 +30,139 @@ class Header {
     const logo = new ElementCreator({ tag: 'a', html: logoSvg });
     nav.appendNode(logo);
 
-    const mobileMenu = new ElementCreator({ tag: 'div', classes: 'mobile-menu md:w-full md:max-w-full max-w-[390px] hidden justify-between md:flex gap-8' });
+    const mobileMenu = new ElementCreator({
+      tag: 'div',
+      classes:
+        'mobile-menu md:w-full md:max-w-full max-w-[390px] hidden justify-between md:flex gap-8',
+    });
     nav.appendNode(mobileMenu);
 
-    const ul = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-5' });
+    const ul = new ElementCreator({
+      tag: 'ul',
+      classes: 'items-center justify-between flex gap-5',
+    });
     mobileMenu.appendNode(ul);
 
     const liHome = new ElementCreator({ tag: 'li' });
     ul.appendNode(liHome);
 
-    const aHome = new ElementCreator({ tag: 'a', text: 'Home', classes: 'h4 hover:text-primary-color' });
+    const aHome = new ElementCreator({
+      tag: 'a',
+      text: 'Home',
+      classes: 'h4 hover:text-primary-color',
+    });
     aHome.getElement().setAttribute('href', '');
     liHome.appendNode(aHome);
 
     const liAboutUs = new ElementCreator({ tag: 'li' });
     ul.appendNode(liAboutUs);
 
-    const aAboutUs = new ElementCreator({ tag: 'a', text: 'About us', classes: 'h4 hover:text-primary-color' });
+    const aAboutUs = new ElementCreator({
+      tag: 'a',
+      text: 'About us',
+      classes: 'h4 hover:text-primary-color',
+    });
     aAboutUs.getElement().setAttribute('href', '');
     liAboutUs.appendNode(aAboutUs);
 
     const tab = new ElementCreator({ tag: 'li', classes: 'relative group tab' });
     ul.appendNode(tab);
 
-    const aCategories = new ElementCreator({ tag: 'a', text: 'Categories', classes: 'h4 hover:text-primary-color' });
+    const aCategories = new ElementCreator({
+      tag: 'a',
+      text: 'Categories',
+      classes: 'h4 hover:text-primary-color',
+    });
     aCategories.getElement().setAttribute('href', '');
     tab.appendNode(aCategories);
 
-    const submenu = new ElementCreator({ tag: 'ul', classes: 'submenu absolute hidden bg-white px-2 py-1 w-max' });
+    const submenu = new ElementCreator({
+      tag: 'ul',
+      classes: 'submenu absolute hidden bg-white px-2 py-1 w-max',
+    });
     tab.appendNode(submenu);
 
     const liSummerTime = new ElementCreator({ tag: 'li' });
     submenu.appendNode(liSummerTime);
 
-    const aSummerTime = new ElementCreator({ tag: 'a', classes: 'h5 hover:text-primary-color', text: 'Summer time' });
+    const aSummerTime = new ElementCreator({
+      tag: 'a',
+      classes: 'h5 hover:text-primary-color',
+      text: 'Summer time',
+    });
     aSummerTime.getElement().setAttribute('href', '');
     liSummerTime.appendNode(aSummerTime);
 
     const liPeakClimber = new ElementCreator({ tag: 'li' });
     submenu.appendNode(liPeakClimber);
 
-    const aPeakClimber = new ElementCreator({ tag: 'a', classes: 'h5 hover:text-primary-color', text: 'Peak climber' });
+    const aPeakClimber = new ElementCreator({
+      tag: 'a',
+      classes: 'h5 hover:text-primary-color',
+      text: 'Peak climber',
+    });
     aPeakClimber.getElement().setAttribute('href', '');
     liPeakClimber.appendNode(aPeakClimber);
 
     const liBallGames = new ElementCreator({ tag: 'li' });
     submenu.appendNode(liBallGames);
 
-    const aBallGames = new ElementCreator({ tag: 'a', classes: 'h5 hover:text-primary-color', text: 'Ball games' });
+    const aBallGames = new ElementCreator({
+      tag: 'a',
+      classes: 'h5 hover:text-primary-color',
+      text: 'Ball games',
+    });
     aBallGames.getElement().setAttribute('href', '');
     liBallGames.appendNode(aBallGames);
 
     const liIceAdventures = new ElementCreator({ tag: 'li' });
     submenu.appendNode(liIceAdventures);
 
-    const aIceAdventures = new ElementCreator({ tag: 'a', classes: 'h5 hover:text-primary-color', text: 'Ice adventures' });
+    const aIceAdventures = new ElementCreator({
+      tag: 'a',
+      classes: 'h5 hover:text-primary-color',
+      text: 'Ice adventures',
+    });
     aIceAdventures.getElement().setAttribute('href', '');
     liIceAdventures.appendNode(aIceAdventures);
 
     const divBtns = new ElementCreator({ tag: 'div', classes: 'flex gap-6' });
     mobileMenu.appendNode(divBtns);
 
-    const btnSignUp = new ElementButtonCreator({ tag: 'button', text: 'sign up', classes: 'secondary-button' });
+    const btnSignUp = new ElementButtonCreator({
+      tag: 'button',
+      text: 'sign up',
+      classes: 'secondary-button',
+    });
     divBtns.appendNode(btnSignUp);
 
-    const btnLogIn = new ElementButtonCreator({ tag: 'button', text: 'log in', classes: 'primary-button' });
+    const btnLogIn = new ElementButtonCreator({
+      tag: 'button',
+      text: 'log in',
+      classes: 'primary-button',
+    });
     divBtns.appendNode(btnLogIn);
 
-    const burger = new ElementCreator({ tag: 'div', classes: 'burger space-y-2 z-10 block md:hidden' });
+    const burger = new ElementCreator({
+      tag: 'div',
+      classes: 'burger space-y-2 z-10 block md:hidden',
+    });
     nav.appendNode(burger);
 
-    const spanBurger1 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
+    const spanBurger1 = new ElementCreator({
+      tag: 'span',
+      classes: 'block w-8 h-0.5 bg-secondary-color',
+    });
     burger.appendNode(spanBurger1);
-    const spanBurger2 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
+    const spanBurger2 = new ElementCreator({
+      tag: 'span',
+      classes: 'block w-8 h-0.5 bg-secondary-color',
+    });
     burger.appendNode(spanBurger2);
-    const spanBurger3 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
+    const spanBurger3 = new ElementCreator({
+      tag: 'span',
+      classes: 'block w-8 h-0.5 bg-secondary-color',
+    });
     burger.appendNode(spanBurger3);
 
     const bg = new ElementCreator({ tag: 'div', classes: 'bg hidden' });
@@ -114,19 +175,13 @@ class Header {
       document.body.classList.toggle('active');
     });
 
-    tab.setHandler(
-      'click',
-      (): void => {
-        submenu.addClasses(['active']);
-      },
-    );
+    tab.setHandler('click', (): void => {
+      submenu.addClasses(['active']);
+    });
 
-    submenu.setHandler(
-      'mouseleave',
-      (): void => {
-        submenu.getElement().classList.remove('active');
-      },
-    );
+    submenu.setHandler('mouseleave', (): void => {
+      submenu.getElement().classList.remove('active');
+    });
   }
 
   getView(): ElementCreator<HTMLElement> {
