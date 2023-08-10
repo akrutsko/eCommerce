@@ -4,10 +4,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        "primary-color": "var(--main-color)",
-        "secondary-color": "var(--secondary-color)",
-        "tertiary-color": "var(--tertiary-color)",
-        "bg-color": "var(--bg-color)"
+        'primary-color': 'var(--main-color)',
+        'secondary-color': 'var(--secondary-color)',
+        'tertiary-color': 'var(--tertiary-color)',
+        'bg-color': 'var(--bg-color)',
+      },
+      fontFamily: {
+        '--main-font-family': 'Ubuntu, sans-serif',
+        '--secondary-font-family': '"Open Sans", sans-serif',
       },
     },
   },
