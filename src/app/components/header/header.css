@@ -1,0 +1,33 @@
+.mobile-menu.active {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #fff;
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+  min-width: 390px;
+  padding: 40px;
+  justify-content: center;
+}
+
+.mobile-menu.active ul,
+.mobile-menu.active div {
+  flex-direction: column;
+}
+
+.bg.active {
+  width: 100vw;
+  height: 100vh;
+  background-color: #8080807a;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.submenu.active {
+  display: block;
+}
