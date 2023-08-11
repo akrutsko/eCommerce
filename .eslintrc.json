@@ -38,7 +38,15 @@
         "devDependencies": true
       }
     ],
-    "object-curly-newline": "off"
+    "max-len": [
+      "error",
+      {
+        "code": 125,
+        "ignoreStrings": true
+      }
+    ],
+    "object-curly-newline": "off",
+    "newline-per-chained-call": "off"
   },
   "ignorePatterns": [
     "webpack.config.js",
