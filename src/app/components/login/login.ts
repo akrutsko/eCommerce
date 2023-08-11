@@ -39,6 +39,7 @@ export class Login {
     this.showButton = new ElementButtonCreator({
       classes: 'absolute top-1/4 right-3',
       html: passwordHide,
+      type: 'button',
     }).getElement();
 
     this.createView();
@@ -46,14 +47,8 @@ export class Login {
   }
 
   createView(): void {
-    const titleContainer = new ElementCreator({
-      tag: 'div',
-      classes: 'text-center',
-    });
-    const title = new ElementCreator({
-      tag: 'h2',
-      text: 'Welcome back!',
-    });
+    const titleContainer = new ElementCreator({ tag: 'div', classes: 'text-center' });
+    const title = new ElementCreator({ tag: 'h2', text: 'Welcome back!' });
     const subtitle = new ElementCreator({
       tag: 'p',
       classes: 'opacity-60 pt-2',
@@ -66,24 +61,12 @@ export class Login {
       classes: 'flex flex-col gap-3 sm:gap-4 md:gap-5',
     });
 
-    const emailInputContainer = new ElementCreator({
-      tag: 'div',
-      classes: 'email relative',
-    });
-    const emailError = new ElementCreator({
-      tag: 'div',
-      classes: 'error hide',
-    });
+    const emailInputContainer = new ElementCreator({ tag: 'div', classes: 'email relative' });
+    const emailError = new ElementCreator({ tag: 'div', classes: 'error hide' });
     emailInputContainer.appendNode(this.emailInput).appendNode(emailError);
 
-    const passwordInputContainer = new ElementCreator({
-      tag: 'div',
-      classes: 'password relative',
-    });
-    const passwordError = new ElementCreator({
-      tag: 'div',
-      classes: 'error hide',
-    });
+    const passwordInputContainer = new ElementCreator({ tag: 'div', classes: 'password relative' });
+    const passwordError = new ElementCreator({ tag: 'div', classes: 'error hide' });
     passwordInputContainer
       .appendNode(this.passwordInput)
       .appendNode(this.showButton)
@@ -95,11 +78,7 @@ export class Login {
       .appendNode(this.submitButton);
 
     const question = new ElementCreator({ tag: 'div', text: 'Not a member yet? ' });
-    const signInAnchor = new ElementAnchorCreator({
-      href: '#',
-      classes: 'link',
-      text: 'Sign up',
-    });
+    const signInAnchor = new ElementAnchorCreator({ href: '#', classes: 'link', text: 'Sign up' });
     question.appendNode(signInAnchor);
 
     this.loginView.appendNode(titleContainer).appendNode(loginForm).appendNode(question);
