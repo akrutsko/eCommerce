@@ -20,7 +20,7 @@ export class Login {
   constructor() {
     this.loginView = new ElementCreator({
       tag: 'div',
-      classes: 'max-w-xl w-full form flex flex-col gap-6 md:gap-7',
+      classes: 'login-form max-w-xl w-full form flex flex-col gap-6 md:gap-7',
     });
     this.emailInput = new ElementInputCreator({
       type: 'email',
