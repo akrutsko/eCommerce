@@ -6,7 +6,7 @@ import { ElementButtonCreator } from '../../utils/element-creator/element-button
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 
-class Header {
+export class Header {
   headerView: ElementCreator<HTMLElement>;
 
   constructor() {
@@ -187,13 +187,13 @@ class Header {
       submenu.getElement().classList.remove('active');
     });
 
-    // temp
+    // TODO:  remove block when implement login page
     btnLogIn.getElement().addEventListener('click', (): void => {
       divBtnsLogin.getElement().classList.add('hidden');
       divBtnsSignOut.getElement().classList.remove('hidden');
     });
 
-    // temp
+    // TODO:  remove block when implement sign out
     btnSignOut.getElement().addEventListener('click', (): void => {
       divBtnsLogin.getElement().classList.remove('hidden');
       divBtnsSignOut.getElement().classList.add('hidden');
@@ -208,5 +208,3 @@ class Header {
     return this.headerView.getElement();
   }
 }
-
-export { Header };
