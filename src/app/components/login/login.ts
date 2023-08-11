@@ -39,7 +39,6 @@ export class Login {
     this.showButton = new ElementButtonCreator({
       classes: 'absolute top-1/4 right-3',
       html: passwordHide,
-      type: 'button',
     }).getElement();
 
     this.createView();
