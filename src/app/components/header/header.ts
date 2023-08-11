@@ -99,7 +99,8 @@ class Header {
     liBallGames.appendNode(aBallGames);
 
     const liIceAdventures = new ElementCreator({ tag: 'li' });
-    submenu.appendNode(liSummerTime)
+    submenu
+      .appendNode(liSummerTime)
       .appendNode(liPeakClimber)
       .appendNode(liBallGames)
       .appendNode(liIceAdventures);
