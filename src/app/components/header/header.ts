@@ -1,7 +1,7 @@
-import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
-import { ElementCreator } from '../../utils/element-creator/element-creator';
 import './header.css';
 import logotype from '../../../assets/svg/logo-header.svg';
+import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
+import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 
 class Header {
