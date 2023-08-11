@@ -37,10 +37,12 @@
       {
         "devDependencies": true
       }
-    ]
+    ],
+    "object-curly-newline": "off"
   },
   "ignorePatterns": [
-    "webpack.config.js"
+    "webpack.config.js",
+    "jest.transformer.js"
   ],
   "overrides": [
     {

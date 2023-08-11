@@ -8,5 +8,13 @@
   "trailingComma": "all",
   "arrowParens": "always",
   "printWidth": 100,
-  "endOfLine": "lf"
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": "*.css",
+      "options": {
+        "singleQuote": false
+      }
+    }
+  ]
 }
