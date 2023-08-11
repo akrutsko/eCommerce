@@ -1,5 +1,7 @@
 import './header.css';
 import logotype from '../../../assets/svg/logo-header.svg';
+import cartSvg from '../../../assets/svg/cart.svg';
+import customerSvg from '../../../assets/svg/customer.svg';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
@@ -112,8 +114,7 @@ class Header {
     });
     liIceAdventures.appendNode(aIceAdventures);
 
-    const divBtns = new ElementCreator({ tag: 'div', classes: 'flex gap-6' });
-    mobileMenu.appendNode(linksList).appendNode(divBtns);
+    const divBtnsLogin = new ElementCreator({ tag: 'div', classes: 'flex gap-6' });
 
     const btnSignUp = new ElementButtonCreator({
       tag: 'button',
@@ -126,7 +127,27 @@ class Header {
       text: 'log in',
       classes: 'primary-button',
     });
-    divBtns.appendNode(btnSignUp).appendNode(btnLogIn);
+
+    divBtnsLogin.appendNode(btnSignUp).appendNode(btnLogIn);
+
+    const divBtnsSignOut = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-6 hidden' });
+    mobileMenu.appendNode(linksList).appendNode(divBtnsLogin).appendNode(divBtnsSignOut);
+
+    const divCart = new ElementCreator({ tag: 'div', html: cartSvg });
+    const aCart = new ElementAnchorCreator({ href: '#' });
+    divCart.appendNode(aCart);
+
+    const divCustomer = new ElementCreator({ tag: 'div', html: customerSvg });
+    const aCustomer = new ElementAnchorCreator({ href: '#' });
+    divCustomer.appendNode(aCustomer);
+
+    const btnSignOut = new ElementButtonCreator({
+      tag: 'button',
+      text: 'sign out',
+      classes: 'secondary-button',
+    });
+
+    divBtnsSignOut.appendNode(divCart).appendNode(divCustomer).appendNode(btnSignOut);
 
     const burger = new ElementCreator({
       tag: 'div',
@@ -161,6 +182,18 @@ class Header {
     });
     submenu.getElement().addEventListener('mouseleave', () => {
       submenu.getElement().classList.remove('active');
+    });
+
+    // temp
+    btnLogIn.getElement().addEventListener('click', (): void => {
+      divBtnsLogin.getElement().classList.add('hidden');
+      divBtnsSignOut.getElement().classList.remove('hidden');
+    });
+
+    // temp
+    btnSignOut.getElement().addEventListener('click', (): void => {
+      divBtnsLogin.getElement().classList.remove('hidden');
+      divBtnsSignOut.getElement().classList.add('hidden');
     });
   }
 
