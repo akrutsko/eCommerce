@@ -20,7 +20,7 @@ export class Login {
   constructor() {
     this.loginView = new ElementCreator({
       tag: 'div',
-      classes: 'login-form max-w-xl w-full form flex flex-col gap-6 md:gap-7',
+      classes: 'login-form max-w-xl w-full form flex flex-col gap-4 md:gap-6',
     });
     this.emailInput = new ElementInputCreator({
       type: 'email',
@@ -84,8 +84,7 @@ export class Login {
   }
 
   handlePasswordVisibility(): void {
-    this.showButton.addEventListener('click', (e) => {
-      e.preventDefault();
+    this.showButton.addEventListener('click', () => {
       this.changePasswordVisibility();
     });
   }
