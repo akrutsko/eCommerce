@@ -130,7 +130,10 @@ class Header {
 
     divBtnsLogin.appendNode(btnSignUp).appendNode(btnLogIn);
 
-    const divBtnsSignOut = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-6 hidden' });
+    const divBtnsSignOut = new ElementCreator({
+      tag: 'div',
+      classes: 'items-center justify-between flex gap-6 hidden',
+    });
     mobileMenu.appendNode(linksList).appendNode(divBtnsLogin).appendNode(divBtnsSignOut);
 
     const divCart = new ElementCreator({ tag: 'div', html: cartSvg });
