@@ -84,9 +84,7 @@ export class Login {
   }
 
   handlePasswordVisibility(): void {
-    this.showButton.addEventListener('click', () => {
-      this.changePasswordVisibility();
-    });
+    this.showButton.addEventListener('click', () => this.changePasswordVisibility());
   }
 
   changePasswordVisibility(): void {
