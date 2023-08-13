@@ -5,16 +5,24 @@ import customerSvg from '../../../assets/svg/customer.svg';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
+import { Observer, Router } from '../../router/router';
 
-export class Header {
+export class Header implements Observer {
   headerView: ElementCreator<HTMLElement>;
 
-  constructor() {
+  router: Router;
+
+  constructor(router: Router) {
+    this.router = router;
     this.headerView = new ElementCreator({
       tag: 'header',
       classes: 'container',
     });
     this.createView();
+  }
+
+  update(data: string): void {
+    console.log(`header ${data}`);
   }
 
   createView(): void {
@@ -122,10 +130,20 @@ export class Header {
       classes: 'secondary-button',
     });
 
+    btnSignUp.getElement().addEventListener('click', (event) => {
+      event.preventDefault();
+      this.router.navigateToSignUp();
+    });
+
     const btnLogIn = new ElementButtonCreator({
       tag: 'button',
       text: 'log in',
       classes: 'primary-button',
+    });
+
+    btnLogIn.getElement().addEventListener('click', (event) => {
+      event.preventDefault();
+      this.router.navigateToLogin();
     });
 
     divBtnsLogin.appendNode(btnSignUp).appendNode(btnLogIn);
@@ -148,6 +166,11 @@ export class Header {
       tag: 'button',
       text: 'sign out',
       classes: 'secondary-button',
+    });
+
+    btnSignOut.getElement().addEventListener('click', (event) => {
+      event.preventDefault();
+      this.router.navigateToSignOut();
     });
 
     divBtnsSignOut.appendNode(divCart).appendNode(divCustomer).appendNode(btnSignOut);
