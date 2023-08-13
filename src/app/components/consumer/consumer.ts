@@ -21,25 +21,16 @@ export class Consumer {
     const token = localStorage.getItem('ecomm-token');
     if (!token) return;
 
-    try {
-      this.apiClient = getTokenClient(token);
-      await getConsumer(this.apiClient);
-      this.status = ConsumerClient.Consumer;
-    } catch {
-      localStorage.clear();
-    }
+    this.apiClient = getTokenClient(token);
+    await getConsumer(this.apiClient);
+    this.status = ConsumerClient.Consumer;
   }
 
   async logIn(username: string, password: string): Promise<void> {
-    try {
-      this.apiClient = getPasswordClient(username, password);
-      await getConsumer(this.apiClient);
-      localStorage.setItem('ecomm-token', getToken());
-      this.status = ConsumerClient.Consumer;
-    } catch (err) {
-      // TODO: update flow when login error
-      console.log('Log in error:', err);
-    }
+    this.apiClient = getPasswordClient(username, password);
+    await getConsumer(this.apiClient);
+    localStorage.setItem('ecomm-token', getToken());
+    this.status = ConsumerClient.Consumer;
   }
 
   logOut(): void {
