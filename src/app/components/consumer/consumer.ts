@@ -44,6 +44,7 @@ export class Consumer implements Observable {
     this.apiClient = getTokenClient(token);
     this.consumer = (await getConsumer(this.apiClient)).body;
     this.status = ConsumerClient.Consumer;
+    this.notify();
   }
 
   async logIn(username: string, password: string): Promise<void> {
@@ -51,6 +52,7 @@ export class Consumer implements Observable {
     this.consumer = (await getConsumer(this.apiClient)).body;
     localStorage.setItem('ecomm-token', getToken());
     this.status = ConsumerClient.Consumer;
+    this.notify();
   }
 
   logOut(): void {
@@ -58,5 +60,6 @@ export class Consumer implements Observable {
     this.status = ConsumerClient.CommerceTools;
     this.consumer = null;
     this.apiClient = getCtpClient();
+    this.notify();
   }
 }

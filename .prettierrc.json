@@ -7,7 +7,7 @@
   "quoteProps": "as-needed",
   "trailingComma": "all",
   "arrowParens": "always",
-  "printWidth": 125,
+  "printWidth": 130,
   "endOfLine": "lf",
   "overrides": [
     {

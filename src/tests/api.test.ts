@@ -1,10 +1,6 @@
-import fetchMock from 'jest-fetch-mock';
+import 'jest-fetch-mock';
 import { getProductTypes, getProducts } from '../app/utils/api/api-product';
 import { getCtpClient } from '../app/utils/api/api-client';
-
-beforeEach(() => {
-  fetchMock.resetMocks();
-});
 
 describe('Tests for getting products and products types', () => {
   test('Get 1 page of products', async () => {
