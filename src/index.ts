@@ -1,21 +1,15 @@
-import {
-  attachToken,
-  logInWithPassword,
-  logOut,
-  testCreateCustomer,
-  testGetCustomerData,
-} from './app/utils/api/api';
+import { Customer } from './app/components/customer/customer';
 
 (async (): Promise<void> => {
-  localStorage.clear();
-  await testCreateCustomer();
-  await testGetCustomerData();
-  logOut();
-  await logInWithPassword({ email: 'ak@test.com', password: 'ak' });
-  await testGetCustomerData();
-  const { token } = localStorage;
-  logOut();
-  localStorage.token = token;
-  attachToken();
-  await testGetCustomerData();
+  const customer = new Customer();
+  await customer.init();
+  console.log('isRegistered:', customer.isRegistered);
+
+  if (!customer.isRegistered) {
+    await customer.logIn('ak@test.com', 'ak');
+    console.log('isRegistered after log-in:', customer.isRegistered);
+  }
+
+  await customer.logOut();
+  console.log('isRegistered after log-out:', customer.isRegistered);
 })();

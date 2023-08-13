@@ -17,7 +17,7 @@ const authHost = 'https://auth.europe-west1.gcp.commercetools.com/';
 const clientId = 'aSH1Qs-X58nIAdx6Dbrw-pvz';
 const clientSecret = 'WgPk-nmbKj2DD1Dk9Aq4m_gFe_Lrv4WO';
 const clientScope = [`manage_project:${projectKey}`]; // TODO: set necessary scopes
-const customerScope = [`manage_project:${projectKey}`, `manage_my_profile:${projectKey}`]; // TODO: set necessary scopes
+const customerScope = [`manage_project:${projectKey}`]; // TODO: set necessary scopes
 const anonScope = [`manage_project:${projectKey}`, `create_anonymous_token:${projectKey}`]; // TODO: set necessary scopes
 
 const httpOptions: HttpMiddlewareOptions = { host: baseHost, fetch };

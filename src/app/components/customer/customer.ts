@@ -15,7 +15,6 @@ export class Customer {
   constructor() {
     this.apiClient = getCtpClient();
     this.status = CustomerClient.CommerceTools;
-    this.init();
   }
 
   async init(): Promise<void> {
