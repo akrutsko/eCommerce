@@ -1,20 +1,20 @@
 import { Client } from '@commercetools/sdk-client-v2';
 import { getCtpClient, getPasswordClient, getToken, getTokenClient } from '../../utils/api/api-client';
-import { getCustomer } from '../../utils/api/api-customer';
-import { CustomerClient } from '../../enums/customer-client';
+import { ConsumerClient } from '../../enums/consumer-client';
+import { getConsumer } from '../../utils/api/api-consumer';
 
-export class Customer {
+export class Consumer {
   apiClient: Client;
 
-  status: CustomerClient;
+  status: ConsumerClient;
 
-  get isRegistered(): boolean {
-    return this.status === CustomerClient.Customer;
+  get isConsumer(): boolean {
+    return this.status === ConsumerClient.Consumer;
   }
 
   constructor() {
     this.apiClient = getCtpClient();
-    this.status = CustomerClient.CommerceTools;
+    this.status = ConsumerClient.CommerceTools;
   }
 
   async init(): Promise<void> {
@@ -23,8 +23,8 @@ export class Customer {
 
     try {
       this.apiClient = getTokenClient(token);
-      await getCustomer(this.apiClient);
-      this.status = CustomerClient.Customer;
+      await getConsumer(this.apiClient);
+      this.status = ConsumerClient.Consumer;
     } catch {
       localStorage.clear();
     }
@@ -33,9 +33,9 @@ export class Customer {
   async logIn(username: string, password: string): Promise<void> {
     try {
       this.apiClient = getPasswordClient(username, password);
-      await getCustomer(this.apiClient);
+      await getConsumer(this.apiClient);
       localStorage.setItem('ecomm-token', getToken());
-      this.status = CustomerClient.Customer;
+      this.status = ConsumerClient.Consumer;
     } catch (err) {
       // TODO: update flow when login error
       console.log('Log in error:', err);
@@ -44,7 +44,7 @@ export class Customer {
 
   logOut(): void {
     localStorage.clear();
-    this.status = CustomerClient.CommerceTools;
+    this.status = ConsumerClient.CommerceTools;
     this.apiClient = getCtpClient();
   }
 }
