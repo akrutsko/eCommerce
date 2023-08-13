@@ -49,13 +49,12 @@
     "newline-per-chained-call": "off"
   },
   "ignorePatterns": [
-    "webpack.config.js",
-    "jest.transformer.js"
+    "**/*.js"
   ],
   "overrides": [
     {
       "files": [
-        "tests/**/*.test.ts"
+        "src/tests/**/*.test.ts"
       ],
       "plugins": [
         "jest",
@@ -65,6 +64,14 @@
         "plugin:jest/recommended",
         "plugin:jest-dom/recommended"
       ]
+    },
+    {
+      "files": [
+        "src/app/interfaces/*.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off"
+      }
     }
   ]
 }

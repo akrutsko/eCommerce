@@ -1,12 +1,17 @@
 import { Client } from '@commercetools/sdk-client-v2';
+import { Customer } from '@commercetools/platform-sdk';
 import { getCtpClient, getPasswordClient, getToken, getTokenClient } from '../../utils/api/api-client';
 import { ConsumerClient } from '../../enums/consumer-client';
 import { getConsumer } from '../../utils/api/api-consumer';
 
-export class Consumer {
+export class Consumer implements Observable {
+  observers: Observer[] = [];
+
   apiClient: Client;
 
   status: ConsumerClient;
+
+  consumer: Customer | null = null;
 
   get isConsumer(): boolean {
     return this.status === ConsumerClient.Consumer;
@@ -17,18 +22,33 @@ export class Consumer {
     this.status = ConsumerClient.CommerceTools;
   }
 
+  subscribe(observer: Observer): void {
+    if (this.observers.includes(observer)) return;
+    this.observers.push(observer);
+  }
+
+  unsubscribe(observer: Observer): void {
+    const index = this.observers.indexOf(observer);
+    if (index === -1) return;
+    this.observers.slice(index, 1);
+  }
+
+  notify(): void {
+    this.observers.forEach((observer) => observer.update());
+  }
+
   async init(): Promise<void> {
     const token = localStorage.getItem('ecomm-token');
     if (!token) return;
 
     this.apiClient = getTokenClient(token);
-    await getConsumer(this.apiClient);
+    this.consumer = (await getConsumer(this.apiClient)).body;
     this.status = ConsumerClient.Consumer;
   }
 
   async logIn(username: string, password: string): Promise<void> {
     this.apiClient = getPasswordClient(username, password);
-    await getConsumer(this.apiClient);
+    this.consumer = (await getConsumer(this.apiClient)).body;
     localStorage.setItem('ecomm-token', getToken());
     this.status = ConsumerClient.Consumer;
   }
@@ -36,6 +56,7 @@ export class Consumer {
   logOut(): void {
     localStorage.clear();
     this.status = ConsumerClient.CommerceTools;
+    this.consumer = null;
     this.apiClient = getCtpClient();
   }
 }
