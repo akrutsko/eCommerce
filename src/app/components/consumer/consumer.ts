@@ -39,11 +39,15 @@ export class Consumer implements Observable {
 
   async init(): Promise<void> {
     const token = localStorage.getItem('ecomm-token');
-    if (!token) return;
-
-    this.apiClient = getTokenClient(token);
-    this.consumer = (await getConsumer(this.apiClient)).body;
-    this.status = ConsumerClient.Consumer;
+    if (token) {
+      this.apiClient = getTokenClient(token);
+      await getConsumer(this.apiClient)
+        .then((res) => {
+          this.consumer = res.body;
+          this.status = ConsumerClient.Consumer;
+        })
+        .catch(() => {});
+    }
     this.notify();
   }
 
