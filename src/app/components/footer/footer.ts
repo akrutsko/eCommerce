@@ -21,8 +21,7 @@ export class Footer {
   createView(): void {
     const logo = new ElementCreator({
       tag: 'div',
-      classes:
-        'hidden sm:block text-opacity-70 max-w-[157px] text-white w-full text-[8px] -font--secondary-font-family',
+      classes: 'hidden sm:block text-opacity-70 max-w-[157px] text-white w-full text-[8px] -font--secondary-font-family',
       html: logotype,
     });
     const slogan = new ElementCreator({
