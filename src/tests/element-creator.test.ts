@@ -55,15 +55,34 @@ test('Should create a anchor element with specified href and innerHtml', () => {
 });
 
 describe('Test class methods of ElementCreator', () => {
-  test('Should add classes to the element', () => {
-    const classesToAdd = ['class1', 'class2'];
-
+  test('Should add class to the element', () => {
     const elementCreator = new ElementCreator({ tag: 'div', classes: 'initial-class' });
-    elementCreator.addClasses(classesToAdd);
+    elementCreator.addClass('added-class');
 
     const element = elementCreator.getElement();
 
-    expect(element).toHaveClass('initial-class', 'class1', 'class2');
+    expect(element).toHaveClass('initial-class', 'added-class');
+  });
+
+  test('Should remove class from the element', () => {
+    const elementCreator = new ElementCreator({ tag: 'div', classes: 'initial-class class-to-remove' });
+    elementCreator.removeClass('class-to-remove');
+
+    const element = elementCreator.getElement();
+
+    expect(element).toHaveClass('initial-class');
+    expect(element).not.toHaveClass('class-to-remove');
+  });
+
+  test('Should toggle class on the element', () => {
+    const elementCreator = new ElementCreator({ tag: 'div', classes: 'class-to-toggle' });
+    const element = elementCreator.getElement();
+
+    elementCreator.toggleClass('class-to-toggle');
+    expect(element).not.toHaveClass('class-to-remove');
+
+    elementCreator.toggleClass('class-to-toggle');
+    expect(element).toHaveClass('class-to-toggle');
   });
 
   test('Should set event handler on the element', () => {
