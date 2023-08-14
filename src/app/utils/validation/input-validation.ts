@@ -1,9 +1,5 @@
+import { ValidationResult } from '../../types/validation-result-type';
 import { countries, postalCodeRegexes } from './countries';
-
-interface ValidationResult {
-  isValid: boolean;
-  message?: string;
-}
 
 export function validateEmail(email: string): ValidationResult {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -35,10 +31,10 @@ export function validatePassword(password: string): ValidationResult {
 }
 
 export function validateDateOfBirth(dateOfBirth: string): ValidationResult {
+  const AGE_RESTRICTION = 14;
+
   const currentDate = new Date();
   const inputDate = new Date(dateOfBirth);
-
-  const AGE_RESTRICTION = 14;
   const yearsDifference = currentDate.getFullYear() - inputDate.getFullYear();
 
   if (yearsDifference < AGE_RESTRICTION) {
