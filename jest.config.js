@@ -13,5 +13,5 @@ module.exports = {
   coverageDirectory: 'coverage',
   setupFilesAfterEnv: ['./src/tests/jest.setup.js'],
   silent: true,
-  modulePathIgnorePatterns: ['./src/app/types'],
+  modulePathIgnorePatterns: ['./src/app/types', './src/app/interfaces'],
 };
