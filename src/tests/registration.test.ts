@@ -5,6 +5,6 @@ describe('Registration form component', () => {
     const registration = new Registration();
     document.body.append(registration.getElement());
 
-    expect(document.querySelector('registration-form')).toBeInTheDocument();
+    expect(document.querySelector('.registration-form')).toBeInTheDocument();
   });
 });
