@@ -43,7 +43,7 @@ export class Registration {
   constructor() {
     this.registrationView = new ElementCreator({
       tag: 'div',
-      classes: 'max-w-xl w-full form flex flex-col gap-4 md:gap-6',
+      classes: 'registration-form max-w-xl w-full form flex flex-col gap-4 md:gap-6',
     });
     this.emailInput = new ElementInputCreator({
       type: 'email',
