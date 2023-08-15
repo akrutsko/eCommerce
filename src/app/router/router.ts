@@ -30,19 +30,4 @@ export class Router implements Observable {
     const hashValue = window.location.hash;
     this.notify(route, hashValue);
   };
-
-  public navigateToLogin(): void {
-    window.history.pushState({}, '', '/login');
-    this.handleLocation();
-  }
-
-  public navigateToSignUp(): void {
-    window.history.pushState({}, '', '/signup');
-    this.handleLocation();
-  }
-
-  public navigateToSignOut(): void {
-    window.history.pushState({}, '', '/signout');
-    this.handleLocation();
-  }
 }
