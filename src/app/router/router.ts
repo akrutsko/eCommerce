@@ -32,7 +32,9 @@ export class Router {
   public route = (event: Event): void => {
     const myEvent = event || window.event;
     myEvent.preventDefault();
-    window.history.pushState({}, '', (myEvent.target as HTMLAnchorElement).href);
+    if (myEvent.target instanceof HTMLAnchorElement) {
+      window.history.pushState({}, '', myEvent.target.href);
+    }
     this.handleLocation();
   };
 
