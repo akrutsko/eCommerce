@@ -15,7 +15,7 @@ export class Router {
     }
   }
 
-  private routes: { [key: string]: string } = {
+  private routes: Record<string, string> = {
     404: '404',
     '/': 'main',
     '/main': 'main',
