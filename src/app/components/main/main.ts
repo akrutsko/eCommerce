@@ -15,7 +15,7 @@ export class Main implements Observer {
     return this.mainView;
   }
 
-  async update(data?: string): Promise<void> {
+  update(data?: string): void {
     this.mainView.textContent = '';
     switch (data) {
       case 'main':
