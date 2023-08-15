@@ -1,3 +1,5 @@
+import { routes } from './routes';
+
 export class Router implements Observable {
   private observers: Observer[] = [];
 
@@ -22,33 +24,25 @@ export class Router implements Observable {
     }
   }
 
-  private routes: Record<string, string> = {
-    404: '404',
-    '/': 'main',
-    '/main': 'main',
-    '/login': 'login',
-    '/signup': 'signup',
-    '/signout': 'signout',
-    '/aboutus': 'aboutus',
-    '/categories': 'categories',
-  };
+  splitPath(path: string): { primaryPath: string; secondaryPath: string } {
+    const hashIndex = path.indexOf('#');
+    let primaryPath = '/';
+    let secondaryPath = '';
+
+    if (hashIndex !== -1) {
+      primaryPath = path.substring(0, hashIndex);
+      secondaryPath = path.substring(hashIndex);
+    } else {
+      primaryPath = path;
+    }
+
+    return { primaryPath, secondaryPath };
+  }
 
   public handleLocation = (): void => {
     const path = window.location.pathname;
-    let primaryPath = '/';
-    let secondaryPath = '';
-    if (path !== '/') {
-      const parts = path.split('/').filter((part) => part !== '');
-
-      if (parts.length >= 1) {
-        primaryPath = `/${parts[0]}`;
-      }
-
-      if (parts.length >= 2) {
-        secondaryPath = `/${parts.slice(1).join('/')}`;
-      }
-    }
-    const route = this.routes[primaryPath] || this.routes[404];
+    const { primaryPath, secondaryPath } = this.splitPath(path);
+    const route = routes[primaryPath] || routes[404];
     this.notify(route, secondaryPath);
   };
 
