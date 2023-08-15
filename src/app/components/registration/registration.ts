@@ -82,7 +82,7 @@ export class Registration {
       classes: 'opacity-60 pt-2',
       text: "Beat yourself and you'll always be first",
     });
-    titleContainer.appendNode(title).appendNode(subtitle);
+    titleContainer.appendNode(title, subtitle);
 
     const registrationForm = new ElementCreator({ tag: 'form', classes: 'flex flex-col gap-6 md:gap-9' });
 
@@ -95,23 +95,22 @@ export class Registration {
 
     const emailInputContainer = new ElementCreator({ tag: 'div', classes: '' });
     const emailError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    emailInputContainer.appendNode(this.emailInput).appendNode(emailError);
+    emailInputContainer.appendNode(this.emailInput, emailError);
 
     const nameInputContainer = new ElementCreator({ tag: 'div', classes: 'w-full md:max-w-[275px]' });
     const nameError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    nameInputContainer.appendNode(this.nameInput).appendNode(nameError);
+    nameInputContainer.appendNode(this.nameInput, nameError);
 
     const surnameInputContainer = new ElementCreator({ tag: 'div', classes: 'w-full md:max-w-[275px]' });
     const surnameError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    surnameInputContainer.appendNode(this.surnameInput).appendNode(surnameError);
+    surnameInputContainer.appendNode(this.surnameInput, surnameError);
 
     const birthDayInputContainer = new ElementCreator({ tag: 'div', classes: '' });
     const birthDayError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    birthDayInputContainer.appendNode(this.birthDayInput).appendNode(birthDayError);
+    birthDayInputContainer.appendNode(this.birthDayInput, birthDayError);
 
-    personalInfoFlexContainer.appendNode(nameInputContainer).appendNode(surnameInputContainer);
-    personalInfoContainer.appendNode(personalInfoTitle).appendNode(emailInputContainer);
-    personalInfoContainer.appendNode(personalInfoFlexContainer).appendNode(birthDayInputContainer);
+    personalInfoFlexContainer.appendNode(nameInputContainer, surnameInputContainer);
+    personalInfoContainer.appendNode(personalInfoTitle, emailInputContainer, personalInfoFlexContainer, birthDayInputContainer);
 
     const addressContainer = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4 md:gap-5' });
     const addressTitle = new ElementCreator({ tag: 'h3', classes: 'text-primary-color', text: 'Address' });
@@ -126,48 +125,44 @@ export class Registration {
 
     const countryInputContainer = new ElementCreator({ tag: 'div', classes: 'w-full md:max-w-[275px]' });
     const countryError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    countryInputContainer.appendNode(this.countryInput).appendNode(countryError);
+    countryInputContainer.appendNode(this.countryInput, countryError);
 
     const cityInputContainer = new ElementCreator({ tag: 'div', classes: 'w-full md:max-w-[275px]' });
     const cityError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    cityInputContainer.appendNode(this.cityInput).appendNode(cityError);
+    cityInputContainer.appendNode(this.cityInput, cityError);
 
     const streetInputContainer = new ElementCreator({ tag: 'div', classes: 'w-full md:max-w-[275px]' });
     const streetError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    streetInputContainer.appendNode(this.streetInput).appendNode(streetError);
+    streetInputContainer.appendNode(this.streetInput, streetError);
 
     const postalCodeInputContainer = new ElementCreator({ tag: 'div', classes: 'w-full md:max-w-[275px]' });
     const postalCodeError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    postalCodeInputContainer.appendNode(this.postalCodeInput).appendNode(postalCodeError);
+    postalCodeInputContainer.appendNode(this.postalCodeInput, postalCodeError);
 
-    addressFirstFlexContainer.appendNode(countryInputContainer).appendNode(cityInputContainer);
-    addressSecondFlexContainer.appendNode(streetInputContainer).appendNode(postalCodeInputContainer);
+    addressFirstFlexContainer.appendNode(countryInputContainer, cityInputContainer);
+    addressSecondFlexContainer.appendNode(streetInputContainer, postalCodeInputContainer);
 
-    addressContainer.appendNode(addressTitle).appendNode(addressFirstFlexContainer).appendNode(addressSecondFlexContainer);
-
-    const passwordContainer = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4 md:gap-5' });
-
-    const passwordTitle = new ElementCreator({ tag: 'h3', classes: 'text-primary-color', text: 'Choose password' });
+    addressContainer.appendNode(addressTitle, addressFirstFlexContainer, addressSecondFlexContainer);
 
     const passwordInputContainer = new ElementCreator({ tag: 'div', classes: 'password relative' });
     const passwordError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    passwordInputContainer.appendNode(this.passwordInput).appendNode(this.showButton).appendNode(passwordError);
+    passwordInputContainer.appendNode(this.passwordInput, this.showButton, passwordError);
 
     const passwordRepeatInputContainer = new ElementCreator({ tag: 'div', classes: 'password relative' });
     const passwordRepeatError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    passwordRepeatInputContainer.appendNode(this.passwordRepeatInput).appendNode(this.showRepeatButton);
-    passwordRepeatInputContainer.appendNode(passwordRepeatError);
+    passwordRepeatInputContainer.appendNode(this.passwordRepeatInput, this.showRepeatButton, passwordRepeatError);
 
-    passwordContainer.appendNode(passwordTitle).appendNode(passwordInputContainer).appendNode(passwordRepeatInputContainer);
+    const passwordContainer = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4 md:gap-5' });
+    const passwordTitle = new ElementCreator({ tag: 'h3', classes: 'text-primary-color', text: 'Choose password' });
+    passwordContainer.appendNode(passwordTitle, passwordInputContainer, passwordRepeatInputContainer);
 
-    registrationForm.appendNode(personalInfoContainer).appendNode(addressContainer);
-    registrationForm.appendNode(passwordContainer).appendNode(this.submitButton);
+    registrationForm.appendNode(personalInfoContainer, addressContainer, passwordContainer, this.submitButton);
 
     const question = new ElementCreator({ tag: 'div', text: 'Already have an account? ' });
     const signInAnchor = new ElementAnchorCreator({ href: '#', classes: 'link', text: 'Log in' });
     question.appendNode(signInAnchor);
 
-    this.registrationView.appendNode(titleContainer).appendNode(registrationForm).appendNode(question);
+    this.registrationView.appendNode(titleContainer, registrationForm, question);
   }
 
   handlePasswordVisibility(): void {
