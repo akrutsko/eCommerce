@@ -15,7 +15,7 @@ export class Main implements Observer {
     return this.mainView;
   }
 
-  update(data?: string): void {
+  update(data?: string, secondaryData?: string): void {
     this.mainView.textContent = '';
     switch (data) {
       case 'main':
@@ -26,6 +26,9 @@ export class Main implements Observer {
         break;
       case 'signup':
         this.showSignup();
+        break;
+      case 'categories':
+        this.showCategories(secondaryData);
         break;
       default:
         this.show404();
@@ -39,6 +42,12 @@ export class Main implements Observer {
   async showLogin(): Promise<void> {
     const { Login } = await import('../login/login');
     this.mainView.append(new Login().getElement());
+  }
+
+  showCategories(secondaryData?: string): void {
+    if (secondaryData) {
+      this.mainView.textContent = secondaryData;
+    }
   }
 
   async showSignup(): Promise<void> {

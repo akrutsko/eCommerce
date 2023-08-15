@@ -59,20 +59,20 @@ export class Header implements Observer {
     liAboutUs.appendNode(aAboutUs);
 
     const liSummerTime = new ElementCreator({ tag: 'li' });
-    const aSummerTime = new ElementAnchorCreator({ href: '#', classes: 'h5 hover:text-primary-color', text: 'Summer time' });
+    const aSummerTime = new ElementAnchorCreator({ href: '/categories#summer-time', classes: 'h5 hover:text-primary-color', text: 'Summer time' });
     liSummerTime.appendNode(aSummerTime);
 
     const liPeakClimber = new ElementCreator({ tag: 'li' });
-    const aPeakClimber = new ElementAnchorCreator({ href: '#', classes: 'h5 hover:text-primary-color', text: 'Peak climber' });
+    const aPeakClimber = new ElementAnchorCreator({ href: '/categories#peak-climber', classes: 'h5 hover:text-primary-color', text: 'Peak climber' });
     liPeakClimber.appendNode(aPeakClimber);
 
     const liBallGames = new ElementCreator({ tag: 'li' });
-    const aBallGames = new ElementAnchorCreator({ href: '#', classes: 'h5 hover:text-primary-color', text: 'Ball games' });
+    const aBallGames = new ElementAnchorCreator({ href: '/categories#ball-games', classes: 'h5 hover:text-primary-color', text: 'Ball games' });
     liBallGames.appendNode(aBallGames);
 
     const liIceAdventures = new ElementCreator({ tag: 'li' });
     const aIceAdventures = new ElementAnchorCreator({
-      href: '#',
+      href: 'categories#ice-adventures',
       classes: 'h5 hover:text-primary-color',
       text: 'Ice adventures',
     });

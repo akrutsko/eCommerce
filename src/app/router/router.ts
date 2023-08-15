@@ -24,26 +24,11 @@ export class Router implements Observable {
     }
   }
 
-  splitPath(path: string): { primaryPath: string; secondaryPath: string } {
-    const hashIndex = path.indexOf('#');
-    let primaryPath = '/';
-    let secondaryPath = '';
-
-    if (hashIndex !== -1) {
-      primaryPath = path.substring(0, hashIndex);
-      secondaryPath = path.substring(hashIndex);
-    } else {
-      primaryPath = path;
-    }
-
-    return { primaryPath, secondaryPath };
-  }
-
   public handleLocation = (): void => {
     const path = window.location.pathname;
-    const { primaryPath, secondaryPath } = this.splitPath(path);
-    const route = routes[primaryPath] || routes[404];
-    this.notify(route, secondaryPath);
+    const route = routes[path] || routes[404];
+    const hashValue = window.location.hash;
+    this.notify(route, hashValue);
   };
 
   public navigateToLogin(): void {
