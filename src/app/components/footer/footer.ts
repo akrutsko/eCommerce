@@ -29,72 +29,35 @@ export class Footer {
       classes: 'mb-1',
       text: 'Unleash Your Inner Athlete. Elevate\u00A0Your\u00A0Game with Every Click!',
     });
-    const copyright = new ElementCreator({
-      tag: 'div',
-      text: 'ⓒ2023 Peak Pulse. All rights are reserved.',
-    });
-    logo.appendNode(slogan).appendNode(copyright);
+    const copyright = new ElementCreator({ tag: 'div', text: 'ⓒ2023 Peak Pulse. All rights are reserved.' });
+    logo.appendNode(slogan, copyright);
 
-    const nav = new ElementCreator({
-      tag: 'div',
-      classes: 'text-white w-full flex justify-between max-w-xs',
-    });
+    const nav = new ElementCreator({ tag: 'div', classes: 'text-white w-full flex justify-between max-w-xs' });
     const companyWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const companyHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Company' });
-    const aboutLink = new ElementAnchorCreator({
-      href: '#',
-      classes: 'text-[10px]',
-      text: 'About us',
-    });
-    const contactLink = new ElementAnchorCreator({
-      href: '#',
-      classes: 'text-[10px]',
-      text: 'Contact',
-    });
-    companyWrapper.appendNode(companyHeading).appendNode(aboutLink).appendNode(contactLink);
+    const aboutLink = new ElementAnchorCreator({ href: '#', classes: 'text-[10px]', text: 'About us' });
+    const contactLink = new ElementAnchorCreator({ href: '#', classes: 'text-[10px]', text: 'Contact' });
+    companyWrapper.appendNode(companyHeading, aboutLink, contactLink);
 
     const socialWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const socialHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Social' });
-    const instagramLink = new ElementAnchorCreator({
-      href: '#',
-      classes: 'text-[10px]',
-      text: 'Instagram',
-    });
-    const facebookLink = new ElementAnchorCreator({
-      href: '#',
-      classes: 'text-[10px]',
-      text: 'Facebook',
-    });
-    socialWrapper.appendNode(socialHeading).appendNode(instagramLink).appendNode(facebookLink);
+    const instagramLink = new ElementAnchorCreator({ href: '#', classes: 'text-[10px]', text: 'Instagram' });
+    const facebookLink = new ElementAnchorCreator({ href: '#', classes: 'text-[10px]', text: 'Facebook' });
+    socialWrapper.appendNode(socialHeading, instagramLink, facebookLink);
 
     const productsWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const productsHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Prodcuts' });
-    const categoriesLink = new ElementAnchorCreator({
-      href: '#',
-      classes: 'text-[10px]',
-      text: 'Categories',
-    });
-    const sellersLink = new ElementAnchorCreator({
-      href: '#',
-      classes: 'text-[10px]',
-      text: 'Top sellers',
-    });
-    productsWrapper.appendNode(productsHeading).appendNode(categoriesLink).appendNode(sellersLink);
+    const categoriesLink = new ElementAnchorCreator({ href: '#', classes: 'text-[10px]', text: 'Categories' });
+    const sellersLink = new ElementAnchorCreator({ href: '#', classes: 'text-[10px]', text: 'Top sellers' });
+    productsWrapper.appendNode(productsHeading, categoriesLink, sellersLink);
 
     const form = new ElementCreator({ tag: 'form', classes: 'search-form' });
-    const input = new ElementInputCreator({
-      type: 'search',
-      name: 'search',
-      placeholder: 'search',
-    });
-    const submitButton = new ElementButtonCreator({
-      classes: 'absolute right-0 top-0 focus:outline-none',
-      html: searchIcon,
-    });
-    form.appendNode(input).appendNode(submitButton);
+    const input = new ElementInputCreator({ type: 'search', name: 'search', placeholder: 'search' });
+    const submitButton = new ElementButtonCreator({ classes: 'absolute right-0 top-0 focus:outline-none', html: searchIcon });
+    form.appendNode(input, submitButton);
 
-    nav.appendNode(companyWrapper).appendNode(socialWrapper).appendNode(productsWrapper);
-    this.footerView.appendNode(logo).appendNode(nav).appendNode(form);
+    nav.appendNode(companyWrapper, socialWrapper, productsWrapper);
+    this.footerView.appendNode(logo, nav, form);
   }
 
   getView(): ElementCreator<HTMLElement> {
