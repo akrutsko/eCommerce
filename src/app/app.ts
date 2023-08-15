@@ -28,7 +28,7 @@ export default class App {
 
   init(): void {
     document.body.append(this.header.getElement());
-    document.body.append(this.main.getElement());
+    document.body.append(this.main.getView());
     document.body.append(this.footer.getElement());
 
     this.consumer.subscribe(this.header);

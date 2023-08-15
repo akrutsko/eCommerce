@@ -1,63 +1,53 @@
 import { ElementCreator } from '../../utils/element-creator/element-creator';
-// import { Login } from '../login/login';
-// import { Registration } from '../registration/registration';
 
 export class Main implements Observer {
-  mainView: ElementCreator<HTMLElement>;
+  mainView: HTMLElement;
 
   constructor() {
     this.mainView = new ElementCreator({
       tag: 'main',
       classes: 'container flex flex-col justify-center items-center h-full my-5 md:my-10',
       text: 'main',
-    });
+    }).getElement();
   }
 
-  getView(): ElementCreator<HTMLElement> {
+  getView(): HTMLElement {
     return this.mainView;
   }
 
-  getElement(): HTMLElement {
-    return this.mainView.getElement();
-  }
-
   async update(data?: string): Promise<void> {
+    this.mainView.textContent = '';
     switch (data) {
       case 'main':
         this.showMain();
         break;
       case 'login':
-        await this.showLogin();
+        this.showLogin();
         break;
       case 'signup':
-        await this.showSignup();
+        this.showSignup();
         break;
       default:
         this.show404();
     }
   }
 
-  async showMain(): Promise<void> {
-    this.mainView.getElement().textContent = '';
+  showMain(): void {
     // TODO add future main context
   }
 
   async showLogin(): Promise<void> {
-    this.mainView.getElement().textContent = '';
-    const module = await import('../login/login');
-    const login = new module.Login();
-    this.mainView.appendNode(login.getElement());
+    const { Login } = await import('../login/login');
+    this.mainView.append(new Login().getElement());
   }
 
   async showSignup(): Promise<void> {
-    this.mainView.getElement().textContent = '';
-    const module = await import('../registration/registration');
-    const registration = new module.Registration();
-    this.mainView.appendNode(registration.getElement());
+    const { Registration } = await import('../registration/registration');
+    this.mainView.append(new Registration().getElement());
   }
 
-  async show404(): Promise<void> {
-    this.mainView.getElement().textContent = '404';
+  show404(): void {
+    this.mainView.textContent = '404';
     // TODO add 404 view
   }
 }
