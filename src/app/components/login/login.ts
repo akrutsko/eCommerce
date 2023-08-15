@@ -18,28 +18,15 @@ export class Login {
   submitButton: HTMLButtonElement;
 
   constructor() {
-    this.loginView = new ElementCreator({
-      tag: 'div',
-      classes: 'login-form max-w-xl w-full form flex flex-col gap-4 md:gap-6',
-    });
-    this.emailInput = new ElementInputCreator({
-      type: 'email',
-      placeholder: 'email',
-      classes: 'form-input',
-    }).getElement();
+    this.loginView = new ElementCreator({ tag: 'div', classes: 'login-form max-w-xl w-full form flex flex-col gap-4 md:gap-6' });
+    this.emailInput = new ElementInputCreator({ type: 'email', placeholder: 'email', classes: 'form-input' }).getElement();
     this.passwordInput = new ElementInputCreator({
       type: 'password',
       placeholder: 'password',
       classes: 'form-input',
     }).getElement();
-    this.submitButton = new ElementButtonCreator({
-      classes: 'primary-button',
-      text: 'log in',
-    }).getElement();
-    this.showButton = new ElementButtonCreator({
-      classes: 'absolute top-1/4 right-3',
-      html: passwordHide,
-    }).getElement();
+    this.submitButton = new ElementButtonCreator({ classes: 'primary-button', text: 'log in' }).getElement();
+    this.showButton = new ElementButtonCreator({ classes: 'absolute top-1/4 right-3', html: passwordHide }).getElement();
 
     this.createView();
     this.handlePasswordVisibility();
@@ -53,34 +40,24 @@ export class Login {
       classes: 'opacity-60 pt-2',
       text: "Beat yourself and you'll always be first",
     });
-    titleContainer.appendNode(title).appendNode(subtitle);
-
-    const loginForm = new ElementCreator({
-      tag: 'form',
-      classes: 'flex flex-col gap-3 sm:gap-4 md:gap-5',
-    });
+    titleContainer.appendNode(title, subtitle);
 
     const emailInputContainer = new ElementCreator({ tag: 'div', classes: 'email relative' });
     const emailError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    emailInputContainer.appendNode(this.emailInput).appendNode(emailError);
+    emailInputContainer.appendNode(this.emailInput, emailError);
 
     const passwordInputContainer = new ElementCreator({ tag: 'div', classes: 'password relative' });
     const passwordError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    passwordInputContainer
-      .appendNode(this.passwordInput)
-      .appendNode(this.showButton)
-      .appendNode(passwordError);
+    passwordInputContainer.appendNode(this.passwordInput, this.showButton, passwordError);
 
-    loginForm
-      .appendNode(emailInputContainer)
-      .appendNode(passwordInputContainer)
-      .appendNode(this.submitButton);
+    const loginForm = new ElementCreator({ tag: 'form', classes: 'flex flex-col gap-3 sm:gap-4 md:gap-5' });
+    loginForm.appendNode(emailInputContainer, passwordInputContainer, this.submitButton);
 
     const question = new ElementCreator({ tag: 'div', text: 'Not a member yet? ' });
-    const signInAnchor = new ElementAnchorCreator({ href: '#', classes: 'link', text: 'Sign up' });
+    const signInAnchor = new ElementAnchorCreator({ href: '/signup', classes: 'link', text: 'Sign up' });
     question.appendNode(signInAnchor);
 
-    this.loginView.appendNode(titleContainer).appendNode(loginForm).appendNode(question);
+    this.loginView.appendNode(titleContainer, loginForm, question);
   }
 
   handlePasswordVisibility(): void {
