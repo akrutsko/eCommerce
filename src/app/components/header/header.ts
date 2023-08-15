@@ -84,7 +84,7 @@ export class Header implements Observer {
 
     const liIceAdventures = new ElementCreator({ tag: 'li' });
     const aIceAdventures = new ElementAnchorCreator({
-      href: 'categories#ice-adventures',
+      href: '/categories#ice-adventures',
       classes: 'h5 hover:text-primary-color',
       text: 'Ice adventures',
     });
