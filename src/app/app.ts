@@ -2,7 +2,7 @@ import { Consumer } from './components/consumer/consumer';
 import { Header } from './components/header/header';
 import { Footer } from './components/footer/footer';
 import { Main } from './components/main/main';
-import { Registration } from './components/registration/registration';
+import { Router } from './router/router';
 
 export default class App {
   header: Header;
@@ -13,17 +13,22 @@ export default class App {
 
   consumer: Consumer;
 
+  router: Router;
+
   constructor() {
+    this.router = new Router();
     this.consumer = new Consumer();
     this.header = new Header(this.consumer);
     this.main = new Main();
     this.footer = new Footer();
+
+    this.router.subscribe(this.main);
+    this.router.handleLocation();
   }
 
   init(): void {
     document.body.append(this.header.getElement());
-    document.body.append(this.main.getElement());
-    this.main.getElement().append(new Registration().getElement());
+    document.body.append(this.main.getView());
     document.body.append(this.footer.getElement());
 
     this.consumer.subscribe(this.header);
