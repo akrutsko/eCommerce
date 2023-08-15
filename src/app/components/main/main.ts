@@ -1,13 +1,9 @@
 import { ElementCreator } from '../../utils/element-creator/element-creator';
-import { Login } from '../login/login';
-import { Registration } from '../registration/registration';
+// import { Login } from '../login/login';
+// import { Registration } from '../registration/registration';
 
 export class Main implements Observer {
   mainView: ElementCreator<HTMLElement>;
-
-  login: Login;
-
-  registration: Registration;
 
   constructor() {
     this.mainView = new ElementCreator({
@@ -15,12 +11,6 @@ export class Main implements Observer {
       classes: 'container flex flex-col justify-center items-center h-full my-5 md:my-10',
       text: 'main',
     });
-    this.login = new Login();
-    this.mainView.appendNode(this.login.loginView);
-    this.login.loginView.addClass('hidden');
-    this.registration = new Registration();
-    this.mainView.appendNode(this.registration.registrationView);
-    this.registration.registrationView.addClass('hidden');
   }
 
   getView(): ElementCreator<HTMLElement> {
@@ -31,23 +21,43 @@ export class Main implements Observer {
     return this.mainView.getElement();
   }
 
-  update(data?: string): void {
+  async update(data?: string): Promise<void> {
     switch (data) {
       case 'main':
-        this.login.loginView.addClass('hidden');
-        this.registration.registrationView.addClass('hidden');
+        this.showMain();
         break;
       case 'login':
-        this.registration.registrationView.addClass('hidden');
-        this.login.loginView.removeClass('hidden');
+        await this.showLogin();
         break;
       case 'signup':
-        this.registration.registrationView.removeClass('hidden');
-        this.login.loginView.addClass('hidden');
+        await this.showSignup();
         break;
       default:
-        this.login.loginView.addClass('hidden');
-        this.registration.registrationView.addClass('hidden');
+        this.show404();
     }
+  }
+
+  async showMain(): Promise<void> {
+    this.mainView.getElement().textContent = '';
+    // TODO add future main context
+  }
+
+  async showLogin(): Promise<void> {
+    this.mainView.getElement().textContent = '';
+    const module = await import('../login/login');
+    const login = new module.Login();
+    this.mainView.appendNode(login.getElement());
+  }
+
+  async showSignup(): Promise<void> {
+    this.mainView.getElement().textContent = '';
+    const module = await import('../registration/registration');
+    const registration = new module.Registration();
+    this.mainView.appendNode(registration.getElement());
+  }
+
+  async show404(): Promise<void> {
+    this.mainView.getElement().textContent = '404';
+    // TODO add 404 view
   }
 }

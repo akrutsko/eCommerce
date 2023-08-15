@@ -33,7 +33,7 @@ export class Header implements Observer {
 
   createView(): void {
     const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between py-5 gap-8' });
-    const logo = new ElementAnchorCreator({ href: '#', html: logotype });
+    const logo = new ElementAnchorCreator({ href: '/', html: logotype });
     const mobileMenu = new ElementCreator({
       tag: 'div',
       classes: 'mobile-menu md:w-full md:max-w-full max-w-[390px] hidden justify-between md:flex gap-8',

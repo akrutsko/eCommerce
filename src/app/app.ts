@@ -22,7 +22,7 @@ export default class App {
     this.main = new Main();
     this.footer = new Footer();
 
-    this.router.addObserver(this.main);
+    this.router.subscribe(this.main);
     this.router.handleLocation();
   }
 

@@ -1,18 +1,25 @@
-export class Router {
+export class Router implements Observable {
   private observers: Observer[] = [];
 
   constructor() {
     window.onpopstate = this.handleLocation;
   }
 
-  addObserver(observer: Observer): void {
+  subscribe(observer: Observer): void {
+    if (this.observers.includes(observer)) return;
     this.observers.push(observer);
   }
 
-  private notifyObservers(data: string): void {
-    this.observers.forEach((observer) => {
-      observer.update(data);
-    });
+  unsubscribe(observer: Observer): void {
+    const index = this.observers.indexOf(observer);
+    if (index === -1) return;
+    this.observers.slice(index, 1);
+  }
+
+  notify(primaryData?: string, secondaryData?: string): void {
+    if (primaryData) {
+      this.observers.forEach((observer) => observer.update(primaryData, secondaryData));
+    }
   }
 
   private routes: Record<string, string> = {
@@ -21,12 +28,26 @@ export class Router {
     '/main': 'main',
     '/login': 'login',
     '/signup': 'signup',
+    '/signout': 'signout',
+    '/aboutus': 'aboutus',
+    '/catagories': 'catagories',
   };
 
   public handleLocation = async (): Promise<void> => {
     const path = window.location.pathname;
-    const route = this.routes[path] || this.routes[404];
-    this.notifyObservers(route);
+    const parts = path.split('/').filter((part) => part !== '');
+    let primaryPath = '';
+    let secondaryPath = '';
+
+    if (parts.length >= 1) {
+      primaryPath = `/${parts[0]}`;
+    }
+
+    if (parts.length >= 2) {
+      secondaryPath = `/${parts.slice(1).join('/')}`;
+    }
+    const route = this.routes[primaryPath] || this.routes[404];
+    this.notify(route, secondaryPath);
   };
 
   public route = (event: Event): void => {
