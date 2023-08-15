@@ -35,7 +35,7 @@ export class Header implements Observer {
   }
 
   createView(): void {
-    const burger = new ElementCreator({ tag: 'div', classes: 'burger space-y-2 z-10 block md:hidden' });
+    const burger = new ElementCreator({ tag: 'div', classes: 'burger space-y-2 z-10 block md:hidden cursor-pointer' });
     const spanBurger1 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     const spanBurger2 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     const spanBurger3 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
@@ -94,12 +94,12 @@ export class Header implements Observer {
     submenu.appendNode(liSummerTime, liPeakClimber, liBallGames, liIceAdventures);
 
     const tab = new ElementCreator({ tag: 'li', classes: 'relative group tab' });
-    const aCategories = new ElementAnchorCreator({
-      href: '/categories',
+    const categories = new ElementCreator({
+      tag: 'div',
       text: 'Categories',
-      classes: 'h4 hover:text-primary-color',
+      classes: 'h4 hover:text-primary-color cursor-pointer',
     });
-    tab.appendNode(aCategories, submenu);
+    tab.appendNode(categories, submenu);
 
     const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-5' });
     linksList.appendNode(liHome, liAboutUs, tab);
@@ -123,7 +123,7 @@ export class Header implements Observer {
       bg.toggleClass('active');
       document.body.classList.toggle('active');
     });
-    tab.getElement().addEventListener('mouseover', () => {
+    tab.getElement().addEventListener('mouseenter', () => {
       submenu.addClass('active');
     });
     submenu.getElement().addEventListener('mouseleave', () => {

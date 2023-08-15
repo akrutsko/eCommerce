@@ -6,7 +6,7 @@ export class Main implements Observer {
   constructor() {
     this.mainView = new ElementCreator({
       tag: 'main',
-      classes: 'container flex flex-col justify-center items-center h-full my-5 md:my-10',
+      classes: 'container flex flex-col grow justify-center items-center h-full my-5 md:my-10',
       text: 'main',
     }).getElement();
   }
