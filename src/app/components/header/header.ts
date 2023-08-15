@@ -51,11 +51,11 @@ export class Header implements Observer {
     nav.appendNode(logo, mobileMenu, burger, bg);
 
     const liHome = new ElementCreator({ tag: 'li' });
-    const aHome = new ElementAnchorCreator({ href: '#', text: 'Home', classes: 'h4 hover:text-primary-color' });
+    const aHome = new ElementAnchorCreator({ href: '/', text: 'Home', classes: 'h4 hover:text-primary-color' });
     liHome.appendNode(aHome);
 
     const liAboutUs = new ElementCreator({ tag: 'li' });
-    const aAboutUs = new ElementAnchorCreator({ href: '#', text: 'About us', classes: 'h4 hover:text-primary-color' });
+    const aAboutUs = new ElementAnchorCreator({ href: '/aboutus', text: 'About us', classes: 'h4 hover:text-primary-color' });
     liAboutUs.appendNode(aAboutUs);
 
     const liSummerTime = new ElementCreator({ tag: 'li' });

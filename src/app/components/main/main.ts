@@ -46,8 +46,8 @@ export class Main implements Observer {
     this.mainView.append(new Registration().getElement());
   }
 
-  show404(): void {
-    this.mainView.textContent = '404';
-    // TODO add 404 view
+  async show404(): Promise<void> {
+    const { Absent } = await import('../absent/absent');
+    this.mainView.append(new Absent().getElement());
   }
 }

@@ -30,21 +30,23 @@ export class Router implements Observable {
     '/signup': 'signup',
     '/signout': 'signout',
     '/aboutus': 'aboutus',
-    '/catagories': 'catagories',
+    '/categories': 'categories',
   };
 
   public handleLocation = async (): Promise<void> => {
     const path = window.location.pathname;
-    const parts = path.split('/').filter((part) => part !== '');
-    let primaryPath = '';
+    let primaryPath = '/';
     let secondaryPath = '';
+    if (path !== '/') {
+      const parts = path.split('/').filter((part) => part !== '');
 
-    if (parts.length >= 1) {
-      primaryPath = `/${parts[0]}`;
-    }
+      if (parts.length >= 1) {
+        primaryPath = `/${parts[0]}`;
+      }
 
-    if (parts.length >= 2) {
-      secondaryPath = `/${parts.slice(1).join('/')}`;
+      if (parts.length >= 2) {
+        secondaryPath = `/${parts.slice(1).join('/')}`;
+      }
     }
     const route = this.routes[primaryPath] || this.routes[404];
     this.notify(route, secondaryPath);
