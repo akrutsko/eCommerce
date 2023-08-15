@@ -2,6 +2,7 @@ import { Consumer } from './components/consumer/consumer';
 import { Header } from './components/header/header';
 import { Footer } from './components/footer/footer';
 import { Main } from './components/main/main';
+import { Registration } from './components/registration/registration';
 
 export default class App {
   header: Header;
@@ -22,6 +23,7 @@ export default class App {
   init(): void {
     document.body.append(this.header.getElement());
     document.body.append(this.main.getElement());
+    this.main.getElement().append(new Registration().getElement());
     document.body.append(this.footer.getElement());
 
     this.consumer.subscribe(this.header);
