@@ -45,12 +45,15 @@ export class ElementCreator<T extends HTMLElement> {
     return this;
   }
 
-  public appendNode(node: HTMLElement | ElementCreator<T>): this {
-    if (node instanceof HTMLElement) {
-      this.element.append(node);
-    } else {
-      this.element.append(node.getElement());
-    }
+  // eslint-disable-next-line @typescript-eslint/array-type
+  public appendNode(...nodes: Array<HTMLElement | ElementCreator<T>>): this {
+    nodes.forEach((node) => {
+      if (node instanceof HTMLElement) {
+        this.element.append(node);
+      } else {
+        this.element.append(node.getElement());
+      }
+    });
     return this;
   }
 
