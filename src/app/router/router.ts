@@ -10,9 +10,9 @@ export class Router {
   }
 
   private notifyObservers(data: string): void {
-    for (let i = 0; i < this.observers.length; i += 1) {
-      this.observers[i].update(data);
-    }
+    this.observers.forEach((observer) => {
+      observer.update(data);
+    });
   }
 
   private routes: Record<string, string> = {
