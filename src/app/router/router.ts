@@ -33,7 +33,7 @@ export class Router implements Observable {
     '/categories': 'categories',
   };
 
-  public handleLocation(): void {
+  public handleLocation = (): void => {
     const path = window.location.pathname;
     let primaryPath = '/';
     let secondaryPath = '';
@@ -50,16 +50,7 @@ export class Router implements Observable {
     }
     const route = this.routes[primaryPath] || this.routes[404];
     this.notify(route, secondaryPath);
-  }
-
-  public route(event: Event): void {
-    const myEvent = event || window.event;
-    myEvent.preventDefault();
-    if (myEvent.target instanceof HTMLAnchorElement) {
-      window.history.pushState({}, '', myEvent.target.href);
-    }
-    this.handleLocation();
-  }
+  };
 
   public navigateToLogin(): void {
     window.history.pushState({}, '', '/login');
