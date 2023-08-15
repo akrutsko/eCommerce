@@ -1,9 +1,9 @@
-export interface Observer {
-  update(data: string): void;
-}
-
 export class Router {
   private observers: Observer[] = [];
+
+  constructor() {
+    window.onpopstate = this.handleLocation;
+  }
 
   addObserver(observer: Observer): void {
     this.observers.push(observer);
@@ -18,19 +18,14 @@ export class Router {
   private routes: { [key: string]: string } = {
     404: '404',
     '/': 'main',
+    '/main': 'main',
     '/login': 'login',
     '/signup': 'signup',
   };
 
-  constructor() {
-    window.onpopstate = this.handleLocation;
-    this.handleLocation();
-  }
-
-  private handleLocation = async (): Promise<void> => {
+  public handleLocation = async (): Promise<void> => {
     const path = window.location.pathname;
     const route = this.routes[path] || this.routes[404];
-    console.log(route);
     this.notifyObservers(route);
   };
 

@@ -1,3 +1,3 @@
 interface Observer {
-  update(): void;
+  update(data?: string): void;
 }

@@ -24,8 +24,8 @@ export class Header implements Observer {
     this.headerView = new ElementCreator({ tag: 'header', classes: 'container' });
     this.loginBtns = new ElementCreator({ tag: 'div', classes: 'flex gap-6 hidden' }).getElement();
     this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-6 hidden' }).getElement();
-    this.loginButton = new ElementButtonCreator({ tag: 'button', text: 'log in', classes: 'primary-button' }).getElement();
-    this.signupButton = new ElementButtonCreator({ tag: 'button', text: 'sign up', classes: 'secondary-button' }).getElement();
+    this.loginButton = new ElementAnchorCreator({ href: '/login', text: 'log in', classes: 'primary-button' }).getElement();
+    this.signupButton = new ElementAnchorCreator({ href: '/signup', text: 'sign up', classes: 'secondary-button' }).getElement();
     this.signoutButton = new ElementButtonCreator({ tag: 'button', text: 'sign out', classes: 'secondary-button' }).getElement();
 
     this.createView();
