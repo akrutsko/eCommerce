@@ -12,8 +12,7 @@ export class Absent {
   constructor() {
     this.notFoundView = new ElementCreator({ tag: 'div', classes: 'bg-[#F1EFEF] rounded-xl w-full flex-1 p-5 md:p-10 relative' });
     this.homeButton = new ElementAnchorCreator({ href: '/', classes: 'primary-button', text: 'Home' }).getElement();
-    this.backButton = new ElementButtonCreator({ classes: 'secondary-button', text: 'Go back' })
-      .getElement();
+    this.backButton = new ElementButtonCreator({ classes: 'secondary-button', text: 'Go back' }).getElement();
     this.backButton.addEventListener('click', () => {
       window.history.back();
     });
