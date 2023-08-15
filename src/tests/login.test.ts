@@ -5,6 +5,6 @@ describe('Login form component', () => {
     const login = new Login();
     document.body.append(login.getElement());
 
-    expect(document.querySelector('login-form')).toBeInTheDocument();
+    expect(document.querySelector('.login-form')).toBeInTheDocument();
   });
 });

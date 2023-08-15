@@ -25,8 +25,18 @@ export class ElementCreator<T extends HTMLElement> {
     return <T>element;
   }
 
-  public addClasses(classes: string[]): this {
-    this.element.classList.add(...classes);
+  public addClass(className: string): this {
+    this.element.classList.add(className);
+    return this;
+  }
+
+  public removeClass(className: string): this {
+    this.element.classList.remove(className);
+    return this;
+  }
+
+  public toggleClass(className: string): this {
+    this.element.classList.toggle(className);
     return this;
   }
 
