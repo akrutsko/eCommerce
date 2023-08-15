@@ -3,9 +3,10 @@ import logotype from '../../../assets/svg/logo-header.svg';
 import cartSvg from '../../../assets/svg/cart.svg';
 import customerSvg from '../../../assets/svg/customer.svg';
 
+import { Consumer } from '../consumer/consumer';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
-import { Consumer } from '../consumer/consumer';
+import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 
 export class Header implements Observer {
   headerView: ElementCreator<HTMLElement>;
@@ -18,15 +19,17 @@ export class Header implements Observer {
 
   signupButton: HTMLAnchorElement;
 
-  signoutButton: HTMLAnchorElement;
+  signoutButton: HTMLButtonElement;
 
   constructor(private consumer: Consumer) {
     this.headerView = new ElementCreator({ tag: 'header', classes: 'container' });
     this.loginBtns = new ElementCreator({ tag: 'div', classes: 'flex gap-6 hidden' }).getElement();
     this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-6 hidden' }).getElement();
-    this.loginButton = new ElementAnchorCreator({ href: '#', text: 'log in', classes: 'primary-button' }).getElement();
-    this.signupButton = new ElementAnchorCreator({ href: '#', text: 'sign up', classes: 'secondary-button' }).getElement();
-    this.signoutButton = new ElementAnchorCreator({ href: '#', text: 'sign out', classes: 'secondary-button' }).getElement();
+    this.loginButton = new ElementAnchorCreator({ href: '/login', text: 'log in', classes: 'primary-button' }).getElement();
+    this.signupButton = new ElementAnchorCreator({ href: '/signup', text: 'sign up', classes: 'secondary-button' }).getElement();
+    this.signoutButton = new ElementButtonCreator({ text: 'sign out', classes: 'secondary-button' })
+      .setHandler('click', this.consumer.logOut)
+      .getElement();
 
     this.createView();
     this.handleButtons();

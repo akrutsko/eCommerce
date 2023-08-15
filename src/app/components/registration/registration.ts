@@ -159,7 +159,7 @@ export class Registration {
     registrationForm.appendNode(personalInfoContainer, addressContainer, passwordContainer, this.submitButton);
 
     const question = new ElementCreator({ tag: 'div', text: 'Already have an account? ' });
-    const signInAnchor = new ElementAnchorCreator({ href: '#', classes: 'link', text: 'Log in' });
+    const signInAnchor = new ElementAnchorCreator({ href: '/login', classes: 'link', text: 'Log in' });
     question.appendNode(signInAnchor);
 
     this.registrationView.appendNode(titleContainer, registrationForm, question);

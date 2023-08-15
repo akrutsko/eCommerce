@@ -54,7 +54,7 @@ export class Login {
     loginForm.appendNode(emailInputContainer, passwordInputContainer, this.submitButton);
 
     const question = new ElementCreator({ tag: 'div', text: 'Not a member yet? ' });
-    const signInAnchor = new ElementAnchorCreator({ href: '#', classes: 'link', text: 'Sign up' });
+    const signInAnchor = new ElementAnchorCreator({ href: '/signup', classes: 'link', text: 'Sign up' });
     question.appendNode(signInAnchor);
 
     this.loginView.appendNode(titleContainer, loginForm, question);
