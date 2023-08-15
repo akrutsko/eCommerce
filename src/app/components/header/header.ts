@@ -32,7 +32,6 @@ export class Header implements Observer {
       .getElement();
 
     this.createView();
-    this.handleButtons();
   }
 
   createView(): void {
@@ -43,7 +42,7 @@ export class Header implements Observer {
     burger.appendNode(spanBurger1, spanBurger2, spanBurger3);
 
     const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between py-5 gap-8' });
-    const logo = new ElementAnchorCreator({ href: '#', html: logotype });
+    const logo = new ElementAnchorCreator({ href: '/', html: logotype });
     const mobileMenu = new ElementCreator({
       tag: 'div',
       classes: 'mobile-menu md:w-full md:max-w-full max-w-[390px] hidden justify-between md:flex gap-8',
@@ -52,28 +51,40 @@ export class Header implements Observer {
     nav.appendNode(logo, mobileMenu, burger, bg);
 
     const liHome = new ElementCreator({ tag: 'li' });
-    const aHome = new ElementAnchorCreator({ href: '#', text: 'Home', classes: 'h4 hover:text-primary-color' });
+    const aHome = new ElementAnchorCreator({ href: '/', text: 'Home', classes: 'h4 hover:text-primary-color' });
     liHome.appendNode(aHome);
 
     const liAboutUs = new ElementCreator({ tag: 'li' });
-    const aAboutUs = new ElementAnchorCreator({ href: '#', text: 'About us', classes: 'h4 hover:text-primary-color' });
+    const aAboutUs = new ElementAnchorCreator({ href: '/aboutus', text: 'About us', classes: 'h4 hover:text-primary-color' });
     liAboutUs.appendNode(aAboutUs);
 
     const liSummerTime = new ElementCreator({ tag: 'li' });
-    const aSummerTime = new ElementAnchorCreator({ href: '#', classes: 'h5 hover:text-primary-color', text: 'Summer time' });
+    const aSummerTime = new ElementAnchorCreator({
+      href: '/categories#summer-time',
+      classes: 'h5 hover:text-primary-color',
+      text: 'Summer time',
+    });
     liSummerTime.appendNode(aSummerTime);
 
     const liPeakClimber = new ElementCreator({ tag: 'li' });
-    const aPeakClimber = new ElementAnchorCreator({ href: '#', classes: 'h5 hover:text-primary-color', text: 'Peak climber' });
+    const aPeakClimber = new ElementAnchorCreator({
+      href: '/categories#peak-climber',
+      classes: 'h5 hover:text-primary-color',
+      text: 'Peak climber',
+    });
     liPeakClimber.appendNode(aPeakClimber);
 
     const liBallGames = new ElementCreator({ tag: 'li' });
-    const aBallGames = new ElementAnchorCreator({ href: '#', classes: 'h5 hover:text-primary-color', text: 'Ball games' });
+    const aBallGames = new ElementAnchorCreator({
+      href: '/categories#ball-games',
+      classes: 'h5 hover:text-primary-color',
+      text: 'Ball games',
+    });
     liBallGames.appendNode(aBallGames);
 
     const liIceAdventures = new ElementCreator({ tag: 'li' });
     const aIceAdventures = new ElementAnchorCreator({
-      href: '#',
+      href: '/categories#ice-adventures',
       classes: 'h5 hover:text-primary-color',
       text: 'Ice adventures',
     });
@@ -83,7 +94,11 @@ export class Header implements Observer {
     submenu.appendNode(liSummerTime, liPeakClimber, liBallGames, liIceAdventures);
 
     const tab = new ElementCreator({ tag: 'li', classes: 'relative group tab' });
-    const aCategories = new ElementAnchorCreator({ href: '#', text: 'Categories', classes: 'h4 hover:text-primary-color' });
+    const aCategories = new ElementAnchorCreator({
+      href: '/categories',
+      text: 'Categories',
+      classes: 'h4 hover:text-primary-color',
+    });
     tab.appendNode(aCategories, submenu);
 
     const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-5' });
@@ -108,7 +123,7 @@ export class Header implements Observer {
       bg.toggleClass('active');
       document.body.classList.toggle('active');
     });
-    tab.getElement().addEventListener('click', () => {
+    tab.getElement().addEventListener('mouseover', () => {
       submenu.addClass('active');
     });
     submenu.getElement().addEventListener('mouseleave', () => {
