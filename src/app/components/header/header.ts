@@ -94,7 +94,11 @@ export class Header implements Observer {
     submenu.appendNode(liSummerTime, liPeakClimber, liBallGames, liIceAdventures);
 
     const tab = new ElementCreator({ tag: 'li', classes: 'relative group tab' });
-    const aCategories = new ElementAnchorCreator({ href: '/categories', text: 'Categories', classes: 'h4 hover:text-primary-color' });
+    const aCategories = new ElementAnchorCreator({
+      href: '/categories',
+      text: 'Categories',
+      classes: 'h4 hover:text-primary-color',
+    });
     tab.appendNode(aCategories, submenu);
 
     const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-5' });
