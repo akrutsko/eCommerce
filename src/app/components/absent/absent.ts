@@ -1,17 +1,20 @@
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
+import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 
 export class Absent {
   notFoundView: ElementCreator<HTMLElement>;
 
   homeButton: HTMLAnchorElement;
 
-  backButton: HTMLAnchorElement;
+  backButton: HTMLButtonElement;
 
   constructor() {
     this.notFoundView = new ElementCreator({ tag: 'div', classes: 'bg-[#F1EFEF] rounded-xl w-full flex-1 p-5 md:p-10 relative' });
-    this.homeButton = new ElementAnchorCreator({ href: '#', classes: 'primary-button', text: 'Home' }).getElement();
-    this.backButton = new ElementAnchorCreator({ href: '#', classes: 'secondary-button', text: 'Go back' }).getElement();
+    this.homeButton = new ElementAnchorCreator({ href: '/', classes: 'primary-button', text: 'Home' }).getElement();
+    this.backButton = new ElementButtonCreator({ classes: 'secondary-button', text: 'Go back' })
+      .setHandler('click', window.history.back)
+      .getElement();
 
     this.createView();
   }
