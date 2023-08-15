@@ -66,15 +66,9 @@ export class Login {
 
     const passwordInputContainer = new ElementCreator({ tag: 'div', classes: 'password relative' });
     const passwordError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    passwordInputContainer
-      .appendNode(this.passwordInput)
-      .appendNode(this.showButton)
-      .appendNode(passwordError);
+    passwordInputContainer.appendNode(this.passwordInput).appendNode(this.showButton).appendNode(passwordError);
 
-    loginForm
-      .appendNode(emailInputContainer)
-      .appendNode(passwordInputContainer)
-      .appendNode(this.submitButton);
+    loginForm.appendNode(emailInputContainer).appendNode(passwordInputContainer).appendNode(this.submitButton);
 
     const question = new ElementCreator({ tag: 'div', text: 'Not a member yet? ' });
     const signInAnchor = new ElementAnchorCreator({ href: '#', classes: 'link', text: 'Sign up' });
