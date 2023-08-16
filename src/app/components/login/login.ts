@@ -42,7 +42,7 @@ export class Login {
       tag: 'div',
       classes: 'error hidden left-3 text-xs text-primary-color absolute',
     }).getElement();
-    this.submitButton = new ElementButtonCreator({ classes: 'primary-button', text: 'log in' }).getElement();
+    this.submitButton = new ElementButtonCreator({ classes: 'primary-button', text: 'log in', disabled: true }).getElement();
     this.showButton = new ElementButtonCreator({ classes: 'absolute top-1/4 right-3', html: passwordHide }).getElement();
 
     this.createView();
@@ -91,8 +91,14 @@ export class Login {
   }
 
   handleInputs(): void {
-    this.emailInput.addEventListener('input', () => this.validateInput(this.emailInput, validateEmail));
-    this.passwordInput.addEventListener('input', () => this.validateInput(this.passwordInput, validatePassword));
+    this.emailInput.addEventListener('input', () => {
+      this.validateInput(this.emailInput, validateEmail);
+      this.validateSubmitButton();
+    });
+    this.passwordInput.addEventListener('input', () => {
+      this.validateInput(this.passwordInput, validatePassword);
+      this.validateSubmitButton();
+    });
   }
 
   changePasswordVisibility(): void {
@@ -112,6 +118,17 @@ export class Login {
       errorField.classList.toggle('hidden', isValid);
       errorField.innerHTML = message || '';
     }
+  }
+
+  validateSubmitButton(): void {
+    if (!this.emailInput.value.length || !this.passwordInput.value.length) {
+      this.submitButton.disabled = true;
+      return;
+    }
+
+    const allErrors = this.getElement().querySelectorAll('div.error');
+    const showingErrors = [...allErrors].filter((error) => !error.classList.contains('hidden'));
+    this.submitButton.disabled = Boolean(showingErrors.length);
   }
 
   async logIn(): Promise<void> {
