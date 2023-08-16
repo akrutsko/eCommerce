@@ -1,9 +1,18 @@
 import { ElementCreator } from '../../utils/element-creator/element-creator';
+import { Router } from '../../router/router';
+import { Consumer } from '../consumer/consumer';
 
 export class Main implements Observer {
+  router: Router;
+
+  consumer: Consumer;
+
   mainView: HTMLElement;
 
-  constructor() {
+  constructor(router: Router, consumer: Consumer) {
+    this.router = router;
+    this.consumer = consumer;
+
     this.mainView = new ElementCreator({
       tag: 'main',
       classes: 'container flex flex-col grow justify-center items-center h-full my-5 md:my-10',
@@ -41,7 +50,7 @@ export class Main implements Observer {
 
   async showLogin(): Promise<void> {
     const { Login } = await import('../login/login');
-    this.mainView.append(new Login().getElement());
+    this.mainView.append(new Login(this.router, this.consumer).getElement());
   }
 
   showCategories(secondaryData?: string): void {

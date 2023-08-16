@@ -28,7 +28,7 @@ export class Header implements Observer {
     this.loginButton = new ElementAnchorCreator({ href: '/login', text: 'log in', classes: 'primary-button' }).getElement();
     this.signupButton = new ElementAnchorCreator({ href: '/signup', text: 'sign up', classes: 'secondary-button' }).getElement();
     this.signoutButton = new ElementButtonCreator({ text: 'sign out', classes: 'secondary-button' })
-      .setHandler('click', this.consumer.logOut)
+      .setHandler('click', () => this.consumer.logOut())
       .getElement();
 
     this.createView();
@@ -147,10 +147,5 @@ export class Header implements Observer {
       this.loginBtns.classList.remove('hidden');
       this.logoutBtns.classList.add('hidden');
     }
-  }
-
-  handleButtons(): void {
-    this.loginButton.addEventListener('click', () => this.consumer.logIn('ak@test.com', 'ak'));
-    this.signoutButton.addEventListener('click', () => this.consumer.logOut());
   }
 }

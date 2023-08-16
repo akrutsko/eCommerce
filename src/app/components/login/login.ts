@@ -7,19 +7,30 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
 import { ValidationResult } from '../../types/validation-result-type';
 import { validateEmail, validatePassword } from '../../utils/validation/input-validation';
+import { Consumer } from '../consumer/consumer';
+import { Router } from '../../router/router';
 
 export class Login {
+  router: Router;
+
+  consumer: Consumer;
+
   loginView: ElementCreator<HTMLElement>;
 
   emailInput: HTMLInputElement;
 
   passwordInput: HTMLInputElement;
 
+  passwordError: HTMLElement;
+
   showButton: HTMLButtonElement;
 
   submitButton: HTMLButtonElement;
 
-  constructor() {
+  constructor(router: Router, consumer: Consumer) {
+    this.router = router;
+    this.consumer = consumer;
+
     this.loginView = new ElementCreator({ tag: 'div', classes: 'login-form max-w-xl w-full form flex flex-col gap-4 md:gap-6' });
     this.emailInput = new ElementInputCreator({ type: 'email', placeholder: 'email', classes: 'form-input' }).getElement();
     this.passwordInput = new ElementInputCreator({
@@ -27,12 +38,16 @@ export class Login {
       placeholder: 'password',
       classes: 'form-input',
     }).getElement();
+    this.passwordError = new ElementCreator({
+      tag: 'div',
+      classes: 'error hidden left-3 text-xs text-primary-color absolute',
+    }).getElement();
     this.submitButton = new ElementButtonCreator({ classes: 'primary-button', text: 'log in' }).getElement();
     this.showButton = new ElementButtonCreator({ classes: 'absolute top-1/4 right-3', html: passwordHide }).getElement();
 
     this.createView();
-    this.handlePasswordVisibility();
-    this.handleOnInput();
+    this.handleButtons();
+    this.handleInputs();
   }
 
   createView(): void {
@@ -46,12 +61,11 @@ export class Login {
     titleContainer.appendNode(title, subtitle);
 
     const emailInputContainer = new ElementCreator({ tag: 'div', classes: 'email relative' });
-    const emailError = new ElementCreator({ tag: 'div', classes: 'error hide' });
+    const emailError = new ElementCreator({ tag: 'div', classes: 'error hidden left-3 text-xs text-primary-color absolute' });
     emailInputContainer.appendNode(this.emailInput, emailError);
 
     const passwordInputContainer = new ElementCreator({ tag: 'div', classes: 'password relative' });
-    const passwordError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    passwordInputContainer.appendNode(this.passwordInput, this.showButton, passwordError);
+    passwordInputContainer.appendNode(this.passwordInput, this.showButton, this.passwordError);
 
     const loginForm = new ElementCreator({ tag: 'form', classes: 'flex flex-col gap-3 sm:gap-4 md:gap-5' });
     loginForm.appendNode(emailInputContainer, passwordInputContainer, this.submitButton);
@@ -63,8 +77,22 @@ export class Login {
     this.loginView.appendNode(titleContainer, loginForm, question);
   }
 
-  handlePasswordVisibility(): void {
+  getView(): ElementCreator<HTMLElement> {
+    return this.loginView;
+  }
+
+  getElement(): HTMLElement {
+    return this.loginView.getElement();
+  }
+
+  handleButtons(): void {
     this.showButton.addEventListener('click', () => this.changePasswordVisibility());
+    this.submitButton.addEventListener('click', () => this.logIn());
+  }
+
+  handleInputs(): void {
+    this.emailInput.addEventListener('input', () => this.validateInput(this.emailInput, validateEmail));
+    this.passwordInput.addEventListener('input', () => this.validateInput(this.passwordInput, validatePassword));
   }
 
   changePasswordVisibility(): void {
@@ -75,27 +103,27 @@ export class Login {
     this.passwordInput.focus();
   }
 
-  handleOnInput(): void {
-    this.emailInput.addEventListener('input', () => this.showError(this.emailInput, validateEmail));
-    this.passwordInput.addEventListener('input', () => this.showError(this.passwordInput, validatePassword));
-  }
-
-  showError(input: HTMLInputElement, callback: (value: string) => ValidationResult): void {
+  validateInput(input: HTMLInputElement, callback: (value: string) => ValidationResult): void {
     const { isValid, message } = callback(input.value);
-    const errorField = input.nextElementSibling;
+
+    const errorField = input.parentElement?.querySelector('div');
 
     if (errorField) {
       errorField.classList.toggle('hidden', isValid);
-      errorField.classList.toggle('absolute', !isValid);
       errorField.innerHTML = message || '';
     }
   }
 
-  getView(): ElementCreator<HTMLElement> {
-    return this.loginView;
-  }
-
-  getElement(): HTMLElement {
-    return this.loginView.getElement();
+  async logIn(): Promise<void> {
+    try {
+      await this.consumer.logIn(this.emailInput.value, this.passwordInput.value);
+      window.history.pushState({}, '', '/main');
+      this.router.handleLocation();
+    } catch (err) {
+      if (err instanceof Error) {
+        this.passwordError.textContent = err.message;
+        this.passwordError.classList.remove('hidden');
+      }
+    }
   }
 }
