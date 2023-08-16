@@ -126,7 +126,7 @@ export class Header implements Observer {
     tab.getElement().addEventListener('mouseenter', () => {
       submenu.addClass('active');
     });
-    submenu.getElement().addEventListener('mouseleave', () => {
+    tab.getElement().addEventListener('mouseleave', () => {
       submenu.removeClass('active');
     });
   }
