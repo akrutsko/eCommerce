@@ -5,6 +5,8 @@ import { ElementButtonCreator } from '../../utils/element-creator/element-button
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
+import { ValidationResult } from '../../types/validation-result-type';
+import { validateEmail, validatePassword } from '../../utils/validation/input-validation';
 
 export class Login {
   loginView: ElementCreator<HTMLElement>;
@@ -18,18 +20,32 @@ export class Login {
   submitButton: HTMLButtonElement;
 
   constructor() {
-    this.loginView = new ElementCreator({ tag: 'div', classes: 'login-form max-w-xl w-full form flex flex-col gap-4 md:gap-6' });
-    this.emailInput = new ElementInputCreator({ type: 'email', placeholder: 'email', classes: 'form-input' }).getElement();
+    this.loginView = new ElementCreator({
+      tag: 'div',
+      classes: 'login-form max-w-xl w-full form flex flex-col gap-4 md:gap-6',
+    });
+    this.emailInput = new ElementInputCreator({
+      type: 'email',
+      placeholder: 'email',
+      classes: 'form-input',
+    }).getElement();
     this.passwordInput = new ElementInputCreator({
       type: 'password',
       placeholder: 'password',
       classes: 'form-input',
     }).getElement();
-    this.submitButton = new ElementButtonCreator({ classes: 'primary-button', text: 'log in' }).getElement();
-    this.showButton = new ElementButtonCreator({ classes: 'absolute top-1/4 right-3', html: passwordHide }).getElement();
+    this.submitButton = new ElementButtonCreator({
+      classes: 'primary-button',
+      text: 'log in',
+    }).getElement();
+    this.showButton = new ElementButtonCreator({
+      classes: 'absolute top-1/4 right-3',
+      html: passwordHide,
+    }).getElement();
 
     this.createView();
     this.handlePasswordVisibility();
+    this.handleOnInput();
   }
 
   createView(): void {
@@ -42,19 +58,23 @@ export class Login {
     });
     titleContainer.appendNode(title, subtitle);
 
+    const loginForm = new ElementCreator({
+      tag: 'form',
+      classes: 'flex flex-col gap-3 sm:gap-4 md:gap-5',
+    });
+
     const emailInputContainer = new ElementCreator({ tag: 'div', classes: 'email relative' });
-    const emailError = new ElementCreator({ tag: 'div', classes: 'error hide' });
+    const emailError = new ElementCreator({ tag: 'div', classes: 'error hidden left-3 text-xs text-primary-color' });
     emailInputContainer.appendNode(this.emailInput, emailError);
 
     const passwordInputContainer = new ElementCreator({ tag: 'div', classes: 'password relative' });
-    const passwordError = new ElementCreator({ tag: 'div', classes: 'error hide' });
-    passwordInputContainer.appendNode(this.passwordInput, this.showButton, passwordError);
+    const passwordError = new ElementCreator({ tag: 'div', classes: 'error hidden left-3 text-xs text-primary-color' });
+    passwordInputContainer.appendNode(this.passwordInput, passwordError, this.showButton);
 
-    const loginForm = new ElementCreator({ tag: 'form', classes: 'flex flex-col gap-3 sm:gap-4 md:gap-5' });
     loginForm.appendNode(emailInputContainer, passwordInputContainer, this.submitButton);
 
     const question = new ElementCreator({ tag: 'div', text: 'Not a member yet? ' });
-    const signInAnchor = new ElementAnchorCreator({ href: '/signup', classes: 'link', text: 'Sign up' });
+    const signInAnchor = new ElementAnchorCreator({ href: '#', classes: 'link', text: 'Sign up' });
     question.appendNode(signInAnchor);
 
     this.loginView.appendNode(titleContainer, loginForm, question);
@@ -70,6 +90,22 @@ export class Login {
     this.passwordInput.type = isHidden ? 'text' : 'password';
     this.showButton.innerHTML = isHidden ? passwordShow : passwordHide;
     this.passwordInput.focus();
+  }
+
+  handleOnInput(): void {
+    this.emailInput.addEventListener('input', () => this.showError(this.emailInput, validateEmail));
+    this.passwordInput.addEventListener('input', () => this.showError(this.passwordInput, validatePassword));
+  }
+
+  showError(input: HTMLInputElement, callback: (value: string) => ValidationResult): void {
+    const { isValid, message } = callback(input.value);
+    const errorField = input.nextElementSibling;
+
+    if (errorField) {
+      errorField.classList.toggle('hidden', isValid);
+      errorField.classList.toggle('absolute', !isValid);
+      errorField.innerHTML = message || '';
+    }
   }
 
   getView(): ElementCreator<HTMLElement> {
