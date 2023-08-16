@@ -5,6 +5,8 @@ import { ElementButtonCreator } from '../../utils/element-creator/element-button
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
+import { ValidationResult } from '../../types/validation-result-type';
+import { validateEmail, validatePassword } from '../../utils/validation/input-validation';
 
 export class Login {
   loginView: ElementCreator<HTMLElement>;
@@ -30,6 +32,7 @@ export class Login {
 
     this.createView();
     this.handlePasswordVisibility();
+    this.handleOnInput();
   }
 
   createView(): void {
@@ -70,6 +73,22 @@ export class Login {
     this.passwordInput.type = isHidden ? 'text' : 'password';
     this.showButton.innerHTML = isHidden ? passwordShow : passwordHide;
     this.passwordInput.focus();
+  }
+
+  handleOnInput(): void {
+    this.emailInput.addEventListener('input', () => this.showError(this.emailInput, validateEmail));
+    this.passwordInput.addEventListener('input', () => this.showError(this.passwordInput, validatePassword));
+  }
+
+  showError(input: HTMLInputElement, callback: (value: string) => ValidationResult): void {
+    const { isValid, message } = callback(input.value);
+    const errorField = input.nextElementSibling;
+
+    if (errorField) {
+      errorField.classList.toggle('hidden', isValid);
+      errorField.classList.toggle('absolute', !isValid);
+      errorField.innerHTML = message || '';
+    }
   }
 
   getView(): ElementCreator<HTMLElement> {
