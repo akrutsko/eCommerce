@@ -28,14 +28,14 @@ export class Header implements Observer {
     this.loginButton = new ElementAnchorCreator({ href: '/login', text: 'log in', classes: 'primary-button' }).getElement();
     this.signupButton = new ElementAnchorCreator({ href: '/signup', text: 'sign up', classes: 'secondary-button' }).getElement();
     this.signoutButton = new ElementButtonCreator({ text: 'sign out', classes: 'secondary-button' })
-      .setHandler('click', this.consumer.logOut)
+      .setHandler('click', () => this.consumer.logOut())
       .getElement();
 
     this.createView();
   }
 
   createView(): void {
-    const burger = new ElementCreator({ tag: 'div', classes: 'burger space-y-2 z-10 block md:hidden' });
+    const burger = new ElementCreator({ tag: 'div', classes: 'burger space-y-2 z-10 block md:hidden cursor-pointer' });
     const spanBurger1 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     const spanBurger2 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     const spanBurger3 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
@@ -93,13 +93,13 @@ export class Header implements Observer {
     const submenu = new ElementCreator({ tag: 'ul', classes: 'submenu absolute hidden bg-white px-2 py-1 w-max' });
     submenu.appendNode(liSummerTime, liPeakClimber, liBallGames, liIceAdventures);
 
-    const tab = new ElementCreator({ tag: 'li', classes: 'relative group tab' });
-    const aCategories = new ElementAnchorCreator({
-      href: '/categories',
+    const tab = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
+    const categories = new ElementCreator({
+      tag: 'div',
       text: 'Categories',
-      classes: 'h4 hover:text-primary-color',
+      classes: 'h4 hover:text-primary-color cursor-pointer',
     });
-    tab.appendNode(aCategories, submenu);
+    tab.appendNode(categories, submenu);
 
     const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-5' });
     linksList.appendNode(liHome, liAboutUs, tab);
@@ -123,10 +123,10 @@ export class Header implements Observer {
       bg.toggleClass('active');
       document.body.classList.toggle('active');
     });
-    tab.getElement().addEventListener('mouseover', () => {
+    tab.getElement().addEventListener('mouseenter', () => {
       submenu.addClass('active');
     });
-    submenu.getElement().addEventListener('mouseleave', () => {
+    tab.getElement().addEventListener('mouseleave', () => {
       submenu.removeClass('active');
     });
   }
@@ -147,10 +147,5 @@ export class Header implements Observer {
       this.loginBtns.classList.remove('hidden');
       this.logoutBtns.classList.add('hidden');
     }
-  }
-
-  handleButtons(): void {
-    this.loginButton.addEventListener('click', () => this.consumer.logIn('ak@test.com', 'ak'));
-    this.signoutButton.addEventListener('click', () => this.consumer.logOut());
   }
 }

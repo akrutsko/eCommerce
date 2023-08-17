@@ -3,7 +3,7 @@ import { Client } from '@commercetools/sdk-client-v2';
 import { getApiRoot } from './api-client';
 
 export function createConsumer(client: Client, customer: MyCustomerDraft): Promise<ClientResponse<CustomerSignInResult>> {
-  return getApiRoot(client).me().signup().post({ body: customer }).execute();
+  return getApiRoot(client).customers().post({ body: customer }).execute();
 }
 
 export function deleteConsumer(client: Client, id: string, version: number): Promise<ClientResponse<Customer>> {
