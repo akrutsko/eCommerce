@@ -19,11 +19,8 @@ export default class App {
     this.router = new Router();
     this.consumer = new Consumer();
     this.header = new Header(this.consumer);
-    this.main = new Main();
+    this.main = new Main(this.router, this.consumer);
     this.footer = new Footer();
-
-    this.router.subscribe(this.main);
-    this.router.handleLocation();
   }
 
   init(): void {
@@ -32,6 +29,7 @@ export default class App {
     document.body.append(this.footer.getElement());
 
     this.consumer.subscribe(this.header);
-    this.consumer.init();
+    this.router.subscribe(this.main);
+    this.consumer.init().then(() => this.router.handleLocation());
   }
 }
