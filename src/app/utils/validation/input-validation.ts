@@ -28,6 +28,7 @@ export function validatePassword(password: string): ValidationResult {
   const { isValid, message } = isTrimmed(password);
   if (!isValid) return { isValid, message };
 
+  if (!password) return { isValid: false, message: 'This field is required' };
   if (password.length < 8) {
     return { isValid: false, message: 'Password must be at least 8 characters long' };
   }
