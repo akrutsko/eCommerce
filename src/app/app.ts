@@ -23,7 +23,7 @@ export default class App {
     this.footer = new Footer();
   }
 
-  async init(): Promise<void> {
+  init(): void {
     document.body.append(this.header.getElement());
     document.body.append(this.main.getView());
     document.body.append(this.footer.getElement());
