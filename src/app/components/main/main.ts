@@ -15,11 +15,14 @@ export class Main implements Observer {
     return this.mainView;
   }
 
-  update(data?: string, secondaryData?: string): void {
+  update(data?: string, hashData?: string): void {
     this.mainView.textContent = '';
     switch (data) {
       case 'main':
         this.showMain();
+        break;
+      case 'aboutus':
+        this.showAboutUs();
         break;
       case 'login':
         this.showLogin();
@@ -28,7 +31,7 @@ export class Main implements Observer {
         this.showSignup();
         break;
       case 'categories':
-        this.showCategories(secondaryData);
+        this.showCategories(hashData);
         break;
       default:
         this.show404();
@@ -36,7 +39,18 @@ export class Main implements Observer {
   }
 
   showMain(): void {
-    // TODO add future main context
+    const mainMessage = new ElementCreator({
+      tag: 'div',
+      classes:
+        'text-[#DFDDDF] text-8xl sd:text-[265px] mg:text-[350px] font-bold drop-shadow-[5px_4px_0px_rgba(57,62,77,0.18)]',
+      text: 'Main page',
+    });
+    this.mainView.append(mainMessage.getElement());
+  }
+
+  async showAboutUs(): Promise<void> {
+    const { AboutUs } = await import('../aboutus/aboutus');
+    this.mainView.append(new AboutUs().getElement());
   }
 
   async showLogin(): Promise<void> {
@@ -44,9 +58,13 @@ export class Main implements Observer {
     this.mainView.append(new Login().getElement());
   }
 
-  showCategories(secondaryData?: string): void {
-    if (secondaryData) {
-      this.mainView.textContent = secondaryData;
+  async showCategories(hashData?: string): Promise<void> {
+    // validateHashCaterories(hashData);
+    if (hashData) {
+      this.mainView.textContent = hashData;
+    } else {
+      const { Categories } = await import('../category/categories');
+      this.mainView.append(new Categories().getElement());
     }
   }
 
