@@ -59,7 +59,7 @@ export class Registration {
       tag: 'div',
       classes: 'registration-form max-w-xl w-full form flex flex-col gap-4 md:gap-6',
     });
-    this.emailInput = new ElementInputCreator({ type: 'email', placeholder: 'email', classes: 'form-input' }).getElement();
+    this.emailInput = new ElementInputCreator({ placeholder: 'email', classes: 'form-input' }).getElement();
     this.nameInput = new ElementInputCreator({ placeholder: 'name', classes: 'form-input' }).getElement();
     this.surnameInput = new ElementInputCreator({ placeholder: 'surname', classes: 'form-input' }).getElement();
     this.birthDayInput = new ElementInputCreator({ placeholder: 'birth date', classes: 'form-input' }).getElement();
