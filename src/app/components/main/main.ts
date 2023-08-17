@@ -34,6 +34,9 @@ export class Main implements Observer {
       case 'aboutus':
         this.showAboutUs();
         break;
+      case 'contact':
+        this.showContact();
+        break;
       case 'login':
         if (this.consumer.isConsumer) {
           this.showMain();
@@ -63,6 +66,11 @@ export class Main implements Observer {
       text: 'Main page',
     });
     this.mainView.append(mainMessage.getElement());
+  }
+
+  async showContact(): Promise<void> {
+    const { Contact } = await import('../contact/contact');
+    this.mainView.append(new Contact().getElement());
   }
 
   async showAboutUs(): Promise<void> {

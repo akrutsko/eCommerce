@@ -35,20 +35,20 @@ export class Footer {
     const nav = new ElementCreator({ tag: 'div', classes: 'text-white w-full flex justify-between max-w-xs' });
     const companyWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const companyHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Company' });
-    const aboutLink = new ElementAnchorCreator({ href: '#', classes: 'text-[10px]', text: 'About us' });
-    const contactLink = new ElementAnchorCreator({ href: '#', classes: 'text-[10px]', text: 'Contact' });
+    const aboutLink = new ElementAnchorCreator({ href: '/aboutus', classes: 'text-[10px]', text: 'About us' });
+    const contactLink = new ElementAnchorCreator({ href: '/contact', classes: 'text-[10px]', text: 'Contact' });
     companyWrapper.appendNode(companyHeading, aboutLink, contactLink);
 
     const socialWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const socialHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Social' });
-    const instagramLink = new ElementAnchorCreator({ href: '#', classes: 'text-[10px]', text: 'Instagram' });
-    const facebookLink = new ElementAnchorCreator({ href: '#', classes: 'text-[10px]', text: 'Facebook' });
+    const instagramLink = new ElementAnchorCreator({ href: 'https://www.instagram.com/rsschool_news/', classes: 'text-[10px]', text: 'Instagram' });
+    const facebookLink = new ElementAnchorCreator({ href: 'https://www.facebook.com/rsschoolEN/', classes: 'text-[10px]', text: 'Facebook' });
     socialWrapper.appendNode(socialHeading, instagramLink, facebookLink);
 
     const productsWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const productsHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Prodcuts' });
-    const categoriesLink = new ElementAnchorCreator({ href: '#', classes: 'text-[10px]', text: 'Categories' });
-    const sellersLink = new ElementAnchorCreator({ href: '#', classes: 'text-[10px]', text: 'Top sellers' });
+    const categoriesLink = new ElementAnchorCreator({ href: '/categories', classes: 'text-[10px]', text: 'Categories' });
+    const sellersLink = new ElementAnchorCreator({ href: '/goods', classes: 'text-[10px]', text: 'Godds' });
     productsWrapper.appendNode(productsHeading, categoriesLink, sellersLink);
 
     const form = new ElementCreator({ tag: 'form', classes: 'search-form' });
