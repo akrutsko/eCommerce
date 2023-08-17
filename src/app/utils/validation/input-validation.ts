@@ -1,14 +1,15 @@
 import { ValidationResult } from '../../types/validation-result-type';
 import { countries, postalCodeRegexes } from './countries';
 
-export function isValueExist(value: string): ValidationResult {
-  if (!value) return { isValid: false, message: 'This field is required' };
-  return { isValid: true };
-}
-export function isTrimmed(value: string): ValidationResult {
+function isTrimmed(value: string): ValidationResult {
   if (value.trim().length !== value.length) {
     return { isValid: false, message: 'Remove redundant leading and trailing whitespace' };
   }
+  return { isValid: true };
+}
+
+export function isValueExist(value: string): ValidationResult {
+  if (!value) return { isValid: false, message: 'This field is required' };
   return { isValid: true };
 }
 
