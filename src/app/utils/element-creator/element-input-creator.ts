@@ -4,6 +4,7 @@ import { ElementCreator } from './element-creator';
 export class ElementInputCreator extends ElementCreator<HTMLInputElement> {
   constructor(params: ElementInputParams) {
     super({ ...params, tag: 'input' });
+    this.element.type = 'text';
 
     if (params.type) {
       this.element.type = params.type;
@@ -13,6 +14,9 @@ export class ElementInputCreator extends ElementCreator<HTMLInputElement> {
     }
     if (params.placeholder) {
       this.element.placeholder = params.placeholder;
+    }
+    if (params.disabled) {
+      this.element.disabled = params.disabled;
     }
   }
 }
