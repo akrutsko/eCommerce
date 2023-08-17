@@ -21,17 +21,15 @@ export default class App {
     this.header = new Header(this.consumer);
     this.main = new Main(this.router, this.consumer);
     this.footer = new Footer();
-
-    this.router.subscribe(this.main);
-    this.router.handleLocation();
   }
 
-  init(): void {
+  async init(): Promise<void> {
     document.body.append(this.header.getElement());
     document.body.append(this.main.getView());
     document.body.append(this.footer.getElement());
 
     this.consumer.subscribe(this.header);
-    this.consumer.init();
+    this.router.subscribe(this.main);
+    this.consumer.init().then(() => this.router.handleLocation());
   }
 }

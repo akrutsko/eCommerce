@@ -26,12 +26,17 @@ export class Main implements Observer {
 
   update(data?: string, secondaryData?: string): void {
     this.mainView.textContent = '';
+
     switch (data) {
       case 'main':
         this.showMain();
         break;
       case 'login':
-        this.showLogin();
+        if (this.consumer.isConsumer) {
+          this.showMain();
+        } else {
+          this.showLogin();
+        }
         break;
       case 'signup':
         this.showSignup();
@@ -45,7 +50,7 @@ export class Main implements Observer {
   }
 
   showMain(): void {
-    // TODO add future main context
+    this.mainView.textContent = 'main';
   }
 
   async showLogin(): Promise<void> {
