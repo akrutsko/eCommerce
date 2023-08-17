@@ -39,7 +39,11 @@ export class Main implements Observer {
         }
         break;
       case 'signup':
-        this.showSignup();
+        if (this.consumer.isConsumer) {
+          this.showMain();
+        } else {
+          this.showSignup();
+        }
         break;
       case 'categories':
         this.showCategories(secondaryData);
