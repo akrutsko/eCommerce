@@ -455,9 +455,11 @@ export class Registration {
       list.innerHTML = '';
 
       filteredCountries.forEach((country) => {
-        const listItem = document.createElement('li');
-        listItem.className = 'p-2 hover:bg-gray-200 cursor-pointer';
-        listItem.textContent = country;
+        const listItem = new ElementCreator({
+          tag: 'li',
+          classes: 'p-2 hover:bg-gray-200 cursor-pointer',
+          text: country,
+        }).getElement();
 
         listItem.addEventListener('click', () => {
           currentInput.value = country;

@@ -4,7 +4,6 @@ import { ElementCreator } from './element-creator';
 export class ElementInputCreator extends ElementCreator<HTMLInputElement> {
   constructor(params: ElementInputParams) {
     super({ ...params, tag: 'input' });
-    this.element.type = 'text';
 
     if (params.type) {
       this.element.type = params.type;
