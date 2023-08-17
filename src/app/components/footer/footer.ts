@@ -41,8 +41,16 @@ export class Footer {
 
     const socialWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const socialHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Social' });
-    const instagramLink = new ElementAnchorCreator({ href: 'https://www.instagram.com/rsschool_news/', classes: 'text-[10px]', text: 'Instagram' });
-    const facebookLink = new ElementAnchorCreator({ href: 'https://www.facebook.com/rsschoolEN/', classes: 'text-[10px]', text: 'Facebook' });
+    const instagramLink = new ElementAnchorCreator({
+      href: 'https://www.instagram.com/rsschool_news/',
+      classes: 'text-[10px]',
+      text: 'Instagram',
+    });
+    const facebookLink = new ElementAnchorCreator({
+      href: 'https://www.facebook.com/rsschoolEN/',
+      classes: 'text-[10px]',
+      text: 'Facebook',
+    });
     socialWrapper.appendNode(socialHeading, instagramLink, facebookLink);
 
     const productsWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
