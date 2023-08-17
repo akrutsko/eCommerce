@@ -5,7 +5,10 @@ export class Categories {
   сategoriesView: ElementCreator<HTMLElement>;
 
   constructor() {
-    this.сategoriesView = new ElementCreator({ tag: 'div', classes: 'bg-[#F1EFEF] rounded-xl w-full flex-1 p-5 md:p-10 relative' });
+    this.сategoriesView = new ElementCreator({
+      tag: 'div',
+      classes: 'bg-[#F1EFEF] rounded-xl w-full flex-1 p-5 md:p-10 relative',
+    });
     this.createView();
   }
 
