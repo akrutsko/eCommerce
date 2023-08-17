@@ -27,7 +27,10 @@ export class Router implements Observable {
   public handleLocation = (): void => {
     const path = window.location.pathname;
     const route = routes[path] || routes[404];
-    const hashValue = window.location.hash;
+    let hashValue = window.location.hash;
+    if (hashValue) {
+      hashValue = hashValue.substring(1);
+    }
     this.notify(route, hashValue);
   };
 }

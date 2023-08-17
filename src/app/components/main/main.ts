@@ -37,6 +37,9 @@ export class Main implements Observer {
       case 'contact':
         this.showContact();
         break;
+      case 'goods':
+        this.showGoods();
+        break;
       case 'login':
         if (this.consumer.isConsumer) {
           this.showMain();
@@ -73,6 +76,11 @@ export class Main implements Observer {
     this.mainView.append(new Contact().getElement());
   }
 
+  async showGoods(): Promise<void> {
+    const { Goods } = await import('../goods/goods');
+    this.mainView.append(new Goods().getElement());
+  }
+
   async showAboutUs(): Promise<void> {
     const { AboutUs } = await import('../aboutus/aboutus');
     this.mainView.append(new AboutUs().getElement());
@@ -84,9 +92,14 @@ export class Main implements Observer {
   }
 
   async showCategories(hashData?: string): Promise<void> {
-    // validateHashCaterories(hashData);
     if (hashData) {
-      this.mainView.textContent = hashData;
+      const { Category } = await import('../category/category');
+      const categories = new Category(hashData);
+      if (categories.validateCategory()) {
+        this.mainView.append(categories.getElement());
+      } else {
+        this.show404();
+      }
     } else {
       const { Categories } = await import('../category/categories');
       this.mainView.append(new Categories().getElement());
