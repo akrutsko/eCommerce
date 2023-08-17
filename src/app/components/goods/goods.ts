@@ -1,7 +1,7 @@
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 
 export class Goods {
-  goodsView : ElementCreator<HTMLElement>;
+  goodsView: ElementCreator<HTMLElement>;
 
   constructor() {
     this.goodsView = new ElementCreator({ tag: 'div' });
