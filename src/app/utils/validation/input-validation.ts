@@ -51,7 +51,7 @@ export function validatePassword(password: string): ValidationResult {
 
 export function validateDateOfBirth(dateOfBirth: string): ValidationResult {
   const AGE_RESTRICTION = 14;
-  if (!dateOfBirth) return { isValid: false, message: 'This field is required' };
+
   const currentDate = new Date();
   const inputDate = new Date(dateOfBirth);
   const yearsDifference = currentDate.getFullYear() - inputDate.getFullYear();
