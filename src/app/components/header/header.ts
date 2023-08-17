@@ -93,7 +93,7 @@ export class Header implements Observer {
     const submenu = new ElementCreator({ tag: 'ul', classes: 'submenu absolute hidden bg-white px-2 py-1 w-max' });
     submenu.appendNode(liSummerTime, liPeakClimber, liBallGames, liIceAdventures);
 
-    const tab = new ElementCreator({ tag: 'li', classes: 'relative group tab' });
+    const tab = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
     const categories = new ElementCreator({
       tag: 'div',
       text: 'Categories',

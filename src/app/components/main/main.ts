@@ -55,6 +55,7 @@ export class Main implements Observer {
 
   showMain(): void {
     this.mainView.textContent = 'main';
+    this.mainView.className = 'mx-auto text-[#DFDDDF] text-9xl md:text-[265px] lg:text-[350px] font-bold';
   }
 
   async showLogin(): Promise<void> {
@@ -64,7 +65,8 @@ export class Main implements Observer {
 
   showCategories(secondaryData?: string): void {
     if (secondaryData) {
-      this.mainView.textContent = secondaryData;
+      this.mainView.textContent = '404';
+      this.mainView.className = 'mx-auto text-[#DFDDDF] text-9xl md:text-[265px] lg:text-[350px] font-bold';
     }
   }
 
