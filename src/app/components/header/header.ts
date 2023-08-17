@@ -7,8 +7,13 @@ import { Consumer } from '../consumer/consumer';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
+import { Router } from '../../router/router';
 
 export class Header implements Observer {
+  router: Router;
+
+  consumer: Consumer;
+
   headerView: ElementCreator<HTMLElement>;
 
   loginBtns: HTMLElement;
@@ -21,8 +26,24 @@ export class Header implements Observer {
 
   signoutButton: HTMLButtonElement;
 
-  constructor(private consumer: Consumer) {
+  logoLink: HTMLAnchorElement;
+
+  homeLink: HTMLAnchorElement;
+
+  aboutusLink: HTMLAnchorElement;
+
+  constructor(router: Router, consumer: Consumer) {
+    this.router = router;
+    this.consumer = consumer;
+
     this.headerView = new ElementCreator({ tag: 'header', classes: 'container' });
+    this.logoLink = new ElementAnchorCreator({ href: '/', html: logotype }).getElement();
+    this.homeLink = new ElementAnchorCreator({ href: '/', text: 'Home', classes: 'h4 hover:text-primary-color' }).getElement();
+    this.aboutusLink = new ElementAnchorCreator({
+      href: '/aboutus',
+      text: 'About us',
+      classes: 'h4 hover:text-primary-color',
+    }).getElement();
     this.loginBtns = new ElementCreator({ tag: 'div', classes: 'flex gap-6 hidden' }).getElement();
     this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-6 hidden' }).getElement();
     this.loginButton = new ElementAnchorCreator({ href: '/login', text: 'log in', classes: 'primary-button' }).getElement();
@@ -32,6 +53,7 @@ export class Header implements Observer {
       .getElement();
 
     this.createView();
+    this.handleLinks();
   }
 
   createView(): void {
@@ -42,21 +64,19 @@ export class Header implements Observer {
     burger.appendNode(spanBurger1, spanBurger2, spanBurger3);
 
     const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between py-5 gap-8' });
-    const logo = new ElementAnchorCreator({ href: '/', html: logotype });
     const mobileMenu = new ElementCreator({
       tag: 'div',
       classes: 'mobile-menu md:w-full md:max-w-full max-w-[390px] hidden justify-between md:flex gap-8',
     });
     const bg = new ElementCreator({ tag: 'div', classes: 'bg hidden' });
-    nav.appendNode(logo, mobileMenu, burger, bg);
+    nav.appendNode(this.logoLink, mobileMenu, burger, bg);
 
-    const liHome = new ElementCreator({ tag: 'li' });
-    const aHome = new ElementAnchorCreator({ href: '/', text: 'Home', classes: 'h4 hover:text-primary-color' });
-    liHome.appendNode(aHome);
+    const home = new ElementCreator({ tag: 'li' });
+    home.appendNode(this.homeLink);
 
-    const liAboutUs = new ElementCreator({ tag: 'li' });
-    const aAboutUs = new ElementAnchorCreator({ href: '/aboutus', text: 'About us', classes: 'h4 hover:text-primary-color' });
-    liAboutUs.appendNode(aAboutUs);
+    const aboutus = new ElementCreator({ tag: 'li' });
+
+    aboutus.appendNode(this.aboutusLink);
 
     const liSummerTime = new ElementCreator({ tag: 'li' });
     const aSummerTime = new ElementAnchorCreator({
@@ -102,7 +122,7 @@ export class Header implements Observer {
     tab.appendNode(categories, submenu);
 
     const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-5' });
-    linksList.appendNode(liHome, liAboutUs, tab);
+    linksList.appendNode(home, aboutus, tab);
 
     const divCart = new ElementCreator({ tag: 'div', html: cartSvg });
     const aCart = new ElementAnchorCreator({ href: '#' });
@@ -147,5 +167,15 @@ export class Header implements Observer {
       this.loginBtns.classList.remove('hidden');
       this.logoutBtns.classList.add('hidden');
     }
+  }
+
+  handleLinks(): void {
+    this.logoLink.addEventListener('click', (e) => {
+      if (e instanceof HTMLAnchorElement) {
+        e.preventDefault();
+        window.history.pushState({}, '', e.href);
+        this.router.handleLocation();
+      }
+    });
   }
 }
