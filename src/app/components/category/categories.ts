@@ -13,13 +13,38 @@ export class Categories {
   }
 
   createView(): void {
+    const categories = new ElementCreator({
+      tag: 'div',
+      text: 'Categories',
+      classes: 'h4 bg-white px-2 py-1 w-max',
+    });
+
+    this.сategoriesView.appendNode(categories);
+
     const linkSummerTime = new ElementAnchorCreator({
       href: '/categories#summer-time',
-      classes: 'h5 hover:text-primary-color',
+      classes: 'h5 hover:text-primary-color block',
       text: 'Summer time',
     });
 
-    this.сategoriesView.appendNode(linkSummerTime);
+    const linkPeakClimber = new ElementAnchorCreator({
+      href: '/categories#peak-climber',
+      classes: 'h5 hover:text-primary-color block',
+      text: 'Peak climber',
+    });
+
+    const linkBallGames = new ElementAnchorCreator({
+      href: '/categories#ball-games',
+      classes: 'h5 hover:text-primary-color block',
+      text: 'Ball games',
+    });
+
+    const linkIceAdventures = new ElementAnchorCreator({
+      href: '/categories#ice-adventures',
+      classes: 'h5 hover:text-primary-color block',
+      text: 'Ice adventures',
+    });
+    categories.appendNode(linkSummerTime, linkPeakClimber, linkBallGames, linkIceAdventures);
   }
 
   getView(): ElementCreator<HTMLElement> {
