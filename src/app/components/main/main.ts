@@ -41,16 +41,11 @@ export class Main implements Observer {
         this.showGoods();
         break;
       case 'cart':
-        if (!this.consumer.isConsumer) {
-          window.history.pushState({}, '', '/');
-          this.router.handleLocation();
-        } else {
-          this.showCart();
-        }
+        this.showCart();
         break;
       case 'profile':
         if (!this.consumer.isConsumer) {
-          window.history.pushState({}, '', '/');
+          window.history.pushState({}, '', '/signup');
           this.router.handleLocation();
         } else {
           this.showProfile();
