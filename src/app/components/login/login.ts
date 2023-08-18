@@ -99,6 +99,9 @@ export class Login {
       this.validateInput(this.passwordInput, validatePassword);
       this.validateSubmitButton();
     });
+
+    this.validateInput(this.emailInput, validateEmail);
+    this.validateInput(this.passwordInput, validatePassword);
   }
 
   changePasswordVisibility(): void {
@@ -121,7 +124,7 @@ export class Login {
   }
 
   validateSubmitButton(): void {
-    if (!this.emailInput.value.length || !this.passwordInput.value.length) {
+    if (!this.emailInput.value || !this.passwordInput.value) {
       this.submitButton.disabled = true;
       return;
     }

@@ -1,5 +1,5 @@
 import { ValidationResult } from '../../types/validation-result-type';
-import { countries, postalCodeRegexes } from './countries';
+import { countries, postalCodeRegexes } from '../../data/countries';
 
 function isTrimmed(value: string): ValidationResult {
   if (value.trim().length !== value.length) {
@@ -14,42 +14,49 @@ export function isValueExist(value: string): ValidationResult {
 }
 
 export function validateEmail(email: string): ValidationResult {
+  if (!email) return { isValid: false, message: 'This field is required' };
+
   const { isValid, message } = isTrimmed(email);
   if (!isValid) return { isValid, message };
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  if (!email) return { isValid: false, message: 'This field is required' };
   if (!emailRegex.test(email)) return { isValid: false, message: 'Invalid email address format' };
 
   return { isValid: true };
 }
 
-export function validatePassword(password: string): ValidationResult {
-  const { isValid, message } = isTrimmed(password);
+export function validatePassword(primaryPassword: string, secondaryPassword?: string): ValidationResult {
+  if (!primaryPassword) return { isValid: false, message: 'This field is required' };
+
+  const { isValid, message } = isTrimmed(primaryPassword);
   if (!isValid) return { isValid, message };
 
-  if (!password) return { isValid: false, message: 'This field is required' };
-  if (password.length < 8) {
+  if (primaryPassword.length < 8) {
     return { isValid: false, message: 'Password must be at least 8 characters long' };
   }
 
-  if (!/[a-z]/.test(password)) {
+  if (!/[a-z]/.test(primaryPassword)) {
     return { isValid: false, message: 'Password must contain at least one lowercase letter' };
   }
 
-  if (!/[A-Z]/.test(password)) {
+  if (!/[A-Z]/.test(primaryPassword)) {
     return { isValid: false, message: 'Password must contain at least one uppercase letter' };
   }
 
-  if (!/\d/.test(password)) {
+  if (!/\d/.test(primaryPassword)) {
     return { isValid: false, message: 'Password must contain at least one digit' };
+  }
+
+  if (secondaryPassword && secondaryPassword !== primaryPassword) {
+    return { isValid: false, message: 'Passwords do not match' };
   }
 
   return { isValid: true };
 }
 
 export function validateDateOfBirth(dateOfBirth: string): ValidationResult {
+  if (!dateOfBirth) return { isValid: false, message: 'This field is required' };
+
   const AGE_RESTRICTION = 14;
 
   const currentDate = new Date();
@@ -64,27 +71,31 @@ export function validateDateOfBirth(dateOfBirth: string): ValidationResult {
 }
 
 export function validateCountry(country: string): ValidationResult {
+  if (!country) return { isValid: false, message: 'This field is required' };
+
   if (!countries.includes(country)) {
-    return { isValid: false, message: 'Invalid country selection.' };
+    return { isValid: false, message: 'Invalid country' };
   }
   return { isValid: true };
 }
 
-export function validatePostalCode(country: string, postalCode?: string): ValidationResult {
-  if (!country) return { isValid: false, message: 'Please choose country' };
+export function validatePostalCode(postalCode: string, country?: string): ValidationResult {
   if (!postalCode) return { isValid: false, message: 'This field is required' };
+  if (!country) return { isValid: false, message: 'Choose country' };
 
   const regex = postalCodeRegexes[country];
 
-  if (!regex) return { isValid: false, message: 'Please choose available country' };
+  if (!regex) return { isValid: false, message: 'Choose valid country' };
   if (!regex.test(postalCode)) {
     return { isValid: false, message: 'Incorrect postal code format' };
   }
   return { isValid: true };
 }
 
-export function validateOnlyLetters(city: string): ValidationResult {
-  if (!/^[A-Za-z\s]+$/.test(city)) {
+export function validateOnlyLetters(input: string): ValidationResult {
+  if (!input) return { isValid: false, message: 'This field is required' };
+
+  if (!/^[A-Za-z\s]+$/.test(input)) {
     return { isValid: false, message: 'This field must contain only letters' };
   }
   return { isValid: true };
