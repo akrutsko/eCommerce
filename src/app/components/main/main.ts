@@ -42,7 +42,8 @@ export class Main implements Observer {
         break;
       case 'login':
         if (this.consumer.isConsumer) {
-          this.showMain();
+          window.history.pushState({}, '', '/');
+          this.router.handleLocation();
         } else {
           this.showLogin();
         }
