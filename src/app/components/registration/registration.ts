@@ -321,7 +321,8 @@ export class Registration extends HandlerLinks {
     isPostalCodeError = false,
   ): void {
     const { isValid, message } = isPostalCodeError
-      ? callback(this.deliveryCountryInput.value, input.value) : callback(input.value);
+      ? callback(this.deliveryCountryInput.value, input.value)
+      : callback(input.value);
 
     const errorField = input.parentElement?.querySelector('div');
 
