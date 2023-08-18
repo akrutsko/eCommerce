@@ -124,11 +124,6 @@ export class Login {
   }
 
   validateSubmitButton(): void {
-    if (!this.emailInput.value || !this.passwordInput.value) {
-      this.submitButton.disabled = true;
-      return;
-    }
-
     const allErrors = this.getElement().querySelectorAll('div.error');
     const showingErrors = [...allErrors].filter((error) => !error.classList.contains('hidden'));
     this.submitButton.disabled = Boolean(showingErrors.length);
@@ -141,8 +136,7 @@ export class Login {
       this.router.handleLocation();
     } catch (err) {
       if (err instanceof Error) {
-        this.passwordError.textContent = err.message;
-        this.passwordError.classList.remove('hidden');
+        // TO DO: show gracefull error message
       }
     }
   }

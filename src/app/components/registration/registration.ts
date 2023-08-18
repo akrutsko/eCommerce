@@ -9,6 +9,8 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
+import { ElementOptionCreator } from '../../utils/element-creator/element-option-creator';
+import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
 import * as validator from '../../utils/validation/input-validation';
 import { ValidationResult } from '../../types/validation-result-type';
 import { Router } from '../../router/router';
@@ -16,7 +18,6 @@ import { Consumer } from '../consumer/consumer';
 import { getCtpClient } from '../../utils/api/api-client';
 import { createConsumer } from '../../utils/api/api-consumer';
 import { countryCodes } from '../../data/country-codes';
-import { ElementOptionCreator } from '../../utils/element-creator/element-option-creator';
 
 export class Registration {
   router: Router;
@@ -85,8 +86,8 @@ export class Registration {
     this.deliveryCityInput = new ElementInputCreator({ placeholder: 'city', classes: 'form-input' }).getElement();
     this.deliveryStreetInput = new ElementInputCreator({ placeholder: 'street', classes: 'form-input' }).getElement();
     this.deliveryPostalCodeInput = new ElementInputCreator({ placeholder: 'postal code', classes: 'form-input' }).getElement();
-    this.saveDeliveryCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true }).getElement();
-    this.setSameAddressCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true }).getElement();
+    this.saveDeliveryCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true, id: 'del-def' }).getElement();
+    this.setSameAddressCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true, id: 'del-bil' }).getElement();
     this.billingCountryInput = new ElementInputCreator({
       placeholder: 'country',
       classes: 'form-input',
@@ -105,7 +106,7 @@ export class Registration {
       placeholder: 'repeat password',
       classes: 'form-input',
     }).getElement();
-    this.saveBillingCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true }).getElement();
+    this.saveBillingCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true, id: 'bil-def' }).getElement();
     this.submitButton = new ElementButtonCreator({ classes: 'primary-button', text: 'sign up', disabled: true }).getElement();
     this.showButton = new ElementButtonCreator({ classes: 'absolute top-1/4 right-3', html: passwordHide }).getElement();
     this.showRepeatButton = new ElementButtonCreator({ classes: 'absolute top-1/4 right-3', html: passwordHide }).getElement();
@@ -155,7 +156,7 @@ export class Registration {
     const addressTitle = new ElementCreator({ tag: 'h3', classes: 'text-primary-color', text: 'Address' });
 
     const addressDeliveryContainer = new ElementCreator({ tag: 'div', classes: 'delivery-address flex flex-col gap-4 md:gap-5' });
-    const addressBillingContainer = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4 md:gap-5' });
+    const addressBillingContainer = new ElementCreator({ tag: 'div', classes: 'billing-address flex flex-col gap-4 md:gap-5' });
 
     const addressDeliverySubtitle = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Delivery address' });
     const addressDeliveryFirstFlexContainer = new ElementCreator({
@@ -209,8 +210,8 @@ export class Registration {
 
     const deliveryFirstCheckboxContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm' });
     const deliverySecondCheckboxContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm' });
-    const deliveryFirstLabel = new ElementCreator({ tag: 'label', text: 'set as default address' });
-    const deliverySecondLabel = new ElementCreator({ tag: 'label', text: 'set delivery address as billing address' });
+    const deliveryFirstLabel = new ElementLabelCreator({ text: 'set as default address', for: 'del-def' });
+    const deliverySecondLabel = new ElementLabelCreator({ text: 'set delivery address as billing address', for: 'del-bil' });
 
     deliveryFirstCheckboxContainer.appendNode(this.saveDeliveryCheckbox, deliveryFirstLabel);
     deliverySecondCheckboxContainer.appendNode(this.setSameAddressCheckbox, deliverySecondLabel);
@@ -273,7 +274,7 @@ export class Registration {
     addressBillingSecondFlexContainer.appendNode(streetBillingInputContainer, postalBillingCodeInputContainer);
 
     const billingCheckboxContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm' });
-    const billingLabel = new ElementCreator({ tag: 'label', text: 'set as default address' });
+    const billingLabel = new ElementLabelCreator({ text: 'set as default address', for: 'bil-def' });
 
     billingCheckboxContainer.appendNode(this.saveBillingCheckbox, billingLabel);
 
@@ -320,7 +321,13 @@ export class Registration {
     this.submitButton.addEventListener('click', () => this.signUp());
   }
 
-  validateAddressesInputs(): void {
+  validateDeliveryAddressesInputs(): void {
+    this.validateInput(this.deliveryCountryInput, validator.validateCountry);
+    this.validateInput(this.deliveryPostalCodeInput, validator.validatePostalCode, this.deliveryCountryInput);
+    this.validateInput(this.deliveryCityInput, validator.validateOnlyLetters);
+    this.validateInput(this.deliveryStreetInput, validator.isValueExist);
+    this.validateInput(this.deliveryPostalCodeInput, validator.validatePostalCode, this.deliveryCountryInput);
+
     const isCountryExist = this.deliveryCountryInput.value;
     const isCityExist = this.deliveryCityInput.value;
     const isStreetExist = this.deliveryStreetInput.value;
@@ -333,12 +340,25 @@ export class Registration {
     }
   }
 
-  validateSubmitButton(): void {
-    if (!this.emailInput.value || !this.passwordInput.value || !this.passwordRepeatInput.value) {
-      this.submitButton.disabled = true;
-      return;
-    }
+  validateBillingAddressesInputs(): void {
+    this.validateInput(this.billingCountryInput, validator.validateCountry);
+    this.validateInput(this.billingPostalCodeInput, validator.validatePostalCode, this.billingCountryInput);
+    this.validateInput(this.billingCityInput, validator.validateOnlyLetters);
+    this.validateInput(this.billingStreetInput, validator.isValueExist);
+    this.validateInput(this.billingPostalCodeInput, validator.validatePostalCode, this.billingCountryInput);
 
+    const isCountryExist = this.billingCountryInput.value;
+    const isCityExist = this.billingCityInput.value;
+    const isStreetExist = this.billingStreetInput.value;
+    const isPostalCodeExist = this.billingPostalCodeInput.value;
+    if (isCountryExist && isCityExist && isStreetExist && isPostalCodeExist) {
+      const addressErrors = this.getElement().querySelectorAll('.billing-address div.error');
+      const showingErrors = [...addressErrors].filter((error) => !error.classList.contains('hidden'));
+      this.saveBillingCheckbox.disabled = Boolean(showingErrors.length);
+    }
+  }
+
+  validateSubmitButton(): void {
     const allErrors = this.getElement().querySelectorAll('div.error');
     const showingErrors = [...allErrors].filter((error) => !error.classList.contains('hidden'));
     this.submitButton.disabled = Boolean(showingErrors.length);
@@ -362,19 +382,19 @@ export class Registration {
   handleInputs(): void {
     this.emailInput.addEventListener('input', () => {
       this.validateInput(this.emailInput, validator.validateEmail);
-      this.validateSubmitButton();
+      // this.validateSubmitButton();
     });
     this.nameInput.addEventListener('input', () => {
       this.validateInput(this.nameInput, validator.validateOnlyLetters);
-      this.validateSubmitButton();
+      // this.validateSubmitButton();
     });
     this.surnameInput.addEventListener('input', () => {
       this.validateInput(this.surnameInput, validator.validateOnlyLetters);
-      this.validateSubmitButton();
+      // this.validateSubmitButton();
     });
     this.birthDayInput.addEventListener('input', () => {
       this.validateInput(this.birthDayInput, validator.validateDateOfBirth);
-      this.validateSubmitButton();
+      // this.validateSubmitButton();
     });
     this.birthDayInput.addEventListener('focus', () => {
       this.birthDayInput.type = 'date';
@@ -383,73 +403,70 @@ export class Registration {
       if (!this.birthDayInput.value) this.birthDayInput.type = 'text';
     });
     this.deliveryCountryInput.addEventListener('input', () => {
-      this.validateInput(this.deliveryCountryInput, validator.validateCountry);
-      this.validateInput(this.deliveryPostalCodeInput, validator.validatePostalCode, this.deliveryCountryInput);
-      this.validateSubmitButton();
-      this.validateAddressesInputs();
+      this.validateDeliveryAddressesInputs();
+      // this.validateSubmitButton();
     });
     this.deliveryCityInput.addEventListener('input', () => {
-      this.validateInput(this.deliveryCityInput, validator.validateOnlyLetters);
-      this.validateSubmitButton();
-      this.validateAddressesInputs();
+      this.validateDeliveryAddressesInputs();
+      // this.validateSubmitButton();
     });
     this.deliveryStreetInput.addEventListener('input', () => {
-      this.validateInput(this.deliveryStreetInput, validator.isValueExist);
-      this.validateSubmitButton();
-      this.validateAddressesInputs();
+      this.validateDeliveryAddressesInputs();
+      // this.validateSubmitButton();
     });
     this.deliveryPostalCodeInput.addEventListener('input', () => {
-      this.validateInput(this.deliveryPostalCodeInput, validator.validatePostalCode, this.deliveryCountryInput);
-      this.validateSubmitButton();
-      this.validateAddressesInputs();
+      this.validateDeliveryAddressesInputs();
+      // this.validateSubmitButton();
     });
 
     this.billingCountryInput.addEventListener('input', () => {
-      this.validateInput(this.billingCountryInput, validator.validateCountry);
-      this.validateInput(this.billingPostalCodeInput, validator.validatePostalCode, this.billingCountryInput);
-      this.validateSubmitButton();
+      this.validateBillingAddressesInputs();
+      // this.validateSubmitButton();
     });
     this.billingCityInput.addEventListener('input', () => {
-      this.validateInput(this.billingCityInput, validator.validateOnlyLetters);
-      this.validateSubmitButton();
+      this.validateBillingAddressesInputs();
+      // this.validateSubmitButton();
     });
     this.billingStreetInput.addEventListener('input', () => {
-      this.validateInput(this.billingStreetInput, validator.isValueExist);
-      this.validateSubmitButton();
+      this.validateBillingAddressesInputs();
+      // this.validateSubmitButton();
     });
     this.billingPostalCodeInput.addEventListener('input', () => {
-      this.validateInput(this.billingPostalCodeInput, validator.validatePostalCode, this.billingCountryInput);
-      this.validateSubmitButton();
+      this.validateBillingAddressesInputs();
+      // this.validateSubmitButton();
     });
 
     this.passwordInput.addEventListener('input', () => {
       this.validateInput(this.passwordInput, validator.validatePassword);
-      this.validateSubmitButton();
+      // this.validateSubmitButton();
     });
     this.passwordRepeatInput.addEventListener('input', () => {
       this.validateInput(this.passwordRepeatInput, validator.validatePassword, this.passwordInput);
-      this.validateSubmitButton();
+      // this.validateSubmitButton();
     });
+
+    this.getElement()
+      .querySelectorAll('input')
+      .forEach((input) => input.addEventListener('input', () => this.validateSubmitButton()));
 
     this.validateInput(this.emailInput, validator.validateEmail);
     this.validateInput(this.nameInput, validator.validateOnlyLetters);
     this.validateInput(this.surnameInput, validator.validateOnlyLetters);
     this.validateInput(this.birthDayInput, validator.validateDateOfBirth);
-    this.validateInput(this.deliveryCountryInput, validator.validateCountry);
-    this.validateInput(this.deliveryCityInput, validator.validateOnlyLetters);
-    this.validateInput(this.deliveryStreetInput, validator.isValueExist);
-    this.validateInput(this.deliveryPostalCodeInput, validator.validatePostalCode);
-    this.validateInput(this.billingCountryInput, validator.validateCountry);
-    this.validateInput(this.billingCityInput, validator.validateOnlyLetters);
-    this.validateInput(this.billingStreetInput, validator.isValueExist);
-    this.validateInput(this.billingPostalCodeInput, validator.validatePostalCode);
-    this.validateInput(this.passwordInput, validator.validatePassword);
+    this.validateDeliveryAddressesInputs();
+    this.validateBillingAddressesInputs();
     this.validateInput(this.passwordRepeatInput, validator.validatePassword);
   }
 
   handleCheckbox(): void {
     this.setSameAddressCheckbox.addEventListener('click', () => {
       const readOnly = this.setSameAddressCheckbox.checked;
+
+      if (readOnly) {
+        this.getElement()
+          .querySelectorAll('.billing-address div.error')
+          .forEach((div) => div.classList.add('hidden'));
+      }
 
       const fields = [
         { input: this.billingCountryInput, source: this.deliveryCountryInput },
@@ -467,7 +484,7 @@ export class Registration {
       });
 
       this.saveBillingCheckbox.disabled = !readOnly;
-      this.saveBillingCheckbox.checked = false;
+      this.validateBillingAddressesInputs();
     });
   }
 
@@ -511,8 +528,8 @@ export class Registration {
       const consumerDraft: MyCustomerDraft = {
         email: this.emailInput.value,
         password: this.passwordInput.value,
-        firstName: this.passwordInput.value,
-        lastName: this.passwordInput.value,
+        firstName: this.nameInput.value,
+        lastName: this.surnameInput.value,
         dateOfBirth: this.birthDayInput.value,
         addresses,
         defaultShippingAddress,
@@ -520,6 +537,7 @@ export class Registration {
       };
 
       await createConsumer(getCtpClient(), consumerDraft);
+      await this.consumer.logIn(this.emailInput.value, this.passwordInput.value);
       window.history.pushState({}, '', '/main');
       this.router.handleLocation();
     } catch (err) {

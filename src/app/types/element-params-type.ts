@@ -26,3 +26,7 @@ export interface ElementAnchorParams extends Partial<ElementParams> {
 export interface ElementOptionParams extends Partial<ElementParams> {
   value: string;
 }
+
+export interface ElementLabelParams extends Partial<ElementParams> {
+  for: string;
+}
