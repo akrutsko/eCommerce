@@ -28,13 +28,13 @@ export class Registration extends HandlerLinks {
 
   passwordRepeatInput: HTMLInputElement;
 
-  countryInput: HTMLInputElement;
+  deliveryCountryInput: HTMLInputElement;
 
-  cityInput: HTMLInputElement;
+  deliveryCityInput: HTMLInputElement;
 
-  streetInput: HTMLInputElement;
+  deliveryStreetInput: HTMLInputElement;
 
-  postalCodeInput: HTMLInputElement;
+  deliveryPostalCodeInput: HTMLInputElement;
 
   billingCountryInput: HTMLInputElement;
 
@@ -66,10 +66,10 @@ export class Registration extends HandlerLinks {
     this.nameInput = new ElementInputCreator({ placeholder: 'name', classes: 'form-input' }).getElement();
     this.surnameInput = new ElementInputCreator({ placeholder: 'surname', classes: 'form-input' }).getElement();
     this.birthDayInput = new ElementInputCreator({ placeholder: 'birth date', classes: 'form-input' }).getElement();
-    this.countryInput = new ElementInputCreator({ placeholder: 'country', classes: 'form-input' }).getElement();
-    this.cityInput = new ElementInputCreator({ placeholder: 'city', classes: 'form-input' }).getElement();
-    this.streetInput = new ElementInputCreator({ placeholder: 'street', classes: 'form-input' }).getElement();
-    this.postalCodeInput = new ElementInputCreator({ placeholder: 'postal code', classes: 'form-input' }).getElement();
+    this.deliveryCountryInput = new ElementInputCreator({ placeholder: 'country', classes: 'form-input' }).getElement();
+    this.deliveryCityInput = new ElementInputCreator({ placeholder: 'city', classes: 'form-input' }).getElement();
+    this.deliveryStreetInput = new ElementInputCreator({ placeholder: 'street', classes: 'form-input' }).getElement();
+    this.deliveryPostalCodeInput = new ElementInputCreator({ placeholder: 'postal code', classes: 'form-input' }).getElement();
     this.billingCountryInput = new ElementInputCreator({ placeholder: 'country', classes: 'form-input' }).getElement();
     this.billingCityInput = new ElementInputCreator({ placeholder: 'city', classes: 'form-input' }).getElement();
     this.billingStreetInput = new ElementInputCreator({ placeholder: 'street', classes: 'form-input' }).getElement();
@@ -160,28 +160,28 @@ export class Registration extends HandlerLinks {
       tag: 'ul',
       classes: 'absolute overflow-y-auto bg-gray-100 w-full z-10 max-h-[232px]',
     });
-    countryDeliveryInputContainer.appendNode(this.countryInput, countryDeliveryError, countryDeliveryList);
+    countryDeliveryInputContainer.appendNode(this.deliveryCountryInput, countryDeliveryError, countryDeliveryList);
 
     const cityDeliveryInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
     const cityDeliveryError = new ElementCreator({
       tag: 'div',
       classes: 'error hidden left-3 text-xs text-primary-color absolute',
     });
-    cityDeliveryInputContainer.appendNode(this.cityInput, cityDeliveryError);
+    cityDeliveryInputContainer.appendNode(this.deliveryCityInput, cityDeliveryError);
 
     const streetDeliveryInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
     const streetDeliveryError = new ElementCreator({
       tag: 'div',
       classes: 'error hidden left-3 text-xs text-primary-color absolute',
     });
-    streetDeliveryInputContainer.appendNode(this.streetInput, streetDeliveryError);
+    streetDeliveryInputContainer.appendNode(this.deliveryStreetInput, streetDeliveryError);
 
     const postalDeliveryCodeInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
     const postalDeliveryCodeError = new ElementCreator({
       tag: 'div',
       classes: 'error hidden left-3 text-xs text-primary-color absolute',
     });
-    postalDeliveryCodeInputContainer.appendNode(this.postalCodeInput, postalDeliveryCodeError);
+    postalDeliveryCodeInputContainer.appendNode(this.deliveryPostalCodeInput, postalDeliveryCodeError);
 
     addressDeliveryFirstFlexContainer.appendNode(countryDeliveryInputContainer, cityDeliveryInputContainer);
     addressDeliverySecondFlexContainer.appendNode(streetDeliveryInputContainer, postalDeliveryCodeInputContainer);
@@ -292,15 +292,11 @@ export class Registration extends HandlerLinks {
   }
 
   validateAddressesInputs(): void {
-    if (
-      // eslint-disable-next-line operator-linebreak
-      this.countryInput.value.length &&
-      // eslint-disable-next-line operator-linebreak
-      this.cityInput.value.length &&
-      // eslint-disable-next-line operator-linebreak
-      this.streetInput.value.length &&
-      this.postalCodeInput.value.length
-    ) {
+    const isCountryExist = this.deliveryCountryInput.value;
+    const isCityExist = this.deliveryCityInput.value;
+    const isStreetExist = this.deliveryStreetInput.value;
+    const isPostalCodeExist = this.deliveryPostalCodeInput.value;
+    if (isCountryExist && isCityExist && isStreetExist && isPostalCodeExist) {
       const addressErrors = this.getElement().querySelectorAll('.address div.error');
       const showingErrors = [...addressErrors].filter((error) => !error.classList.contains('hidden'));
       this.saveDeliveryCheckbox.disabled = Boolean(showingErrors.length);
@@ -324,7 +320,8 @@ export class Registration extends HandlerLinks {
     callback: (value: string, code?: string) => ValidationResult,
     isPostalCodeError = false,
   ): void {
-    const { isValid, message } = isPostalCodeError ? callback(this.countryInput.value, input.value) : callback(input.value);
+    const { isValid, message } = isPostalCodeError
+      ? callback(this.deliveryCountryInput.value, input.value) : callback(input.value);
 
     const errorField = input.parentElement?.querySelector('div');
 
@@ -351,40 +348,40 @@ export class Registration extends HandlerLinks {
       this.validateInput(this.birthDayInput, validator.validateDateOfBirth);
       this.validateSubmitButton();
     });
-    this.countryInput.addEventListener('input', () => {
-      this.validateInput(this.countryInput, validator.validateCountry);
+    this.deliveryCountryInput.addEventListener('input', () => {
+      this.validateInput(this.deliveryCountryInput, validator.validateCountry);
       this.validateSubmitButton();
       this.validateAddressesInputs();
     });
-    this.cityInput.addEventListener('input', () => {
-      this.validateInput(this.cityInput, validator.validateOnlyLetters);
+    this.deliveryCityInput.addEventListener('input', () => {
+      this.validateInput(this.deliveryCityInput, validator.validateOnlyLetters);
       this.validateSubmitButton();
       this.validateAddressesInputs();
     });
-    this.streetInput.addEventListener('input', () => {
-      this.validateInput(this.streetInput, validator.validateOnlyLetters);
+    this.deliveryStreetInput.addEventListener('input', () => {
+      this.validateInput(this.deliveryStreetInput, validator.validateOnlyLetters);
       this.validateSubmitButton();
       this.validateAddressesInputs();
     });
-    this.postalCodeInput.addEventListener('input', () => {
-      this.validateInput(this.postalCodeInput, validator.validatePostalCode, true);
+    this.deliveryPostalCodeInput.addEventListener('input', () => {
+      this.validateInput(this.deliveryPostalCodeInput, validator.validatePostalCode, true);
       this.validateSubmitButton();
       this.validateAddressesInputs();
     });
     this.billingCountryInput.addEventListener('input', () => {
-      this.validateInput(this.countryInput, validator.validateCountry);
+      this.validateInput(this.deliveryCountryInput, validator.validateCountry);
       this.validateSubmitButton();
     });
     this.billingCityInput.addEventListener('input', () => {
-      this.validateInput(this.cityInput, validator.validateOnlyLetters);
+      this.validateInput(this.deliveryCityInput, validator.validateOnlyLetters);
       this.validateSubmitButton();
     });
     this.billingStreetInput.addEventListener('input', () => {
-      this.validateInput(this.streetInput, validator.validateOnlyLetters);
+      this.validateInput(this.deliveryStreetInput, validator.validateOnlyLetters);
       this.validateSubmitButton();
     });
     this.billingPostalCodeInput.addEventListener('input', () => {
-      this.validateInput(this.postalCodeInput, validator.validatePostalCode, true);
+      this.validateInput(this.deliveryPostalCodeInput, validator.validatePostalCode, true);
       this.validateSubmitButton();
     });
     this.passwordInput.addEventListener('input', () => {
@@ -402,10 +399,10 @@ export class Registration extends HandlerLinks {
       const readOnly = this.setSameAddressCheckbox.checked;
 
       const fields = [
-        { input: this.billingCountryInput, source: this.countryInput },
-        { input: this.billingCityInput, source: this.cityInput },
-        { input: this.billingStreetInput, source: this.streetInput },
-        { input: this.billingPostalCodeInput, source: this.postalCodeInput },
+        { input: this.billingCountryInput, source: this.deliveryCountryInput },
+        { input: this.billingCityInput, source: this.deliveryCityInput },
+        { input: this.billingStreetInput, source: this.deliveryStreetInput },
+        { input: this.billingPostalCodeInput, source: this.deliveryPostalCodeInput },
       ];
 
       fields.forEach((field) => {
@@ -429,7 +426,7 @@ export class Registration extends HandlerLinks {
   }
 
   handleCountryInputs(): void {
-    this.countryInput.addEventListener('input', () => this.showAvailableCountries(this.countryInput));
+    this.deliveryCountryInput.addEventListener('input', () => this.showAvailableCountries(this.deliveryCountryInput));
     this.billingCountryInput.addEventListener('input', () => this.showAvailableCountries(this.billingCountryInput));
   }
 
