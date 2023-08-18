@@ -3,6 +3,10 @@ import { routes } from './routes';
 export class Router implements Observable {
   private observers: Observer[] = [];
 
+  private previousPath = '';
+
+  private previousHash = '';
+
   constructor() {
     window.onpopstate = this.handleLocation;
   }
@@ -25,9 +29,14 @@ export class Router implements Observable {
   }
 
   public handleLocation = (): void => {
-    const path = window.location.pathname;
-    const route = routes[path] || routes[404];
-    const hashValue = window.location.hash;
-    this.notify(route, hashValue);
+    const newPath = window.location.pathname;
+    const newHash = window.location.hash.substring(1);
+    if (newPath === this.previousPath && newHash === this.previousHash) {
+      return;
+    }
+    this.previousPath = newPath;
+    this.previousHash = newHash;
+    const route = routes[newPath] || routes[404];
+    this.notify(route, newHash);
   };
 }
