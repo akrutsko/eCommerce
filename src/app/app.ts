@@ -20,7 +20,7 @@ export default class App {
     this.consumer = new Consumer();
     this.header = new Header(this.router, this.consumer);
     this.main = new Main(this.router, this.consumer);
-    this.footer = new Footer();
+    this.footer = new Footer(this.router);
   }
 
   init(): void {

@@ -8,13 +8,10 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { Router } from '../../router/router';
+import { HendlerLinks } from '../../router/hendler-links';
 
-export class Header implements Observer {
-  router: Router;
-
+export class Header extends HendlerLinks implements Observer {
   consumer: Consumer;
-
-  listOfLinks: HTMLAnchorElement[];
 
   headerView: ElementCreator<HTMLElement>;
 
@@ -29,9 +26,8 @@ export class Header implements Observer {
   signoutButton: HTMLButtonElement;
 
   constructor(router: Router, consumer: Consumer) {
-    this.router = router;
+    super(router);
     this.consumer = consumer;
-    this.listOfLinks = [];
     this.headerView = new ElementCreator({ tag: 'header', classes: 'container' });
     this.loginBtns = new ElementCreator({ tag: 'div', classes: 'flex gap-6 hidden' }).getElement();
     this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-6 hidden' }).getElement();
@@ -181,17 +177,5 @@ export class Header implements Observer {
       this.loginBtns.classList.remove('hidden');
       this.logoutBtns.classList.add('hidden');
     }
-  }
-
-  handleLinks(): void {
-    this.listOfLinks.forEach((link) => {
-      link.addEventListener('click', (e) => {
-        if (e.currentTarget instanceof HTMLAnchorElement) {
-          e.preventDefault();
-          window.history.pushState({}, '', e.currentTarget.href);
-          this.router.handleLocation();
-        }
-      });
-    });
   }
 }

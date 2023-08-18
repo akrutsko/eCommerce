@@ -5,17 +5,21 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
+import { HendlerLinks } from '../../router/hendler-links';
+import { Router } from '../../router/router';
 
-export class Footer {
+export class Footer extends HendlerLinks {
   footerView: ElementCreator<HTMLElement>;
 
-  constructor() {
+  constructor(router: Router) {
+    super(router);
     this.footerView = new ElementCreator({
       tag: 'footer',
       classes:
         'container flex flex-col-reverse items-center justify-center bg-secondary-color py-10 gap-4 sm:gap-10 sm:flex-row sm:justify-between',
     });
     this.createView();
+    this.handleLinks();
   }
 
   createView(): void {
@@ -36,7 +40,9 @@ export class Footer {
     const companyWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const companyHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Company' });
     const aboutLink = new ElementAnchorCreator({ href: '/aboutus', classes: 'text-[10px]', text: 'About us' });
+    this.listOfLinks.push(aboutLink.getElement());
     const contactLink = new ElementAnchorCreator({ href: '/contact', classes: 'text-[10px]', text: 'Contact' });
+    this.listOfLinks.push(contactLink.getElement());
     companyWrapper.appendNode(companyHeading, aboutLink, contactLink);
 
     const socialWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
@@ -56,7 +62,9 @@ export class Footer {
     const productsWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const productsHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Prodcuts' });
     const categoriesLink = new ElementAnchorCreator({ href: '/categories', classes: 'text-[10px]', text: 'Categories' });
+    this.listOfLinks.push(categoriesLink.getElement());
     const sellersLink = new ElementAnchorCreator({ href: '/goods', classes: 'text-[10px]', text: 'Godds' });
+    this.listOfLinks.push(sellersLink.getElement());
     productsWrapper.appendNode(productsHeading, categoriesLink, sellersLink);
 
     const form = new ElementCreator({ tag: 'form', classes: 'search-form' });
