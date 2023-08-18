@@ -14,5 +14,8 @@ export class ElementInputCreator extends ElementCreator<HTMLInputElement> {
     if (params.placeholder) {
       this.element.placeholder = params.placeholder;
     }
+    if (params.disabled) {
+      this.element.disabled = params.disabled;
+    }
   }
 }

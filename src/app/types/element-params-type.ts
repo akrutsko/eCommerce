@@ -11,6 +11,7 @@ export interface ElementInputParams extends Partial<ElementParams> {
   value?: string;
   name?: string;
   placeholder?: string;
+  disabled?: boolean;
 }
 
 export interface ElementButtonParams extends Partial<ElementParams> {

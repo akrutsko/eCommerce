@@ -32,7 +32,7 @@ export class Login {
     this.consumer = consumer;
 
     this.loginView = new ElementCreator({ tag: 'div', classes: 'login-form max-w-xl w-full form flex flex-col gap-4 md:gap-6' });
-    this.emailInput = new ElementInputCreator({ type: 'email', placeholder: 'email', classes: 'form-input' }).getElement();
+    this.emailInput = new ElementInputCreator({ placeholder: 'email', classes: 'form-input' }).getElement();
     this.passwordInput = new ElementInputCreator({
       type: 'password',
       placeholder: 'password',
