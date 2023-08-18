@@ -17,5 +17,8 @@ export class ElementInputCreator extends ElementCreator<HTMLInputElement> {
     if (params.disabled) {
       this.element.disabled = params.disabled;
     }
+    if (params.list) {
+      this.element.setAttribute('list', params.list);
+    }
   }
 }

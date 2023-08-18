@@ -101,6 +101,9 @@ export class Login extends HandlerLinks {
       this.validateInput(this.passwordInput, validatePassword);
       this.validateSubmitButton();
     });
+
+    this.validateInput(this.emailInput, validateEmail);
+    this.validateInput(this.passwordInput, validatePassword);
   }
 
   changePasswordVisibility(): void {
@@ -123,11 +126,6 @@ export class Login extends HandlerLinks {
   }
 
   validateSubmitButton(): void {
-    if (!this.emailInput.value.length || !this.passwordInput.value.length) {
-      this.submitButton.disabled = true;
-      return;
-    }
-
     const allErrors = this.getElement().querySelectorAll('div.error');
     const showingErrors = [...allErrors].filter((error) => !error.classList.contains('hidden'));
     this.submitButton.disabled = Boolean(showingErrors.length);

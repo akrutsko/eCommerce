@@ -11,6 +11,13 @@ module.exports = {
   collectCoverage: true,
   collectCoverageFrom: ['src/**/*.ts'],
   coverageDirectory: 'coverage',
+  coverageThreshold: {
+    global: {
+      branches: 25,
+      functions: 25,
+      lines: 25,
+    },
+  },
   setupFilesAfterEnv: ['./src/tests/jest.setup.js'],
   silent: true,
   modulePathIgnorePatterns: ['./src/app/types', './src/app/interfaces'],
