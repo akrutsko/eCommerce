@@ -73,7 +73,7 @@ export class Footer extends HandlerLinks {
       if (e.key === 'Enter') {
         e.preventDefault();
       }
-    }); // TODO Realize search
+    }); // TODO: implement search
     const submitButton = new ElementButtonCreator({ classes: 'absolute right-0 top-0 focus:outline-none', html: searchIcon });
     form.appendNode(input, submitButton);
 
