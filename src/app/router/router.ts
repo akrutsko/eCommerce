@@ -34,6 +34,8 @@ export class Router implements Observable {
     if (newPath === this.previousPath && newHash === this.previousHash) {
       return;
     }
+    this.previousPath = newPath;
+    this.previousHash = newHash;
     const route = routes[newPath] || routes[404];
     this.notify(route, newHash);
   };
