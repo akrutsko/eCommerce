@@ -10,10 +10,10 @@ import { ElementInputCreator } from '../../utils/element-creator/element-input-c
 import { countries } from '../../utils/validation/countries';
 import * as validator from '../../utils/validation/input-validation';
 import { ValidationResult } from '../../types/validation-result-type';
-import { HendlerLinks } from '../../router/hendler-links';
+import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
 
-export class Registration extends HendlerLinks {
+export class Registration extends HandlerLinks {
   registrationView: ElementCreator<HTMLElement>;
 
   emailInput: HTMLInputElement;

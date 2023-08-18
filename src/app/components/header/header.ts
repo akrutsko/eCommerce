@@ -8,9 +8,9 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { Router } from '../../router/router';
-import { HendlerLinks } from '../../router/hendler-links';
+import { HandlerLinks } from '../../router/handler-links';
 
-export class Header extends HendlerLinks implements Observer {
+export class Header extends HandlerLinks implements Observer {
   consumer: Consumer;
 
   headerView: ElementCreator<HTMLElement>;
@@ -122,13 +122,13 @@ export class Header extends HendlerLinks implements Observer {
     const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-5' });
     linksList.appendNode(liHome, liAboutUs, tab);
 
-    const divCart = new ElementCreator({ tag: 'div', html: cartSvg });
-    const aCart = new ElementAnchorCreator({ href: '/cart' });
+    const divCart = new ElementCreator({ tag: 'div', classes: 'relative', html: cartSvg });
+    const aCart = new ElementAnchorCreator({ href: '/cart', classes: 'absolute inset-0' });
     this.listOfLinks.push(aCart.getElement());
     divCart.appendNode(aCart);
 
-    const divCustomer = new ElementCreator({ tag: 'div', html: customerSvg });
-    const aCustomer = new ElementAnchorCreator({ href: '/profile' });
+    const divCustomer = new ElementCreator({ tag: 'div', classes: 'relative', html: customerSvg });
+    const aCustomer = new ElementAnchorCreator({ href: '/profile', classes: 'absolute inset-0' });
     this.listOfLinks.push(aCustomer.getElement());
     divCustomer.appendNode(aCustomer);
 

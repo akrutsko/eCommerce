@@ -40,6 +40,22 @@ export class Main implements Observer {
       case 'goods':
         this.showGoods();
         break;
+      case 'cart':
+        if (!this.consumer.isConsumer) {
+          window.history.pushState({}, '', '/');
+          this.router.handleLocation();
+        } else {
+          this.showCart();
+        }
+        break;
+      case 'profile':
+        if (!this.consumer.isConsumer) {
+          window.history.pushState({}, '', '/');
+          this.router.handleLocation();
+        } else {
+          this.showProfile();
+        }
+        break;
       case 'login':
         if (this.consumer.isConsumer) {
           window.history.pushState({}, '', '/');
@@ -75,6 +91,16 @@ export class Main implements Observer {
   async showContact(): Promise<void> {
     const { Contact } = await import('../contact/contact');
     this.mainView.append(new Contact().getElement());
+  }
+
+  async showCart(): Promise<void> {
+    const { Cart } = await import('../cart/cart');
+    this.mainView.append(new Cart().getElement());
+  }
+
+  async showProfile(): Promise<void> {
+    const { Profile } = await import('../profile/profile');
+    this.mainView.append(new Profile().getElement());
   }
 
   async showGoods(): Promise<void> {
@@ -114,6 +140,6 @@ export class Main implements Observer {
 
   async show404(): Promise<void> {
     const { Absent } = await import('../absent/absent');
-    this.mainView.append(new Absent().getElement());
+    this.mainView.append(new Absent(this.router).getElement());
   }
 }

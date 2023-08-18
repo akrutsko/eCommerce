@@ -1,22 +1,27 @@
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
+import { HandlerLinks } from '../../router/handler-links';
+import { Router } from '../../router/router';
 
-export class Absent {
+export class Absent extends HandlerLinks {
   notFoundView: ElementCreator<HTMLElement>;
 
   homeButton: HTMLAnchorElement;
 
   backButton: HTMLButtonElement;
 
-  constructor() {
+  constructor(router: Router) {
+    super(router);
     this.notFoundView = new ElementCreator({ tag: 'div', classes: 'bg-[#F1EFEF] rounded-xl w-full flex-1 p-5 md:p-10 relative' });
     this.homeButton = new ElementAnchorCreator({ href: '/', classes: 'primary-button', text: 'Home' }).getElement();
+    this.listOfLinks.push(this.homeButton);
     this.backButton = new ElementButtonCreator({ classes: 'secondary-button', text: 'Go back' }).getElement();
     this.backButton.addEventListener('click', () => {
       window.history.back();
     });
     this.createView();
+    this.handleLinks();
   }
 
   createView(): void {

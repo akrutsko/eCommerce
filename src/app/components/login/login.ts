@@ -9,9 +9,9 @@ import { ValidationResult } from '../../types/validation-result-type';
 import { validateEmail, validatePassword } from '../../utils/validation/input-validation';
 import { Consumer } from '../consumer/consumer';
 import { Router } from '../../router/router';
-import { HendlerLinks } from '../../router/hendler-links';
+import { HandlerLinks } from '../../router/handler-links';
 
-export class Login extends HendlerLinks {
+export class Login extends HandlerLinks {
   consumer: Consumer;
 
   loginView: ElementCreator<HTMLElement>;

@@ -1,6 +1,6 @@
 import { Router } from './router';
 
-export class HendlerLinks {
+export class HandlerLinks {
   router: Router;
 
   listOfLinks: HTMLAnchorElement[] = [];

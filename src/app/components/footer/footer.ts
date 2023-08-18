@@ -5,10 +5,10 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
-import { HendlerLinks } from '../../router/hendler-links';
+import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
 
-export class Footer extends HendlerLinks {
+export class Footer extends HandlerLinks {
   footerView: ElementCreator<HTMLElement>;
 
   constructor(router: Router) {
@@ -63,7 +63,7 @@ export class Footer extends HendlerLinks {
     const productsHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Prodcuts' });
     const categoriesLink = new ElementAnchorCreator({ href: '/categories', classes: 'text-[10px]', text: 'Categories' });
     this.listOfLinks.push(categoriesLink.getElement());
-    const sellersLink = new ElementAnchorCreator({ href: '/goods', classes: 'text-[10px]', text: 'Godds' });
+    const sellersLink = new ElementAnchorCreator({ href: '/goods', classes: 'text-[10px]', text: 'Goods' });
     this.listOfLinks.push(sellersLink.getElement());
     productsWrapper.appendNode(productsHeading, categoriesLink, sellersLink);
 
