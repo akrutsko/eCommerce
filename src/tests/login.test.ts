@@ -1,3 +1,4 @@
+import 'jest-fetch-mock';
 import { Consumer } from '../app/components/consumer/consumer';
 import { Login } from '../app/components/login/login';
 import { Router } from '../app/router/router';

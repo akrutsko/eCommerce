@@ -12,6 +12,7 @@ export interface ElementInputParams extends Partial<ElementParams> {
   name?: string;
   placeholder?: string;
   disabled?: boolean;
+  list?: string;
 }
 
 export interface ElementButtonParams extends Partial<ElementParams> {
@@ -20,4 +21,12 @@ export interface ElementButtonParams extends Partial<ElementParams> {
 
 export interface ElementAnchorParams extends Partial<ElementParams> {
   href: string;
+}
+
+export interface ElementOptionParams extends Partial<ElementParams> {
+  value: string;
+}
+
+export interface ElementLabelParams extends Partial<ElementParams> {
+  for: string;
 }

@@ -10,3 +10,12 @@ body {
 body.active {
   overflow: hidden;
 }
+
+input[type="checkbox"]:not(:disabled),
+input[type="checkbox"]:not(:disabled) + label {
+  cursor: pointer;
+}
+
+label {
+  user-select: none;
+}

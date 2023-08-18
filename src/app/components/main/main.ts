@@ -130,7 +130,7 @@ export class Main implements Observer {
 
   async showSignup(): Promise<void> {
     const { Registration } = await import('../registration/registration');
-    this.mainView.append(new Registration(this.router).getElement());
+    this.mainView.append(new Registration(this.router, this.consumer).getElement());
   }
 
   async show404(): Promise<void> {
