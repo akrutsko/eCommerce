@@ -69,6 +69,11 @@ export class Footer extends HandlerLinks {
 
     const form = new ElementCreator({ tag: 'form', classes: 'search-form' });
     const input = new ElementInputCreator({ type: 'search', name: 'search', placeholder: 'search' });
+    input.getElement().addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+      }
+    });// TODO Realize search
     const submitButton = new ElementButtonCreator({ classes: 'absolute right-0 top-0 focus:outline-none', html: searchIcon });
     form.appendNode(input, submitButton);
 
