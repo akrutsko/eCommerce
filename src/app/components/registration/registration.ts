@@ -18,8 +18,9 @@ import { Consumer } from '../consumer/consumer';
 import { getCtpClient } from '../../utils/api/api-client';
 import { createConsumer } from '../../utils/api/api-consumer';
 import { countryCodes } from '../../data/country-codes';
+import { HandlerLinks } from '../../router/handler-links';
 
-export class Registration {
+export class Registration extends HandlerLinks {
   router: Router;
 
   consumer: Consumer;
@@ -67,6 +68,7 @@ export class Registration {
   submitButton: HTMLButtonElement;
 
   constructor(router: Router, consumer: Consumer) {
+    super(router);
     this.router = router;
     this.consumer = consumer;
 
@@ -115,6 +117,7 @@ export class Registration {
     this.handleButtons();
     this.handleInputs();
     this.handleCheckbox();
+    this.handleLinks();
   }
 
   createView(): void {
@@ -308,6 +311,7 @@ export class Registration {
 
     const question = new ElementCreator({ tag: 'div', text: 'Already have an account? ' });
     const signInAnchor = new ElementAnchorCreator({ href: '/login', classes: 'link', text: 'Log in' });
+    this.listOfLinks.push(signInAnchor.getElement());
     question.appendNode(signInAnchor);
 
     this.registrationView.appendNode(titleContainer, registrationForm, question);
@@ -382,19 +386,15 @@ export class Registration {
   handleInputs(): void {
     this.emailInput.addEventListener('input', () => {
       this.validateInput(this.emailInput, validator.validateEmail);
-      // this.validateSubmitButton();
     });
     this.nameInput.addEventListener('input', () => {
       this.validateInput(this.nameInput, validator.validateOnlyLetters);
-      // this.validateSubmitButton();
     });
     this.surnameInput.addEventListener('input', () => {
       this.validateInput(this.surnameInput, validator.validateOnlyLetters);
-      // this.validateSubmitButton();
     });
     this.birthDayInput.addEventListener('input', () => {
       this.validateInput(this.birthDayInput, validator.validateDateOfBirth);
-      // this.validateSubmitButton();
     });
     this.birthDayInput.addEventListener('focus', () => {
       this.birthDayInput.type = 'date';
@@ -404,45 +404,35 @@ export class Registration {
     });
     this.deliveryCountryInput.addEventListener('input', () => {
       this.validateDeliveryAddressesInputs();
-      // this.validateSubmitButton();
     });
     this.deliveryCityInput.addEventListener('input', () => {
       this.validateDeliveryAddressesInputs();
-      // this.validateSubmitButton();
     });
     this.deliveryStreetInput.addEventListener('input', () => {
       this.validateDeliveryAddressesInputs();
-      // this.validateSubmitButton();
     });
     this.deliveryPostalCodeInput.addEventListener('input', () => {
       this.validateDeliveryAddressesInputs();
-      // this.validateSubmitButton();
     });
 
     this.billingCountryInput.addEventListener('input', () => {
       this.validateBillingAddressesInputs();
-      // this.validateSubmitButton();
     });
     this.billingCityInput.addEventListener('input', () => {
       this.validateBillingAddressesInputs();
-      // this.validateSubmitButton();
     });
     this.billingStreetInput.addEventListener('input', () => {
       this.validateBillingAddressesInputs();
-      // this.validateSubmitButton();
     });
     this.billingPostalCodeInput.addEventListener('input', () => {
       this.validateBillingAddressesInputs();
-      // this.validateSubmitButton();
     });
 
     this.passwordInput.addEventListener('input', () => {
       this.validateInput(this.passwordInput, validator.validatePassword);
-      // this.validateSubmitButton();
     });
     this.passwordRepeatInput.addEventListener('input', () => {
       this.validateInput(this.passwordRepeatInput, validator.validatePassword, this.passwordInput);
-      // this.validateSubmitButton();
     });
 
     this.getElement()

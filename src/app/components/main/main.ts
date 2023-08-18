@@ -24,16 +24,37 @@ export class Main implements Observer {
     return this.mainView;
   }
 
-  update(data?: string, secondaryData?: string): void {
+  update(data?: string, hashData?: string): void {
     this.mainView.textContent = '';
 
     switch (data) {
       case 'main':
         this.showMain();
         break;
+      case 'aboutus':
+        this.showAboutUs();
+        break;
+      case 'contact':
+        this.showContact();
+        break;
+      case 'goods':
+        this.showGoods();
+        break;
+      case 'cart':
+        this.showCart();
+        break;
+      case 'profile':
+        if (!this.consumer.isConsumer) {
+          window.history.pushState({}, '', '/signup');
+          this.router.handleLocation();
+        } else {
+          this.showProfile();
+        }
+        break;
       case 'login':
         if (this.consumer.isConsumer) {
-          this.showMain();
+          window.history.pushState({}, '', '/');
+          this.router.handleLocation();
         } else {
           this.showLogin();
         }
@@ -46,7 +67,7 @@ export class Main implements Observer {
         }
         break;
       case 'categories':
-        this.showCategories(secondaryData);
+        this.showCategories(hashData);
         break;
       default:
         this.show404();
@@ -54,8 +75,37 @@ export class Main implements Observer {
   }
 
   showMain(): void {
-    this.mainView.textContent = 'main';
-    this.mainView.className = 'mx-auto text-[#DFDDDF] text-9xl md:text-[265px] lg:text-[350px] font-bold';
+    const mainMessage = new ElementCreator({
+      tag: 'div',
+      classes: 'text-[#DFDDDF] text-8xl sd:text-[265px] mg:text-[350px] font-bold drop-shadow-[5px_4px_0px_rgba(57,62,77,0.18)]',
+      text: 'Main page',
+    });
+    this.mainView.append(mainMessage.getElement());
+  }
+
+  async showContact(): Promise<void> {
+    const { Contact } = await import('../contact/contact');
+    this.mainView.append(new Contact().getElement());
+  }
+
+  async showCart(): Promise<void> {
+    const { Cart } = await import('../cart/cart');
+    this.mainView.append(new Cart().getElement());
+  }
+
+  async showProfile(): Promise<void> {
+    const { Profile } = await import('../profile/profile');
+    this.mainView.append(new Profile().getElement());
+  }
+
+  async showGoods(): Promise<void> {
+    const { Goods } = await import('../goods/goods');
+    this.mainView.append(new Goods().getElement());
+  }
+
+  async showAboutUs(): Promise<void> {
+    const { AboutUs } = await import('../aboutus/aboutus');
+    this.mainView.append(new AboutUs().getElement());
   }
 
   async showLogin(): Promise<void> {
@@ -63,10 +113,18 @@ export class Main implements Observer {
     this.mainView.append(new Login(this.router, this.consumer).getElement());
   }
 
-  showCategories(secondaryData?: string): void {
-    if (secondaryData) {
-      this.mainView.textContent = '404';
-      this.mainView.className = 'mx-auto text-[#DFDDDF] text-9xl md:text-[265px] lg:text-[350px] font-bold';
+  async showCategories(hashData?: string): Promise<void> {
+    if (hashData) {
+      const { Category } = await import('../category/category');
+      const categories = new Category(hashData);
+      if (categories.validateCategory()) {
+        this.mainView.append(categories.getElement());
+      } else {
+        this.show404();
+      }
+    } else {
+      const { Categories } = await import('../category/categories');
+      this.mainView.append(new Categories().getElement());
     }
   }
 
@@ -77,6 +135,6 @@ export class Main implements Observer {
 
   async show404(): Promise<void> {
     const { Absent } = await import('../absent/absent');
-    this.mainView.append(new Absent().getElement());
+    this.mainView.append(new Absent(this.router).getElement());
   }
 }
