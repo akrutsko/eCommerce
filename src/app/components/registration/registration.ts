@@ -288,10 +288,13 @@ export class Registration {
 
   validateAddressesInputs(): void {
     if (
-      this.countryInput.value.length
-      && this.cityInput.value.length
-      && this.streetInput.value.length
-      && this.postalCodeInput.value.length
+      // eslint-disable-next-line operator-linebreak
+      this.countryInput.value.length &&
+      // eslint-disable-next-line operator-linebreak
+      this.cityInput.value.length &&
+      // eslint-disable-next-line operator-linebreak
+      this.streetInput.value.length &&
+      this.postalCodeInput.value.length
     ) {
       const addressErrors = this.getElement().querySelectorAll('.address div.error');
       const showingErrors = [...addressErrors].filter((error) => !error.classList.contains('hidden'));

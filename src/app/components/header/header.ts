@@ -7,8 +7,15 @@ import { Consumer } from '../consumer/consumer';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
+import { Router } from '../../router/router';
 
 export class Header implements Observer {
+  router: Router;
+
+  consumer: Consumer;
+
+  listOfLinks: HTMLAnchorElement[];
+
   headerView: ElementCreator<HTMLElement>;
 
   loginBtns: HTMLElement;
@@ -21,7 +28,10 @@ export class Header implements Observer {
 
   signoutButton: HTMLButtonElement;
 
-  constructor(private consumer: Consumer) {
+  constructor(router: Router, consumer: Consumer) {
+    this.router = router;
+    this.consumer = consumer;
+    this.listOfLinks = [];
     this.headerView = new ElementCreator({ tag: 'header', classes: 'container' });
     this.loginBtns = new ElementCreator({ tag: 'div', classes: 'flex gap-6 hidden' }).getElement();
     this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-6 hidden' }).getElement();
@@ -32,6 +42,7 @@ export class Header implements Observer {
       .getElement();
 
     this.createView();
+    this.handleLinks();
   }
 
   createView(): void {
@@ -43,6 +54,7 @@ export class Header implements Observer {
 
     const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between py-5 gap-8' });
     const logo = new ElementAnchorCreator({ href: '/', html: logotype });
+    this.listOfLinks.push(logo.getElement());
     const mobileMenu = new ElementCreator({
       tag: 'div',
       classes: 'mobile-menu md:w-full md:max-w-full max-w-[390px] hidden justify-between md:flex gap-8',
@@ -52,10 +64,12 @@ export class Header implements Observer {
 
     const liHome = new ElementCreator({ tag: 'li' });
     const aHome = new ElementAnchorCreator({ href: '/', text: 'Home', classes: 'h4 hover:text-primary-color' });
+    this.listOfLinks.push(aHome.getElement());
     liHome.appendNode(aHome);
 
     const liAboutUs = new ElementCreator({ tag: 'li' });
     const aAboutUs = new ElementAnchorCreator({ href: '/aboutus', text: 'About us', classes: 'h4 hover:text-primary-color' });
+    this.listOfLinks.push(aAboutUs.getElement());
     liAboutUs.appendNode(aAboutUs);
 
     const liSummerTime = new ElementCreator({ tag: 'li' });
@@ -64,6 +78,7 @@ export class Header implements Observer {
       classes: 'h5 hover:text-primary-color',
       text: 'Summer time',
     });
+    this.listOfLinks.push(aSummerTime.getElement());
     liSummerTime.appendNode(aSummerTime);
 
     const liPeakClimber = new ElementCreator({ tag: 'li' });
@@ -72,6 +87,7 @@ export class Header implements Observer {
       classes: 'h5 hover:text-primary-color',
       text: 'Peak climber',
     });
+    this.listOfLinks.push(aPeakClimber.getElement());
     liPeakClimber.appendNode(aPeakClimber);
 
     const liBallGames = new ElementCreator({ tag: 'li' });
@@ -80,6 +96,7 @@ export class Header implements Observer {
       classes: 'h5 hover:text-primary-color',
       text: 'Ball games',
     });
+    this.listOfLinks.push(aBallGames.getElement());
     liBallGames.appendNode(aBallGames);
 
     const liIceAdventures = new ElementCreator({ tag: 'li' });
@@ -88,6 +105,7 @@ export class Header implements Observer {
       classes: 'h5 hover:text-primary-color',
       text: 'Ice adventures',
     });
+    this.listOfLinks.push(aIceAdventures.getElement());
     liIceAdventures.appendNode(aIceAdventures);
 
     const submenu = new ElementCreator({ tag: 'ul', classes: 'submenu absolute hidden bg-white px-2 py-1 w-max' });
@@ -105,11 +123,13 @@ export class Header implements Observer {
     linksList.appendNode(liHome, liAboutUs, tab);
 
     const divCart = new ElementCreator({ tag: 'div', html: cartSvg });
-    const aCart = new ElementAnchorCreator({ href: '#' });
+    const aCart = new ElementAnchorCreator({ href: '/cart' });
+    this.listOfLinks.push(aCart.getElement());
     divCart.appendNode(aCart);
 
     const divCustomer = new ElementCreator({ tag: 'div', html: customerSvg });
-    const aCustomer = new ElementAnchorCreator({ href: '#' });
+    const aCustomer = new ElementAnchorCreator({ href: '/profile' });
+    this.listOfLinks.push(aCustomer.getElement());
     divCustomer.appendNode(aCustomer);
 
     this.loginBtns.append(this.signupButton, this.loginButton);
@@ -147,5 +167,17 @@ export class Header implements Observer {
       this.loginBtns.classList.remove('hidden');
       this.logoutBtns.classList.add('hidden');
     }
+  }
+
+  handleLinks(): void {
+    this.listOfLinks.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        if (e.currentTarget instanceof HTMLAnchorElement) {
+          e.preventDefault();
+          window.history.pushState({}, '', e.currentTarget.href);
+          this.router.handleLocation();
+        }
+      });
+    });
   }
 }

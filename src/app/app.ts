@@ -18,7 +18,7 @@ export default class App {
   constructor() {
     this.router = new Router();
     this.consumer = new Consumer();
-    this.header = new Header(this.consumer);
+    this.header = new Header(this.router, this.consumer);
     this.main = new Main(this.router, this.consumer);
     this.footer = new Footer();
   }
