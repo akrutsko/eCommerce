@@ -9,10 +9,9 @@ import { ValidationResult } from '../../types/validation-result-type';
 import { validateEmail, validatePassword } from '../../utils/validation/input-validation';
 import { Consumer } from '../consumer/consumer';
 import { Router } from '../../router/router';
+import { HendlerLinks } from '../../router/hendler-links';
 
-export class Login {
-  router: Router;
-
+export class Login extends HendlerLinks {
   consumer: Consumer;
 
   loginView: ElementCreator<HTMLElement>;
@@ -28,7 +27,7 @@ export class Login {
   submitButton: HTMLButtonElement;
 
   constructor(router: Router, consumer: Consumer) {
-    this.router = router;
+    super(router);
     this.consumer = consumer;
 
     this.loginView = new ElementCreator({ tag: 'div', classes: 'login-form max-w-xl w-full form flex flex-col gap-4 md:gap-6' });
@@ -48,6 +47,7 @@ export class Login {
     this.createView();
     this.handleButtons();
     this.handleInputs();
+    this.handleLinks();
   }
 
   createView(): void {
@@ -72,6 +72,7 @@ export class Login {
 
     const question = new ElementCreator({ tag: 'div', text: 'Not a member yet? ' });
     const signInAnchor = new ElementAnchorCreator({ href: '/signup', classes: 'link', text: 'Sign up' });
+    this.listOfLinks.push(signInAnchor.getElement());
     question.appendNode(signInAnchor);
 
     this.loginView.appendNode(titleContainer, loginForm, question);

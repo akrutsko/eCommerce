@@ -10,8 +10,10 @@ import { ElementInputCreator } from '../../utils/element-creator/element-input-c
 import { countries } from '../../utils/validation/countries';
 import * as validator from '../../utils/validation/input-validation';
 import { ValidationResult } from '../../types/validation-result-type';
+import { HendlerLinks } from '../../router/hendler-links';
+import { Router } from '../../router/router';
 
-export class Registration {
+export class Registration extends HendlerLinks {
   registrationView: ElementCreator<HTMLElement>;
 
   emailInput: HTMLInputElement;
@@ -54,7 +56,8 @@ export class Registration {
 
   submitButton: HTMLButtonElement;
 
-  constructor() {
+  constructor(router: Router) {
+    super(router);
     this.registrationView = new ElementCreator({
       tag: 'div',
       classes: 'registration-form max-w-xl w-full form flex flex-col gap-4 md:gap-6',
@@ -94,6 +97,7 @@ export class Registration {
     this.handleInputType();
     this.handleInputs();
     this.handleCheckbox();
+    this.handleLinks();
   }
 
   createView(): void {
@@ -281,6 +285,7 @@ export class Registration {
 
     const question = new ElementCreator({ tag: 'div', text: 'Already have an account? ' });
     const signInAnchor = new ElementAnchorCreator({ href: '/login', classes: 'link', text: 'Log in' });
+    this.listOfLinks.push(signInAnchor.getElement());
     question.appendNode(signInAnchor);
 
     this.registrationView.appendNode(titleContainer, registrationForm, question);
