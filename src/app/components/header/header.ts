@@ -22,9 +22,9 @@ export class Header implements Observer {
 
   logoutBtns: HTMLElement;
 
-  loginButton: HTMLAnchorElement;
+  loginButton: HTMLButtonElement;
 
-  signupButton: HTMLAnchorElement;
+  signupButton: HTMLButtonElement;
 
   signoutButton: HTMLButtonElement;
 
@@ -35,10 +35,14 @@ export class Header implements Observer {
     this.headerView = new ElementCreator({ tag: 'header', classes: 'container' });
     this.loginBtns = new ElementCreator({ tag: 'div', classes: 'flex gap-6 hidden' }).getElement();
     this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-6 hidden' }).getElement();
-    this.loginButton = new ElementAnchorCreator({ href: '/login', text: 'log in', classes: 'primary-button' }).getElement();
-    this.signupButton = new ElementAnchorCreator({ href: '/signup', text: 'sign up', classes: 'secondary-button' }).getElement();
+    this.loginButton = new ElementButtonCreator({ text: 'log in', classes: 'primary-button' }).getElement();
+    this.signupButton = new ElementButtonCreator({ text: 'sign up', classes: 'secondary-button' }).getElement();
     this.signoutButton = new ElementButtonCreator({ text: 'sign out', classes: 'secondary-button' })
-      .setHandler('click', () => this.consumer.logOut())
+      .setHandler('click', () => {
+        this.consumer.logOut();
+        window.history.pushState({}, '', '/');
+        this.router.handleLocation();
+      })
       .getElement();
 
     this.createView();
@@ -148,6 +152,16 @@ export class Header implements Observer {
     });
     tab.getElement().addEventListener('mouseleave', () => {
       submenu.removeClass('active');
+    });
+
+    this.loginButton.addEventListener('click', () => {
+      window.history.pushState({}, '', '/login');
+      this.router.handleLocation();
+    });
+
+    this.signupButton.addEventListener('click', () => {
+      window.history.pushState({}, '', '/signup');
+      this.router.handleLocation();
     });
   }
 
