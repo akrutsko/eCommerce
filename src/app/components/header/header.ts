@@ -36,7 +36,7 @@ export class Header extends HandlerLinks implements Observer {
     this.signoutButton = new ElementButtonCreator({ text: 'sign out', classes: 'secondary-button' })
       .setHandler('click', () => {
         this.consumer.logOut();
-        window.history.pushState({}, '', '/');
+        window.history.pushState({}, '', '/signup');
         this.router.handleLocation();
       })
       .getElement();
