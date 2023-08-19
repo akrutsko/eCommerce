@@ -82,3 +82,7 @@ export function getToken(): string {
 export function getApiRoot(client: Client): ByProjectKeyRequestBuilder {
   return createApiBuilderFromCtpClient(client).withProjectKey({ projectKey });
 }
+
+export function clearTokenStore(): void {
+  tokenStore = { token: '', refreshToken: '', expirationTime: 0 };
+}
