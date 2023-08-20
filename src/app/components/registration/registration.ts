@@ -39,13 +39,13 @@ export class Registration extends HandlerLinks {
 
   passwordRepeatInput: HTMLInputElement;
 
-  deliveryCountryInput: HTMLInputElement;
+  shippingCountryInput: HTMLInputElement;
 
-  deliveryCityInput: HTMLInputElement;
+  shippingCityInput: HTMLInputElement;
 
-  deliveryStreetInput: HTMLInputElement;
+  shippingStreetInput: HTMLInputElement;
 
-  deliveryPostalCodeInput: HTMLInputElement;
+  shippingPostalCodeInput: HTMLInputElement;
 
   billingCountryInput: HTMLInputElement;
 
@@ -55,7 +55,7 @@ export class Registration extends HandlerLinks {
 
   billingPostalCodeInput: HTMLInputElement;
 
-  saveDeliveryCheckbox: HTMLInputElement;
+  saveShippingCheckbox: HTMLInputElement;
 
   saveBillingCheckbox: HTMLInputElement;
 
@@ -80,15 +80,15 @@ export class Registration extends HandlerLinks {
     this.nameInput = new ElementInputCreator({ placeholder: 'name', classes: 'form-input' }).getElement();
     this.surnameInput = new ElementInputCreator({ placeholder: 'surname', classes: 'form-input' }).getElement();
     this.birthDayInput = new ElementInputCreator({ placeholder: 'birth date', classes: 'form-input' }).getElement();
-    this.deliveryCountryInput = new ElementInputCreator({
+    this.shippingCountryInput = new ElementInputCreator({
       placeholder: 'country',
       classes: 'form-input',
-      list: 'delivery-country',
+      list: 'shipping-country',
     }).getElement();
-    this.deliveryCityInput = new ElementInputCreator({ placeholder: 'city', classes: 'form-input' }).getElement();
-    this.deliveryStreetInput = new ElementInputCreator({ placeholder: 'street', classes: 'form-input' }).getElement();
-    this.deliveryPostalCodeInput = new ElementInputCreator({ placeholder: 'postal code', classes: 'form-input' }).getElement();
-    this.saveDeliveryCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true, id: 'del-def' }).getElement();
+    this.shippingCityInput = new ElementInputCreator({ placeholder: 'city', classes: 'form-input' }).getElement();
+    this.shippingStreetInput = new ElementInputCreator({ placeholder: 'street', classes: 'form-input' }).getElement();
+    this.shippingPostalCodeInput = new ElementInputCreator({ placeholder: 'postal code', classes: 'form-input' }).getElement();
+    this.saveShippingCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true, id: 'del-def' }).getElement();
     this.setSameAddressCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true, id: 'del-bil' }).getElement();
     this.billingCountryInput = new ElementInputCreator({
       placeholder: 'country',
@@ -158,73 +158,73 @@ export class Registration extends HandlerLinks {
 
     const addressTitle = new ElementCreator({ tag: 'h3', classes: 'text-primary-color', text: 'Address' });
 
-    const addressDeliveryContainer = new ElementCreator({ tag: 'div', classes: 'delivery-address flex flex-col gap-4 md:gap-5' });
+    const addressShippingContainer = new ElementCreator({ tag: 'div', classes: 'shipping-address flex flex-col gap-4 md:gap-5' });
     const addressBillingContainer = new ElementCreator({ tag: 'div', classes: 'billing-address flex flex-col gap-4 md:gap-5' });
 
-    const addressDeliverySubtitle = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Delivery address' });
-    const addressDeliveryFirstFlexContainer = new ElementCreator({
+    const addressShippingSubtitle = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Shipping address' });
+    const addressShippingFirstFlexContainer = new ElementCreator({
       tag: 'div',
       classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
     });
-    const addressDeliverySecondFlexContainer = new ElementCreator({
+    const addressShippingSecondFlexContainer = new ElementCreator({
       tag: 'div',
       classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
     });
 
-    const countryDeliveryInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
-    const countryDeliveryError = new ElementCreator({
+    const countryShippingInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
+    const countryShippingError = new ElementCreator({
       tag: 'div',
       classes: 'error hidden left-3 text-xs text-primary-color absolute',
     });
-    const countryDeliveryList = new ElementCreator({
+    const countryShippingList = new ElementCreator({
       tag: 'datalist',
-      id: 'delivery-country',
+      id: 'shipping-country',
       classes: 'absolute overflow-y-auto bg-gray-100 w-full z-10 max-h-[232px]',
     });
     Object.keys(countryCodes).forEach((country) => {
       const option = new ElementOptionCreator({ tag: 'option', value: country });
-      countryDeliveryList.appendNode(option);
+      countryShippingList.appendNode(option);
     });
-    countryDeliveryInputContainer.appendNode(this.deliveryCountryInput, countryDeliveryError, countryDeliveryList);
+    countryShippingInputContainer.appendNode(this.shippingCountryInput, countryShippingError, countryShippingList);
 
-    const cityDeliveryInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
-    const cityDeliveryError = new ElementCreator({
+    const cityShippingInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
+    const cityShippingError = new ElementCreator({
       tag: 'div',
       classes: 'error hidden left-3 text-xs text-primary-color absolute',
     });
-    cityDeliveryInputContainer.appendNode(this.deliveryCityInput, cityDeliveryError);
+    cityShippingInputContainer.appendNode(this.shippingCityInput, cityShippingError);
 
-    const streetDeliveryInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
-    const streetDeliveryError = new ElementCreator({
+    const streetShippingInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
+    const streetShippingError = new ElementCreator({
       tag: 'div',
       classes: 'error hidden left-3 text-xs text-primary-color absolute',
     });
-    streetDeliveryInputContainer.appendNode(this.deliveryStreetInput, streetDeliveryError);
+    streetShippingInputContainer.appendNode(this.shippingStreetInput, streetShippingError);
 
-    const postalDeliveryCodeInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
-    const postalDeliveryCodeError = new ElementCreator({
+    const postalShippingCodeInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
+    const postalShippingCodeError = new ElementCreator({
       tag: 'div',
       classes: 'error hidden left-3 text-xs text-primary-color absolute',
     });
-    postalDeliveryCodeInputContainer.appendNode(this.deliveryPostalCodeInput, postalDeliveryCodeError);
+    postalShippingCodeInputContainer.appendNode(this.shippingPostalCodeInput, postalShippingCodeError);
 
-    addressDeliveryFirstFlexContainer.appendNode(countryDeliveryInputContainer, cityDeliveryInputContainer);
-    addressDeliverySecondFlexContainer.appendNode(streetDeliveryInputContainer, postalDeliveryCodeInputContainer);
+    addressShippingFirstFlexContainer.appendNode(countryShippingInputContainer, cityShippingInputContainer);
+    addressShippingSecondFlexContainer.appendNode(streetShippingInputContainer, postalShippingCodeInputContainer);
 
-    const deliveryFirstCheckboxContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm' });
-    const deliverySecondCheckboxContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm' });
-    const deliveryFirstLabel = new ElementLabelCreator({ text: 'set as default address', for: 'del-def' });
-    const deliverySecondLabel = new ElementLabelCreator({ text: 'set delivery address as billing address', for: 'del-bil' });
+    const shippingFirstCheckboxContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm' });
+    const shippingSecondCheckboxContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm' });
+    const shippingFirstLabel = new ElementLabelCreator({ text: 'set as default address', for: 'del-def' });
+    const shippingSecondLabel = new ElementLabelCreator({ text: 'set shipping address as billing address', for: 'del-bil' });
 
-    deliveryFirstCheckboxContainer.appendNode(this.saveDeliveryCheckbox, deliveryFirstLabel);
-    deliverySecondCheckboxContainer.appendNode(this.setSameAddressCheckbox, deliverySecondLabel);
+    shippingFirstCheckboxContainer.appendNode(this.saveShippingCheckbox, shippingFirstLabel);
+    shippingSecondCheckboxContainer.appendNode(this.setSameAddressCheckbox, shippingSecondLabel);
 
-    addressDeliveryContainer.appendNode(
-      addressDeliverySubtitle,
-      addressDeliveryFirstFlexContainer,
-      addressDeliverySecondFlexContainer,
-      deliveryFirstCheckboxContainer,
-      deliverySecondCheckboxContainer,
+    addressShippingContainer.appendNode(
+      addressShippingSubtitle,
+      addressShippingFirstFlexContainer,
+      addressShippingSecondFlexContainer,
+      shippingFirstCheckboxContainer,
+      shippingSecondCheckboxContainer,
     );
 
     const addressBillingSubtitle = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Billing address' });
@@ -289,7 +289,7 @@ export class Registration extends HandlerLinks {
     );
 
     const addressContainer = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4 md:gap-5' });
-    addressContainer.appendNode(addressTitle, addressDeliveryContainer, addressBillingContainer);
+    addressContainer.appendNode(addressTitle, addressShippingContainer, addressBillingContainer);
 
     const passwordInputContainer = new ElementCreator({ tag: 'div', classes: 'password relative' });
     const passwordError = new ElementCreator({ tag: 'div', classes: 'error hidden left-3 text-xs text-primary-color absolute' });
@@ -325,21 +325,21 @@ export class Registration extends HandlerLinks {
     this.submitButton.addEventListener('click', () => this.signUp());
   }
 
-  validateDeliveryAddressesInputs(): void {
-    this.validateInput(this.deliveryCountryInput, validator.validateCountry);
-    this.validateInput(this.deliveryPostalCodeInput, validator.validatePostalCode, this.deliveryCountryInput);
-    this.validateInput(this.deliveryCityInput, validator.validateOnlyLetters);
-    this.validateInput(this.deliveryStreetInput, validator.isValueExist);
-    this.validateInput(this.deliveryPostalCodeInput, validator.validatePostalCode, this.deliveryCountryInput);
+  validateShippingAddressesInputs(): void {
+    this.validateInput(this.shippingCountryInput, validator.validateCountry);
+    this.validateInput(this.shippingPostalCodeInput, validator.validatePostalCode, this.shippingCountryInput);
+    this.validateInput(this.shippingCityInput, validator.validateOnlyLetters);
+    this.validateInput(this.shippingStreetInput, validator.isValueExist);
+    this.validateInput(this.shippingPostalCodeInput, validator.validatePostalCode, this.shippingCountryInput);
 
-    const isCountryExist = this.deliveryCountryInput.value;
-    const isCityExist = this.deliveryCityInput.value;
-    const isStreetExist = this.deliveryStreetInput.value;
-    const isPostalCodeExist = this.deliveryPostalCodeInput.value;
+    const isCountryExist = this.shippingCountryInput.value;
+    const isCityExist = this.shippingCityInput.value;
+    const isStreetExist = this.shippingStreetInput.value;
+    const isPostalCodeExist = this.shippingPostalCodeInput.value;
     if (isCountryExist && isCityExist && isStreetExist && isPostalCodeExist) {
-      const addressErrors = this.getElement().querySelectorAll('.delivery-address div.error');
+      const addressErrors = this.getElement().querySelectorAll('.shipping-address div.error');
       const showingErrors = [...addressErrors].filter((error) => !error.classList.contains('hidden'));
-      this.saveDeliveryCheckbox.disabled = Boolean(showingErrors.length);
+      this.saveShippingCheckbox.disabled = Boolean(showingErrors.length);
       this.setSameAddressCheckbox.disabled = Boolean(showingErrors.length);
     }
   }
@@ -402,17 +402,17 @@ export class Registration extends HandlerLinks {
     this.birthDayInput.addEventListener('blur', () => {
       if (!this.birthDayInput.value) this.birthDayInput.type = 'text';
     });
-    this.deliveryCountryInput.addEventListener('input', () => {
-      this.validateDeliveryAddressesInputs();
+    this.shippingCountryInput.addEventListener('input', () => {
+      this.validateShippingAddressesInputs();
     });
-    this.deliveryCityInput.addEventListener('input', () => {
-      this.validateDeliveryAddressesInputs();
+    this.shippingCityInput.addEventListener('input', () => {
+      this.validateShippingAddressesInputs();
     });
-    this.deliveryStreetInput.addEventListener('input', () => {
-      this.validateDeliveryAddressesInputs();
+    this.shippingStreetInput.addEventListener('input', () => {
+      this.validateShippingAddressesInputs();
     });
-    this.deliveryPostalCodeInput.addEventListener('input', () => {
-      this.validateDeliveryAddressesInputs();
+    this.shippingPostalCodeInput.addEventListener('input', () => {
+      this.validateShippingAddressesInputs();
     });
 
     this.billingCountryInput.addEventListener('input', () => {
@@ -444,7 +444,7 @@ export class Registration extends HandlerLinks {
     this.validateInput(this.nameInput, validator.validateOnlyLetters);
     this.validateInput(this.surnameInput, validator.validateOnlyLetters);
     this.validateInput(this.birthDayInput, validator.validateDateOfBirth);
-    this.validateDeliveryAddressesInputs();
+    this.validateShippingAddressesInputs();
     this.validateBillingAddressesInputs();
     this.validateInput(this.passwordRepeatInput, validator.validatePassword);
   }
@@ -463,10 +463,10 @@ export class Registration extends HandlerLinks {
       }
 
       const fields = [
-        { input: this.billingCountryInput, source: this.deliveryCountryInput },
-        { input: this.billingCityInput, source: this.deliveryCityInput },
-        { input: this.billingStreetInput, source: this.deliveryStreetInput },
-        { input: this.billingPostalCodeInput, source: this.deliveryPostalCodeInput },
+        { input: this.billingCountryInput, source: this.shippingCountryInput },
+        { input: this.billingCityInput, source: this.shippingCityInput },
+        { input: this.billingStreetInput, source: this.shippingStreetInput },
+        { input: this.billingPostalCodeInput, source: this.shippingPostalCodeInput },
       ];
 
       fields.forEach((field) => {
@@ -494,11 +494,11 @@ export class Registration extends HandlerLinks {
 
   async signUp(): Promise<void> {
     try {
-      const deliveryAddress: BaseAddress = {
-        country: countryCodes[this.deliveryCountryInput.value],
-        city: this.deliveryCityInput.value,
-        streetName: this.deliveryStreetInput.value,
-        postalCode: this.deliveryPostalCodeInput.value,
+      const shippingAddress: BaseAddress = {
+        country: countryCodes[this.shippingCountryInput.value],
+        city: this.shippingCityInput.value,
+        streetName: this.shippingStreetInput.value,
+        postalCode: this.shippingPostalCodeInput.value,
       };
 
       const billingAddress: BaseAddress = {
@@ -508,15 +508,7 @@ export class Registration extends HandlerLinks {
         postalCode: this.billingPostalCodeInput.value,
       };
 
-      const addresses: BaseAddress[] = [];
-      if (billingAddress.country) {
-        addresses.push(deliveryAddress);
-      }
-      if (billingAddress.country) {
-        addresses.push(billingAddress);
-      }
-
-      const defaultShippingAddress = this.saveDeliveryCheckbox.checked ? 0 : undefined;
+      const defaultShippingAddress = this.saveShippingCheckbox.checked ? 0 : undefined;
       const defaultBillingAddress = this.saveBillingCheckbox.checked ? 1 : undefined;
 
       const consumerDraft: CustomerDraft = {
@@ -525,7 +517,7 @@ export class Registration extends HandlerLinks {
         firstName: this.nameInput.value,
         lastName: this.surnameInput.value,
         dateOfBirth: this.birthDayInput.value,
-        addresses,
+        addresses: [shippingAddress, billingAddress],
         shippingAddresses: [0],
         billingAddresses: [1],
         defaultShippingAddress,
