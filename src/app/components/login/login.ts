@@ -133,7 +133,7 @@ export class Login extends HandlerLinks {
   async logIn(): Promise<void> {
     try {
       await this.consumer.logIn(this.emailInput.value, this.passwordInput.value);
-      window.history.pushState({}, '', '/main');
+      window.history.pushState({}, '', '/');
       this.router.handleLocation();
     } catch (err) {
       if (err instanceof Error) {
