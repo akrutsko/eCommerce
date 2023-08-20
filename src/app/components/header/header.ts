@@ -29,7 +29,7 @@ export class Header extends HandlerLinks implements Observer {
     super(router);
     this.consumer = consumer;
     this.headerView = new ElementCreator({ tag: 'header', classes: 'container' });
-    this.loginBtns = new ElementCreator({ tag: 'div', classes: 'flex gap-6 hidden' }).getElement();
+    this.loginBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-6' }).getElement();
     this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-6 hidden' }).getElement();
     this.loginButton = new ElementButtonCreator({ text: 'log in', classes: 'primary-button' }).getElement();
     this.signupButton = new ElementButtonCreator({ text: 'sign up', classes: 'secondary-button' }).getElement();
@@ -132,9 +132,9 @@ export class Header extends HandlerLinks implements Observer {
     this.listOfLinks.push(aCustomer.getElement());
     divCustomer.appendNode(aCustomer);
 
-    this.loginBtns.append(this.signupButton, this.loginButton);
-    this.logoutBtns.append(divCart.getElement(), divCustomer.getElement(), this.signoutButton);
-    mobileMenu.appendNode(linksList, this.loginBtns, this.logoutBtns);
+    this.loginBtns.append(this.signupButton, this.loginButton, divCart.getElement(), this.logoutBtns);
+    this.logoutBtns.append(divCustomer.getElement(), this.signoutButton);
+    mobileMenu.appendNode(linksList, this.loginBtns);
     this.headerView.appendNode(nav);
 
     burger.getElement().addEventListener('click', () => {
@@ -171,10 +171,8 @@ export class Header extends HandlerLinks implements Observer {
 
   update(): void {
     if (this.consumer.isConsumer) {
-      this.loginBtns.classList.add('hidden');
       this.logoutBtns.classList.remove('hidden');
     } else {
-      this.loginBtns.classList.remove('hidden');
       this.logoutBtns.classList.add('hidden');
     }
   }
