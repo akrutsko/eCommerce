@@ -1,6 +1,6 @@
 import './registration.css';
 
-import { BaseAddress, MyCustomerDraft } from '@commercetools/platform-sdk';
+import { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
 
 import passwordHide from '../../../assets/svg/passwordHide.svg';
 import passwordShow from '../../../assets/svg/passwordShow.svg';
@@ -430,6 +430,7 @@ export class Registration extends HandlerLinks {
 
     this.passwordInput.addEventListener('input', () => {
       this.validateInput(this.passwordInput, validator.validatePassword);
+      this.validateInput(this.passwordRepeatInput, validator.validatePassword, this.passwordInput);
     });
     this.passwordRepeatInput.addEventListener('input', () => {
       this.validateInput(this.passwordRepeatInput, validator.validatePassword, this.passwordInput);
@@ -456,6 +457,9 @@ export class Registration extends HandlerLinks {
         this.getElement()
           .querySelectorAll('.billing-address div.error')
           .forEach((div) => div.classList.add('hidden'));
+      }
+      if (!readOnly) {
+        this.saveBillingCheckbox.checked = false;
       }
 
       const fields = [
@@ -515,13 +519,15 @@ export class Registration extends HandlerLinks {
       const defaultShippingAddress = this.saveDeliveryCheckbox.checked ? 0 : undefined;
       const defaultBillingAddress = this.saveBillingCheckbox.checked ? 1 : undefined;
 
-      const consumerDraft: MyCustomerDraft = {
+      const consumerDraft: CustomerDraft = {
         email: this.emailInput.value,
         password: this.passwordInput.value,
         firstName: this.nameInput.value,
         lastName: this.surnameInput.value,
         dateOfBirth: this.birthDayInput.value,
         addresses,
+        shippingAddresses: [0],
+        billingAddresses: [1],
         defaultShippingAddress,
         defaultBillingAddress,
       };
