@@ -171,8 +171,10 @@ export class Header extends HandlerLinks implements Observer {
 
   update(): void {
     if (this.consumer.isConsumer) {
+      // this.loginBtns.classList.add('hidden');TODO: remove comment for sprint 3
       this.logoutBtns.classList.remove('hidden');
     } else {
+      // this.loginBtns.classList.remove('hidden');TODO: remove comment for sprint 3
       this.logoutBtns.classList.add('hidden');
     }
   }
