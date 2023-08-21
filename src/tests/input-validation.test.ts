@@ -1,4 +1,10 @@
-import { isValueExist, validateCountry, validateEmail, validateOnlyLetters, validatePassword } from '../app/utils/validation/input-validation';
+import {
+  isValueExist,
+  validateCountry,
+  validateEmail,
+  validateOnlyLetters,
+  validatePassword,
+} from '../app/utils/validation/input-validation';
 
 describe('Input validation tests', () => {
   test('Value exists', () => {
