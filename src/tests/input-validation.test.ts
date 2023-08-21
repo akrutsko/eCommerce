@@ -1,4 +1,4 @@
-import { isValueExist, validateEmail, validateOnlyLetters, validatePassword } from '../app/utils/validation/input-validation';
+import { isValueExist, validateCountry, validateEmail, validateOnlyLetters, validatePassword } from '../app/utils/validation/input-validation';
 
 describe('Input validation tests', () => {
   test('Value exists', () => {
@@ -33,5 +33,11 @@ describe('Input validation tests', () => {
     expect(validateOnlyLetters('a1')).toEqual({ isValid: false, message: 'This field must contain only letters' });
     expect(validateOnlyLetters('a b')).toEqual({ isValid: true });
     expect(validateOnlyLetters('a#b')).toEqual({ isValid: false, message: 'This field must contain only letters' });
+  });
+
+  test('Validate country', () => {
+    expect(validateCountry('')).toEqual({ isValid: false, message: 'This field is required' });
+    expect(validateCountry('Belarus')).toEqual({ isValid: true });
+    expect(validateCountry('B')).toEqual({ isValid: false, message: 'Invalid country' });
   });
 });
