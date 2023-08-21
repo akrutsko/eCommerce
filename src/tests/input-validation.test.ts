@@ -46,4 +46,25 @@ describe('Input validation tests', () => {
     expect(validateCountry('Belarus')).toEqual({ isValid: true });
     expect(validateCountry('B')).toEqual({ isValid: false, message: 'Invalid country' });
   });
+
+  test('Password validation test', () => {
+    expect(validatePassword('Secret123')).toEqual({ isValid: true });
+    expect(validatePassword('Secret1')).toEqual({ isValid: false, message: 'Password must be at least 8 characters long' });
+    expect(validatePassword('SECRET123')).toEqual({
+      isValid: false,
+      message: 'Password must contain at least one lowercase letter',
+    });
+    expect(validatePassword('secret123')).toEqual({
+      isValid: false,
+      message: 'Password must contain at least one uppercase letter',
+    });
+    expect(validatePassword('Secretttt')).toEqual({
+      isValid: false,
+      message: 'Password must contain at least one digit',
+    });
+    expect(validatePassword('Secret123', 'Secret124')).toEqual({
+      isValid: false,
+      message: 'Passwords do not match',
+    });
+  });
 });
