@@ -114,7 +114,7 @@ export class Registration extends HandlerLinks {
     const personalInfoTitle = new ElementCreator({ tag: 'h3', classes: 'text-primary-color', text: 'Personal info' });
     const personalInfoFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
 
     const emailInputContainer = new ElementCreator({ tag: 'div', classes: 'relative' });
@@ -144,11 +144,11 @@ export class Registration extends HandlerLinks {
     const addressDeliverySubtitle = new ElementCreator({ tag: 'h5', classes: 'h5 text-primary-color', text: 'Delivery address' });
     const addressDeliveryFirstFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
     const addressDeliverySecondFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
 
     const countryDeliveryInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
@@ -209,11 +209,11 @@ export class Registration extends HandlerLinks {
     });
     const addressBillingFirstFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
     const addressBillingSecondFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
     const countryBillingInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
     const countryBillingError = new ElementCreator({

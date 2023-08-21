@@ -54,9 +54,20 @@ export function validateDateOfBirth(dateOfBirth: string): ValidationResult {
 
   const currentDate = new Date();
   const inputDate = new Date(dateOfBirth);
-  const yearsDifference = currentDate.getFullYear() - inputDate.getFullYear();
 
-  if (yearsDifference < AGE_RESTRICTION) {
+  if (dateOfBirth.length !== 10) {
+    return { isValid: false, message: 'Invalid date format' };
+  }
+
+  const yearsDifference = currentDate.getFullYear() - inputDate.getFullYear();
+  const monthsDifference = currentDate.getMonth() - inputDate.getMonth();
+  const daysDifference = currentDate.getDate() - inputDate.getDate();
+
+  const isYearValid = yearsDifference < AGE_RESTRICTION;
+  const isMonthValid = yearsDifference === AGE_RESTRICTION && monthsDifference < 0;
+  const isDayValid = yearsDifference === AGE_RESTRICTION && monthsDifference === 0 && daysDifference < 0;
+
+  if (isYearValid || isMonthValid || isDayValid) {
     return { isValid: false, message: `You must be at least ${AGE_RESTRICTION} years old` };
   }
 

@@ -137,13 +137,25 @@ export class Header extends HandlerLinks implements Observer {
     mobileMenu.appendNode(linksList, this.loginBtns, this.logoutBtns);
     this.headerView.appendNode(nav);
 
+    const closeBurger = (): void => {
+      mobileMenu.removeClass('active');
+      burger.removeClass('active');
+      bg.removeClass('active');
+      document.body.classList.remove('active');
+    };
+
     window.addEventListener('resize', () => {
       if (window.innerWidth > 768 && burger.getElement().classList.contains('active')) {
-        mobileMenu.removeClass('active');
-        burger.removeClass('active');
-        bg.removeClass('active');
-        document.body.classList.remove('active');
+        closeBurger();
       }
+    });
+
+    this.listOfLinks.forEach((link) => {
+      link.addEventListener('click', (e) => {
+        if (e.currentTarget instanceof HTMLAnchorElement) {
+          closeBurger();
+        }
+      });
     });
 
     burger.getElement().addEventListener('click', () => {
@@ -162,11 +174,13 @@ export class Header extends HandlerLinks implements Observer {
     this.loginButton.addEventListener('click', () => {
       window.history.pushState({}, '', '/login');
       this.router.handleLocation();
+      closeBurger();
     });
 
     this.signupButton.addEventListener('click', () => {
       window.history.pushState({}, '', '/signup');
       this.router.handleLocation();
+      closeBurger();
     });
   }
 
