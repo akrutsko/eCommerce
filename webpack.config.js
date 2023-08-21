@@ -83,9 +83,9 @@ module.exports = (env, argv) => {
         patterns: [
           {
             from: path.resolve(__dirname, 'netlify.toml'),
-            to: path.resolve(__dirname, 'dist')
-          }
-        ]
+            to: path.resolve(__dirname, 'dist'),
+          },
+        ],
       }),
       ...esLintPlugin,
     ],
