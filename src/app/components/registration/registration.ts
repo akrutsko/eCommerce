@@ -528,7 +528,7 @@ export class Registration extends HandlerLinks {
 
       await createConsumer(getCtpClient(), consumerDraft);
       await this.consumer.logIn(this.emailInput.value, this.passwordInput.value);
-      window.history.pushState({}, '', '/main');
+      window.history.pushState({}, '', '/');
       this.router.handleLocation();
     } catch (err) {
       if (err instanceof Error) {

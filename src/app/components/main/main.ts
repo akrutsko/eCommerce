@@ -25,7 +25,7 @@ export class Main implements Observer {
   }
 
   update(data?: string, hashData?: string): void {
-    this.mainView.textContent = '';
+    this.mainView.innerHTML = '';
 
     switch (data) {
       case 'main':
