@@ -30,8 +30,8 @@ describe('Input validation tests', () => {
 
   test('Only letters in string', () => {
     expect(validateOnlyLetters('Secret')).toEqual({ isValid: true });
-    expect(validateOnlyLetters('aAaaaaaa1')).toEqual({ isValid: false, message: 'This field must contain only letters' });
-    expect(validateOnlyLetters('BBBBBBBB2b')).toEqual({ isValid: false, message: 'This field must contain only letters' });
-    expect(validateOnlyLetters('secret123')).toEqual({ isValid: false, message: 'This field must contain only letters' });
+    expect(validateOnlyLetters('a1')).toEqual({ isValid: false, message: 'This field must contain only letters' });
+    expect(validateOnlyLetters('a b')).toEqual({ isValid: true });
+    expect(validateOnlyLetters('a#b')).toEqual({ isValid: false, message: 'This field must contain only letters' });
   });
 });
