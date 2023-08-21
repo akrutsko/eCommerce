@@ -18,6 +18,14 @@ describe('Input validation tests', () => {
     expect(validatePassword('aAaaaaaa1')).toBeTruthy();
     expect(validatePassword('BBBBBBBB2b')).toBeTruthy();
     expect(validatePassword('secret123').isValid).toBeFalsy();
+    expect(validatePassword('secret123')).toEqual({
+      isValid: false,
+      message: 'Password must contain at least one uppercase letter',
+    });
+    expect(validatePassword('s')).toEqual({
+      isValid: false,
+      message: 'Password must be at least 8 characters long',
+    });
   });
 
   test('Onli letters in string', () => {
