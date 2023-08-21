@@ -77,12 +77,12 @@ export class Registration extends HandlerLinks {
     this.passwordInput = new ElementInputCreator({
       type: 'password',
       placeholder: 'password',
-      classes: 'form-input',
+      classes: 'form-input pr-10',
     }).getElement();
     this.passwordRepeatInput = new ElementInputCreator({
       type: 'password',
       placeholder: 'repeat password',
-      classes: 'form-input',
+      classes: 'form-input pr-10',
     }).getElement();
     this.saveDeliveryCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true }).getElement();
     this.saveBillingCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true }).getElement();
