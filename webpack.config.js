@@ -34,6 +34,7 @@ module.exports = (env, argv) => {
       filename: '[name].[contenthash].js',
       path: path.join(__dirname, 'dist'),
       assetModuleFilename: 'assets/[hash][ext]',
+      publicPath: '/',
     },
     resolve: {
       extensions: ['.ts', '.js', 'json', '...'],
