@@ -70,11 +70,11 @@ export function validateDateOfBirth(dateOfBirth: string): ValidationResult {
   const monthsDifference = currentDate.getMonth() - inputDate.getMonth();
   const daysDifference = currentDate.getDate() - inputDate.getDate();
 
-  const isYearValid = yearsDifference < AGE_RESTRICTION;
-  const isMonthValid = yearsDifference === AGE_RESTRICTION && monthsDifference < 0;
-  const isDayValid = yearsDifference === AGE_RESTRICTION && monthsDifference === 0 && daysDifference < 0;
+  const isYearInvalid = yearsDifference < AGE_RESTRICTION;
+  const isMonthInvalid = yearsDifference === AGE_RESTRICTION && monthsDifference < 0;
+  const isDayInvalid = yearsDifference === AGE_RESTRICTION && monthsDifference === 0 && daysDifference < 0;
 
-  if (isYearValid || isMonthValid || isDayValid) {
+  if (isYearInvalid || isMonthInvalid || isDayInvalid) {
     return { isValid: false, message: `You must be at least ${AGE_RESTRICTION} years old` };
   }
 

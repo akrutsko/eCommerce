@@ -151,11 +151,7 @@ export class Header extends HandlerLinks implements Observer {
     });
 
     this.listOfLinks.forEach((link) => {
-      link.addEventListener('click', (e) => {
-        if (e.currentTarget instanceof HTMLAnchorElement) {
-          closeBurger();
-        }
-      });
+      link.addEventListener('click', () => closeBurger());
     });
 
     burger.getElement().addEventListener('click', () => {
