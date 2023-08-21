@@ -142,7 +142,7 @@ export class Login extends HandlerLinks {
         if (err.message) {
           new Message(err.message, 'error').showMessage();
         } else {
-          new Message('Something went wrong. Try again.', 'error').showMessage();
+          new Message('Something went wrong. Try later.', 'error').showMessage();
         }
       }
     }
