@@ -120,7 +120,8 @@ export class Header extends HandlerLinks implements Observer {
     tab.appendNode(categories, submenu);
 
     const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-5' });
-    linksList.appendNode(liHome, liAboutUs, tab);
+    // linksList.appendNode(liHome, liAboutUs, tab); //TODO: delete comments in sprint3
+    linksList.appendNode(liHome);
 
     const divCart = new ElementCreator({ tag: 'div', classes: 'relative', html: cartSvg });
     const aCart = new ElementAnchorCreator({ href: '/cart', classes: 'absolute inset-0' });

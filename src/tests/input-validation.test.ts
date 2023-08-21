@@ -1,4 +1,10 @@
-import { isValueExist, validateEmail, validateOnlyLetters, validatePassword } from '../app/utils/validation/input-validation';
+import {
+  isValueExist,
+  validateCountry,
+  validateEmail,
+  validateOnlyLetters,
+  validatePassword,
+} from '../app/utils/validation/input-validation';
 
 describe('Input validation tests', () => {
   test('Value exists', () => {
@@ -33,5 +39,32 @@ describe('Input validation tests', () => {
     expect(validateOnlyLetters('a1')).toEqual({ isValid: false, message: 'This field must contain only letters' });
     expect(validateOnlyLetters('a b')).toEqual({ isValid: true });
     expect(validateOnlyLetters('a#b')).toEqual({ isValid: false, message: 'This field must contain only letters' });
+  });
+
+  test('Validate country', () => {
+    expect(validateCountry('')).toEqual({ isValid: false, message: 'This field is required' });
+    expect(validateCountry('Belarus')).toEqual({ isValid: true });
+    expect(validateCountry('B')).toEqual({ isValid: false, message: 'Invalid country' });
+  });
+
+  test('Password validation test', () => {
+    expect(validatePassword('Secret123')).toEqual({ isValid: true });
+    expect(validatePassword('Secret1')).toEqual({ isValid: false, message: 'Password must be at least 8 characters long' });
+    expect(validatePassword('SECRET123')).toEqual({
+      isValid: false,
+      message: 'Password must contain at least one lowercase letter',
+    });
+    expect(validatePassword('secret123')).toEqual({
+      isValid: false,
+      message: 'Password must contain at least one uppercase letter',
+    });
+    expect(validatePassword('Secretttt')).toEqual({
+      isValid: false,
+      message: 'Password must contain at least one digit',
+    });
+    expect(validatePassword('Secret123', 'Secret124')).toEqual({
+      isValid: false,
+      message: 'Passwords do not match',
+    });
   });
 });
