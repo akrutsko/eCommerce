@@ -134,7 +134,7 @@ export class Login extends HandlerLinks {
   async logIn(): Promise<void> {
     try {
       await this.consumer.logIn(this.emailInput.value, this.passwordInput.value);
-      window.history.pushState({}, '', '/main');
+      window.history.pushState({}, '', '/');
       this.router.handleLocation();
       new Message('Welcome! Start shopping and reach new sports peak', 'info').showMessage();
     } catch (err) {

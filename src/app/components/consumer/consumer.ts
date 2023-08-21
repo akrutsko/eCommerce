@@ -1,6 +1,6 @@
 import { Client } from '@commercetools/sdk-client-v2';
 import { Customer } from '@commercetools/platform-sdk';
-import { getCtpClient, getPasswordClient, getToken, getTokenClient } from '../../utils/api/api-client';
+import { getCtpClient, getPasswordClient, getToken, getTokenClient, clearTokenStore } from '../../utils/api/api-client';
 import { ConsumerClient } from '../../enums/consumer-client';
 import { getConsumer } from '../../utils/api/api-consumer';
 
@@ -63,6 +63,7 @@ export class Consumer implements Observable {
     localStorage.clear();
     this.status = ConsumerClient.CommerceTools;
     this.consumer = null;
+    clearTokenStore();
     this.apiClient = getCtpClient();
     this.notify();
   }

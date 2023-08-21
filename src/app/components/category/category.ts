@@ -14,7 +14,7 @@ export class Category {
   createView(hash: string): void {
     const mainMessage = new ElementCreator({
       tag: 'div',
-      classes: 'text-[#DFDDDF] text-8xl sd:text-[265px] mg:text-[350px] font-bold drop-shadow-[5px_4px_0px_rgba(57,62,77,0.18)]',
+      classes: 'text-[#DFDDDF] text-5xl sd:text-[265px] mg:text-[350px] font-bold drop-shadow-[5px_4px_0px_rgba(57,62,77,0.18)]',
       text: hash,
     });
 

@@ -109,5 +109,8 @@ export function validateOnlyLetters(input: string): ValidationResult {
   if (!/^[A-Za-z\s]+$/.test(input)) {
     return { isValid: false, message: 'This field must contain only letters' };
   }
+  if (input.trim().length !== input.length) {
+    return { isValid: false, message: 'This field must contain at least one character' };
+  }
   return { isValid: true };
 }
