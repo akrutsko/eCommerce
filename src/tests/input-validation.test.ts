@@ -2,22 +2,22 @@ import { isValueExist, validateEmail, validateOnlyLetters, validatePassword } fr
 
 describe('Input validation tests', () => {
   test('Value exists', () => {
-    expect(isValueExist('').isValid).toBeFalsy();
-    expect(isValueExist('a')).toBeTruthy();
-    expect(isValueExist('1')).toBeTruthy();
-    expect(isValueExist('@')).toBeTruthy();
+    expect(isValueExist('')).toEqual({ isValid: false, message: 'This field is required' });
+    expect(isValueExist('a')).toEqual({ isValid: true });
+    expect(isValueExist('1')).toEqual({ isValid: true });
+    expect(isValueExist('@')).toEqual({ isValid: true });
   });
 
   test('Email is valid', () => {
-    expect(validateEmail('t@t.by')).toBeTruthy();
-    expect(validateEmail('t@t').isValid).toBeFalsy();
+    expect(validateEmail('')).toEqual({ isValid: false, message: 'This field is required' });
+    expect(validateEmail('t@t.by')).toEqual({ isValid: true });
+    expect(validateEmail('t@t')).toEqual({ isValid: false, message: 'Invalid email address format' });
   });
 
   test('Password is valid', () => {
-    expect(validatePassword('Secret123')).toBeTruthy();
-    expect(validatePassword('aAaaaaaa1')).toBeTruthy();
-    expect(validatePassword('BBBBBBBB2b')).toBeTruthy();
-    expect(validatePassword('secret123').isValid).toBeFalsy();
+    expect(validatePassword('Secret123')).toEqual({ isValid: true });
+    expect(validatePassword('aAaaaaaa1')).toEqual({ isValid: true });
+    expect(validatePassword('BBBBBBBB2b')).toEqual({ isValid: true });
     expect(validatePassword('secret123')).toEqual({
       isValid: false,
       message: 'Password must contain at least one uppercase letter',
@@ -28,10 +28,10 @@ describe('Input validation tests', () => {
     });
   });
 
-  test('Onli letters in string', () => {
-    expect(validateOnlyLetters('Secret123')).toBeTruthy();
-    expect(validateOnlyLetters('aAaaaaaa1').isValid).toBeFalsy();
-    expect(validateOnlyLetters('BBBBBBBB2b').isValid).toBeFalsy();
-    expect(validateOnlyLetters('secret123').isValid).toBeFalsy();
+  test('Only letters in string', () => {
+    expect(validateOnlyLetters('Secret')).toEqual({ isValid: true });
+    expect(validateOnlyLetters('aAaaaaaa1')).toEqual({ isValid: false, message: 'This field must contain only letters' });
+    expect(validateOnlyLetters('BBBBBBBB2b')).toEqual({ isValid: false, message: 'This field must contain only letters' });
+    expect(validateOnlyLetters('secret123')).toEqual({ isValid: false, message: 'This field must contain only letters' });
   });
 });
