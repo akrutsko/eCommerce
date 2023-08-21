@@ -1,5 +1,5 @@
 import 'jest-fetch-mock';
-import { BaseAddress, MyCustomerDraft } from '@commercetools/platform-sdk';
+import { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
 import { getCtpClient, getPasswordClient } from '../app/utils/api/api-client';
 import { createConsumer, deleteConsumer, getConsumer } from '../app/utils/api/api-consumer';
 
@@ -13,13 +13,15 @@ describe('Tests for consumer API', () => {
     const lastName = 'Doe';
     const dateOfBirth = '2000-01-01';
 
-    const consumerDraft: MyCustomerDraft = {
+    const consumerDraft: CustomerDraft = {
       email,
       password,
       firstName,
       lastName,
       dateOfBirth,
       addresses: [shippingAddress, billingAddress],
+      shippingAddresses: [0],
+      billingAddresses: [1],
       defaultShippingAddress: 0,
       defaultBillingAddress: 1,
     };
