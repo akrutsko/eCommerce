@@ -10,6 +10,7 @@ import { validateEmail, validatePassword } from '../../utils/validation/input-va
 import { Consumer } from '../consumer/consumer';
 import { Router } from '../../router/router';
 import { HandlerLinks } from '../../router/handler-links';
+import { Message } from '../../utils/message/toastify-message';
 
 export class Login extends HandlerLinks {
   consumer: Consumer;
@@ -35,7 +36,7 @@ export class Login extends HandlerLinks {
     this.passwordInput = new ElementInputCreator({
       type: 'password',
       placeholder: 'password',
-      classes: 'form-input',
+      classes: 'form-input pr-10',
     }).getElement();
     this.passwordError = new ElementCreator({
       tag: 'div',
@@ -139,8 +140,7 @@ export class Login extends HandlerLinks {
       this.router.handleLocation();
     } catch (err) {
       if (err instanceof Error) {
-        this.passwordError.textContent = err.message;
-        this.passwordError.classList.remove('hidden');
+        new Message(err.message, 'error').showMessage();
       }
     }
   }
