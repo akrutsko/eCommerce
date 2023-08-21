@@ -1,7 +1,8 @@
-import { isValueExist, validateEmail, validatePassword } from '../app/utils/validation/input-validation';
+import { isValueExist, validateEmail, validateOnlyLetters, validatePassword } from '../app/utils/validation/input-validation';
 
 describe('Input validation tests', () => {
   test('Value exists', () => {
+    expect(isValueExist('').isValid).toBeFalsy();
     expect(isValueExist('a')).toBeTruthy();
     expect(isValueExist('1')).toBeTruthy();
     expect(isValueExist('@')).toBeTruthy();
@@ -17,5 +18,12 @@ describe('Input validation tests', () => {
     expect(validatePassword('aAaaaaaa1')).toBeTruthy();
     expect(validatePassword('BBBBBBBB2b')).toBeTruthy();
     expect(validatePassword('secret123').isValid).toBeFalsy();
+  });
+
+  test('Onli letters in string', () => {
+    expect(validateOnlyLetters('Secret123')).toBeTruthy();
+    expect(validateOnlyLetters('aAaaaaaa1').isValid).toBeFalsy();
+    expect(validateOnlyLetters('BBBBBBBB2b').isValid).toBeFalsy();
+    expect(validateOnlyLetters('secret123').isValid).toBeFalsy();
   });
 });
