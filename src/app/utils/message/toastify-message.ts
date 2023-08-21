@@ -15,6 +15,11 @@ export class Message {
     Toastify({
       text: this.message,
       duration: 3000,
+      offset: {
+        x: 0,
+        y: 170,
+      },
+      gravity: 'bottom',
       backgroundColor: this.getBackgroundColor(),
     }).showToast();
   }
