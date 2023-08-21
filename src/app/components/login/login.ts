@@ -10,6 +10,7 @@ import { validateEmail, validatePassword } from '../../utils/validation/input-va
 import { Consumer } from '../consumer/consumer';
 import { Router } from '../../router/router';
 import { HandlerLinks } from '../../router/handler-links';
+import { Message } from '../../utils/message/toastify-message';
 
 export class Login extends HandlerLinks {
   consumer: Consumer;
@@ -35,7 +36,7 @@ export class Login extends HandlerLinks {
     this.passwordInput = new ElementInputCreator({
       type: 'password',
       placeholder: 'password',
-      classes: 'form-input',
+      classes: 'form-input pr-10',
     }).getElement();
     this.passwordError = new ElementCreator({
       tag: 'div',
@@ -135,9 +136,14 @@ export class Login extends HandlerLinks {
       await this.consumer.logIn(this.emailInput.value, this.passwordInput.value);
       window.history.pushState({}, '', '/main');
       this.router.handleLocation();
+      new Message('Welcome! Start shopping and reach new sports peak', 'info').showMessage();
     } catch (err) {
       if (err instanceof Error) {
-        // TO DO: show gracefull error message
+        if (err.message) {
+          new Message(err.message, 'error').showMessage();
+        } else {
+          new Message('Something went wrong. Try again.', 'error').showMessage();
+        }
       }
     }
   }

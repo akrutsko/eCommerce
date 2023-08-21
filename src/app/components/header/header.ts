@@ -108,7 +108,7 @@ export class Header extends HandlerLinks implements Observer {
     this.listOfLinks.push(aIceAdventures.getElement());
     liIceAdventures.appendNode(aIceAdventures);
 
-    const submenu = new ElementCreator({ tag: 'ul', classes: 'submenu absolute hidden bg-white px-2 py-1 w-max' });
+    const submenu = new ElementCreator({ tag: 'ul', classes: 'submenu relative md:absolute hidden bg-white px-2 py-1 w-max' });
     submenu.appendNode(liSummerTime, liPeakClimber, liBallGames, liIceAdventures);
 
     const tab = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
@@ -137,6 +137,23 @@ export class Header extends HandlerLinks implements Observer {
     mobileMenu.appendNode(linksList, this.loginBtns, this.logoutBtns);
     this.headerView.appendNode(nav);
 
+    const closeBurger = (): void => {
+      mobileMenu.removeClass('active');
+      burger.removeClass('active');
+      bg.removeClass('active');
+      document.body.classList.remove('active');
+    };
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768 && burger.getElement().classList.contains('active')) {
+        closeBurger();
+      }
+    });
+
+    this.listOfLinks.forEach((link) => {
+      link.addEventListener('click', () => closeBurger());
+    });
+
     burger.getElement().addEventListener('click', () => {
       mobileMenu.toggleClass('active');
       burger.toggleClass('active');
@@ -153,11 +170,13 @@ export class Header extends HandlerLinks implements Observer {
     this.loginButton.addEventListener('click', () => {
       window.history.pushState({}, '', '/login');
       this.router.handleLocation();
+      closeBurger();
     });
 
     this.signupButton.addEventListener('click', () => {
       window.history.pushState({}, '', '/signup');
       this.router.handleLocation();
+      closeBurger();
     });
   }
 

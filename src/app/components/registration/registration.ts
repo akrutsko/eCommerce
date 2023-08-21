@@ -101,12 +101,12 @@ export class Registration extends HandlerLinks {
     this.passwordInput = new ElementInputCreator({
       type: 'password',
       placeholder: 'password',
-      classes: 'form-input',
+      classes: 'form-input pr-10',
     }).getElement();
     this.passwordRepeatInput = new ElementInputCreator({
       type: 'password',
       placeholder: 'repeat password',
-      classes: 'form-input',
+      classes: 'form-input pr-10',
     }).getElement();
     this.saveBillingCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true, id: 'bil-def' }).getElement();
     this.submitButton = new ElementButtonCreator({ classes: 'primary-button', text: 'sign up', disabled: true }).getElement();
@@ -134,7 +134,7 @@ export class Registration extends HandlerLinks {
     const personalInfoTitle = new ElementCreator({ tag: 'h3', classes: 'text-primary-color', text: 'Personal info' });
     const personalInfoFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
 
     const emailInputContainer = new ElementCreator({ tag: 'div', classes: 'relative' });
@@ -164,11 +164,11 @@ export class Registration extends HandlerLinks {
     const addressDeliverySubtitle = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Delivery address' });
     const addressDeliveryFirstFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
     const addressDeliverySecondFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
 
     const countryDeliveryInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
@@ -230,11 +230,11 @@ export class Registration extends HandlerLinks {
     const addressBillingSubtitle = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Billing address' });
     const addressBillingFirstFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
     const addressBillingSecondFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
     const countryBillingInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
     const countryBillingError = new ElementCreator({
