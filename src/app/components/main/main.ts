@@ -25,7 +25,7 @@ export class Main implements Observer {
   }
 
   update(data?: string, hashData?: string): void {
-    this.mainView.textContent = '';
+    this.mainView.innerHTML = '';
 
     switch (data) {
       case 'main':
@@ -61,7 +61,8 @@ export class Main implements Observer {
         break;
       case 'signup':
         if (this.consumer.isConsumer) {
-          this.showMain();
+          window.history.pushState({}, '', '/');
+          this.router.handleLocation();
         } else {
           this.showSignup();
         }

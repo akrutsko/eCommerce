@@ -19,6 +19,7 @@ import { getCtpClient } from '../../utils/api/api-client';
 import { createConsumer } from '../../utils/api/api-consumer';
 import { countryCodes } from '../../data/country-codes';
 import { HandlerLinks } from '../../router/handler-links';
+import { Message } from '../../utils/message/toastify-message';
 
 export class Registration extends HandlerLinks {
   router: Router;
@@ -101,12 +102,12 @@ export class Registration extends HandlerLinks {
     this.passwordInput = new ElementInputCreator({
       type: 'password',
       placeholder: 'password',
-      classes: 'form-input',
+      classes: 'form-input pr-10',
     }).getElement();
     this.passwordRepeatInput = new ElementInputCreator({
       type: 'password',
       placeholder: 'repeat password',
-      classes: 'form-input',
+      classes: 'form-input pr-10',
     }).getElement();
     this.saveBillingCheckbox = new ElementInputCreator({ type: 'checkbox', disabled: true, id: 'bil-def' }).getElement();
     this.submitButton = new ElementButtonCreator({ classes: 'primary-button', text: 'sign up', disabled: true }).getElement();
@@ -134,7 +135,7 @@ export class Registration extends HandlerLinks {
     const personalInfoTitle = new ElementCreator({ tag: 'h3', classes: 'text-primary-color', text: 'Personal info' });
     const personalInfoFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
 
     const emailInputContainer = new ElementCreator({ tag: 'div', classes: 'relative' });
@@ -164,11 +165,11 @@ export class Registration extends HandlerLinks {
     const addressShippingSubtitle = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Shipping address' });
     const addressShippingFirstFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
     const addressShippingSecondFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
 
     const countryShippingInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
@@ -230,11 +231,11 @@ export class Registration extends HandlerLinks {
     const addressBillingSubtitle = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Billing address' });
     const addressBillingFirstFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
     const addressBillingSecondFlexContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-wrap justify-between gap-y-3 sm:gap-y-4 md:gap-y-5',
+      classes: 'flex flex-wrap justify-between gap-y-4 md:gap-y-5',
     });
     const countryBillingInputContainer = new ElementCreator({ tag: 'div', classes: 'relative w-full md:max-w-[275px]' });
     const countryBillingError = new ElementCreator({
@@ -525,12 +526,17 @@ export class Registration extends HandlerLinks {
       };
 
       await createConsumer(getCtpClient(), consumerDraft);
+      new Message('The account has been created.', 'info').showMessage();
       await this.consumer.logIn(this.emailInput.value, this.passwordInput.value);
-      window.history.pushState({}, '', '/main');
+      window.history.pushState({}, '', '/');
       this.router.handleLocation();
     } catch (err) {
       if (err instanceof Error) {
-        // TODO: show graceful error message ECOMM-2_12
+        if (err.message) {
+          new Message(err.message, 'error').showMessage();
+        } else {
+          new Message('Something went wrong. Try later.', 'error').showMessage();
+        }
       }
     }
   }
