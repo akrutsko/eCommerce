@@ -7,6 +7,14 @@
   "quoteProps": "as-needed",
   "trailingComma": "all",
   "arrowParens": "always",
-  "printWidth": 100,
-  "endOfLine": "lf"
+  "printWidth": 130,
+  "endOfLine": "lf",
+  "overrides": [
+    {
+      "files": "*.css",
+      "options": {
+        "singleQuote": false
+      }
+    }
+  ]
 }

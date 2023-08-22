@@ -25,8 +25,18 @@ export class ElementCreator<T extends HTMLElement> {
     return <T>element;
   }
 
-  public addClasses(classes: string[]): this {
-    this.element.classList.add(...classes);
+  public addClass(className: string): this {
+    this.element.classList.add(className);
+    return this;
+  }
+
+  public removeClass(className: string): this {
+    this.element.classList.remove(className);
+    return this;
+  }
+
+  public toggleClass(className: string): this {
+    this.element.classList.toggle(className);
     return this;
   }
 
@@ -35,12 +45,15 @@ export class ElementCreator<T extends HTMLElement> {
     return this;
   }
 
-  public appendNode(node: HTMLElement | ElementCreator<T>): this {
-    if (node instanceof HTMLElement) {
-      this.element.append(node);
-    } else {
-      this.element.append(node.getElement());
-    }
+  // eslint-disable-next-line @typescript-eslint/array-type
+  public appendNode(...nodes: Array<HTMLElement | ElementCreator<T>>): this {
+    nodes.forEach((node) => {
+      if (node instanceof HTMLElement) {
+        this.element.append(node);
+      } else {
+        this.element.append(node.getElement());
+      }
+    });
     return this;
   }
 

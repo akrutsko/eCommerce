@@ -37,15 +37,24 @@
       {
         "devDependencies": true
       }
-    ]
+    ],
+    "max-len": [
+      "error",
+      {
+        "code": 130,
+        "ignoreStrings": true
+      }
+    ],
+    "object-curly-newline": "off",
+    "newline-per-chained-call": "off"
   },
   "ignorePatterns": [
-    "webpack.config.js"
+    "**/*.js"
   ],
   "overrides": [
     {
       "files": [
-        "tests/**/*.test.ts"
+        "src/tests/**/*.test.ts"
       ],
       "plugins": [
         "jest",
@@ -55,6 +64,14 @@
         "plugin:jest/recommended",
         "plugin:jest-dom/recommended"
       ]
+    },
+    {
+      "files": [
+        "src/app/interfaces/*.ts"
+      ],
+      "rules": {
+        "@typescript-eslint/no-unused-vars": "off"
+      }
     }
   ]
 }
