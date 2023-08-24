@@ -115,4 +115,8 @@
   .container {
     @apply px-4 md:px-10 flex items-center justify-between max-w-full;
   }
+
+  .breadcrumbs {
+    @apply text-base font-medium leading-6 text-left text-[#DB5743];
+  }
 }
