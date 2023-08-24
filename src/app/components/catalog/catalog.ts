@@ -16,7 +16,10 @@ export class Catalog {
   }
 
   createView(): void {
-    const firstBlock = new ElementCreator({ tag: 'div', classes: 'w-full items-top justify-between flex gap-6 flex-wrap flex-col md:flex-row' });
+    const firstBlock = new ElementCreator({
+      tag: 'div',
+      classes: 'w-full items-top justify-between flex gap-6 flex-wrap flex-col md:flex-row',
+    });
     const catalogNameBlock = new ElementCreator({ tag: 'div', classes: 'order-2 md:order-1' });
     const breadcrumbsBlock = new ElementCreator({ tag: 'div', text: '1>2', classes: 'breadcrumbs' });
     const catalogName = new ElementCreator({ tag: 'h2', text: 'Catalog', classes: 'h2' });
@@ -39,8 +42,15 @@ export class Catalog {
     secondBlock.appendNode(seletedFilfers, countOfResults);
 
     const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full justify-between flex gap-3 flex-wrap' });
-    const filters = new ElementCreator({ tag: 'div', classes: 'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap border border-1 border-blue-500 filters', text: 'filters' });
-    const cards = new ElementCreator({ tag: 'div', classes: 'w-full md:w-2/4 lg:w-6/8 flex flex-wrap gap-3 justify-around grow' });
+    const filters = new ElementCreator({
+      tag: 'div',
+      classes: 'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap border border-1 border-blue-500 filters',
+      text: 'filters',
+    });
+    const cards = new ElementCreator({
+      tag: 'div',
+      classes: 'w-full md:w-2/4 lg:w-6/8 flex flex-wrap gap-3 justify-around grow',
+    });
     thirdBlock.appendNode(filters, cards);
 
     for (let i = 0; i < 9; i += 1) {
