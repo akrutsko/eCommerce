@@ -1,4 +1,5 @@
 import searchIcon from '../../../assets/svg/search.svg';
+import './catalog.css';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
@@ -15,13 +16,13 @@ export class Catalog {
   }
 
   createView(): void {
-    const firstBlock = new ElementCreator({ tag: 'div', classes: 'w-full items-top justify-between flex gap-1' });
-    const catalogNameBlock = new ElementCreator({ tag: 'div', classes: '' });
+    const firstBlock = new ElementCreator({ tag: 'div', classes: 'w-full items-top justify-between flex gap-6 flex-wrap flex-col md:flex-row' });
+    const catalogNameBlock = new ElementCreator({ tag: 'div', classes: 'order-2 md:order-1' });
     const breadcrumbsBlock = new ElementCreator({ tag: 'div', text: '1>2', classes: 'breadcrumbs' });
     const catalogName = new ElementCreator({ tag: 'h2', text: 'Catalog', classes: 'h2' });
     catalogNameBlock.appendNode(catalogName, breadcrumbsBlock);
 
-    const form = new ElementCreator({ tag: 'form', classes: 'search-form' });
+    const form = new ElementCreator({ tag: 'form', classes: 'search-form order-1 md:order-2' });
     const search = new ElementInputCreator({ type: 'search', name: 'search', placeholder: 'search' });
     search.getElement().addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
@@ -37,15 +38,15 @@ export class Catalog {
     const countOfResults = new ElementCreator({ tag: 'div', classes: '', text: '12 results' });
     secondBlock.appendNode(seletedFilfers, countOfResults);
 
-    const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full grow items-top justify-between flex gap-1' });
-    const filters = new ElementCreator({ tag: 'div', classes: '', text: 'filters' });
-    const cards = new ElementCreator({ tag: 'div', classes: 'grow flex flex-wrap gap-3 justify-around' });
+    const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full justify-between flex gap-3 flex-wrap' });
+    const filters = new ElementCreator({ tag: 'div', classes: 'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap border border-1 border-blue-500 filters', text: 'filters' });
+    const cards = new ElementCreator({ tag: 'div', classes: 'w-full md:w-2/4 lg:w-6/8 flex flex-wrap gap-3 justify-around grow' });
     thirdBlock.appendNode(filters, cards);
 
     for (let i = 0; i < 9; i += 1) {
       const card = new ElementCreator({
         tag: 'div',
-        classes: 'card w-36 h-36 border border-1 border-blue-500',
+        classes: 'card w-60 h-72 border border-1 border-blue-500',
         text: `card ${i}`,
       });
       cards.appendNode(card);
