@@ -43,6 +43,9 @@ export class Main implements Observer {
       case 'cart':
         this.showCart();
         break;
+      case 'catalog':
+        this.showCatalog();
+        break;
       case 'profile':
         if (!this.consumer.isConsumer) {
           window.history.pushState({}, '', '/signup');
@@ -92,6 +95,11 @@ export class Main implements Observer {
   async showCart(): Promise<void> {
     const { Cart } = await import('../cart/cart');
     this.mainView.append(new Cart().getElement());
+  }
+
+  async showCatalog(): Promise<void> {
+    const { Catalog } = await import('../catalog/catalog');
+    this.mainView.append(new Catalog().getElement());
   }
 
   async showProfile(): Promise<void> {

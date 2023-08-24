@@ -9,5 +9,6 @@ export const routes: Record<string, string> = {
   '/profile': 'profile',
   '/aboutus': 'aboutus',
   '/contact': 'contact',
+  '/catalog': 'catalog',
   '/categories': 'categories',
 };

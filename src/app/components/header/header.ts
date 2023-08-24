@@ -29,8 +29,8 @@ export class Header extends HandlerLinks implements Observer {
     super(router);
     this.consumer = consumer;
     this.headerView = new ElementCreator({ tag: 'header', classes: 'container' });
-    this.loginBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-6' }).getElement();
-    this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-6 hidden' }).getElement();
+    this.loginBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-3 hidden' }).getElement();
+    this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-3 hidden' }).getElement();
     this.loginButton = new ElementButtonCreator({ text: 'log in', classes: 'primary-button' }).getElement();
     this.signupButton = new ElementButtonCreator({ text: 'sign up', classes: 'secondary-button' }).getElement();
     this.signoutButton = new ElementButtonCreator({ text: 'sign out', classes: 'secondary-button' })
@@ -112,16 +112,16 @@ export class Header extends HandlerLinks implements Observer {
     submenu.appendNode(liSummerTime, liPeakClimber, liBallGames, liIceAdventures);
 
     const tab = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
-    const categories = new ElementCreator({
-      tag: 'div',
-      text: 'Categories',
+    const catalog = new ElementAnchorCreator({
+      href: '/catalog',
+      text: 'Catalog',
       classes: 'h4 hover:text-primary-color cursor-pointer',
     });
-    tab.appendNode(categories, submenu);
+    this.listOfLinks.push(catalog.getElement());
+    tab.appendNode(catalog, submenu);
 
     const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-5' });
-    // linksList.appendNode(liHome, liAboutUs, tab); //TODO: delete comments in sprint3
-    linksList.appendNode(liHome);
+    linksList.appendNode(liHome, liAboutUs, tab);
 
     const divCart = new ElementCreator({ tag: 'div', classes: 'relative', html: cartSvg });
     const aCart = new ElementAnchorCreator({ href: '/cart', classes: 'absolute inset-0' });
@@ -133,9 +133,11 @@ export class Header extends HandlerLinks implements Observer {
     this.listOfLinks.push(aCustomer.getElement());
     divCustomer.appendNode(aCustomer);
 
-    this.loginBtns.append(this.signupButton, this.loginButton, divCart.getElement(), this.logoutBtns);
-    this.logoutBtns.append(divCustomer.getElement(), this.signoutButton);
-    mobileMenu.appendNode(linksList, this.loginBtns);
+    const allBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-3' });
+    this.loginBtns.append(divCart.getElement(), this.signupButton, this.loginButton);
+    this.logoutBtns.append(divCart.getElement(), divCustomer.getElement(), this.signoutButton);
+    allBtns.appendNode(divCart, this.loginBtns, this.logoutBtns);
+    mobileMenu.appendNode(linksList, allBtns);
     this.headerView.appendNode(nav);
 
     const closeBurger = (): void => {
@@ -191,10 +193,10 @@ export class Header extends HandlerLinks implements Observer {
 
   update(): void {
     if (this.consumer.isConsumer) {
-      // this.loginBtns.classList.add('hidden');TODO: remove comment for sprint 3
+      this.loginBtns.classList.add('hidden');
       this.logoutBtns.classList.remove('hidden');
     } else {
-      // this.loginBtns.classList.remove('hidden');TODO: remove comment for sprint 3
+      this.loginBtns.classList.remove('hidden');
       this.logoutBtns.classList.add('hidden');
     }
   }
