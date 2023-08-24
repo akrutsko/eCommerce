@@ -39,11 +39,15 @@ export class Catalog {
 
     const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full grow items-top justify-between flex gap-1' });
     const filters = new ElementCreator({ tag: 'div', classes: '', text: 'filters' });
-    const cards = new ElementCreator({ tag: 'div', classes: 'grow flex flex-wrap' });
+    const cards = new ElementCreator({ tag: 'div', classes: 'grow flex flex-wrap gap-3 justify-around' });
     thirdBlock.appendNode(filters, cards);
 
     for (let i = 0; i < 9; i += 1) {
-      const card = new ElementCreator({ tag: 'div', classes: 'card w-36 h-36 border border-1 border-blue-500', text: `card ${i}` });
+      const card = new ElementCreator({
+        tag: 'div',
+        classes: 'card w-36 h-36 border border-1 border-blue-500',
+        text: `card ${i}`,
+      });
       cards.appendNode(card);
       this.cardsList.push(card);
     }
