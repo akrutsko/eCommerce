@@ -6,8 +6,11 @@ import { ElementInputCreator } from '../../utils/element-creator/element-input-c
 export class Catalog {
   catalogView: ElementCreator<HTMLElement>;
 
+  cardsList: ElementCreator<HTMLElement>[];
+
   constructor() {
-    this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full items-top' });
+    this.cardsList = [];
+    this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
     this.createView();
   }
 
@@ -29,7 +32,23 @@ export class Catalog {
     form.appendNode(search, submitButton);
     firstBlock.appendNode(catalogNameBlock, form);
 
-    this.catalogView.appendNode(firstBlock);
+    const secondBlock = new ElementCreator({ tag: 'div', classes: 'w-full items-top justify-between flex gap-1' });
+    const seletedFilfers = new ElementCreator({ tag: 'div', classes: '', text: 'filters' });
+    const countOfResults = new ElementCreator({ tag: 'div', classes: '', text: '12 results' });
+    secondBlock.appendNode(seletedFilfers, countOfResults);
+
+    const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full grow items-top justify-between flex gap-1' });
+    const filters = new ElementCreator({ tag: 'div', classes: '', text: 'filters' });
+    const cards = new ElementCreator({ tag: 'div', classes: 'grow flex flex-wrap' });
+    thirdBlock.appendNode(filters, cards);
+
+    for (let i = 0; i < 9; i += 1) {
+      const card = new ElementCreator({ tag: 'div', classes: 'card w-36 h-36 border border-1 border-blue-500', text: `card ${i}` });
+      cards.appendNode(card);
+      this.cardsList.push(card);
+    }
+
+    this.catalogView.appendNode(firstBlock, secondBlock, thirdBlock);
   }
 
   getView(): ElementCreator<HTMLElement> {
