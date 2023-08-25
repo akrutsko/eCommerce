@@ -30,7 +30,10 @@ export class Header extends HandlerLinks implements Observer {
     this.consumer = consumer;
     this.headerView = new ElementCreator({ tag: 'header', classes: 'container' });
     this.loginBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-3 hidden md:gap-6' }).getElement();
-    this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-3 hidden md:gap-6' }).getElement();
+    this.logoutBtns = new ElementCreator({
+      tag: 'div',
+      classes: 'items-center justify-between flex gap-3 hidden md:gap-6',
+    }).getElement();
     this.loginButton = new ElementButtonCreator({ text: 'log in', classes: 'primary-button' }).getElement();
     this.signupButton = new ElementButtonCreator({ text: 'sign up', classes: 'secondary-button' }).getElement();
     this.signoutButton = new ElementButtonCreator({ text: 'sign out', classes: 'secondary-button' })

@@ -109,7 +109,12 @@ export class Catalog {
 
     const productNameBlock = new ElementCreator({ tag: 'h4', text: `${productName}` });
 
-    const productDescriptionBlock = new ElementCreator({ tag: 'div', text: productDescription, classes: 'font-open-sans text-xs font-normal leading-4 tracking-normal h-8 overflow-hidden whitespace-normal overflow-ellipsis' });
+    const productDescriptionBlock = new ElementCreator({
+      tag: 'div',
+      text: productDescription,
+      classes:
+        'font-open-sans text-xs font-normal leading-4 tracking-normal h-8 overflow-hidden whitespace-normal overflow-ellipsis',
+    });
 
     card.appendNode(productImageBlock, productNameBlock, productDescriptionBlock);
   }
