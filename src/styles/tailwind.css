@@ -105,7 +105,7 @@
   }
 
   .card {
-    @apply max-w-sm flex flex-col gap-3;
+    @apply max-w-sm flex flex-col gap-1;
   }
 
   .card-image {

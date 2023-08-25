@@ -29,8 +29,8 @@ export class Header extends HandlerLinks implements Observer {
     super(router);
     this.consumer = consumer;
     this.headerView = new ElementCreator({ tag: 'header', classes: 'container' });
-    this.loginBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-3 hidden' }).getElement();
-    this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-3 hidden' }).getElement();
+    this.loginBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-3 hidden md:gap-6' }).getElement();
+    this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-3 hidden md:gap-6' }).getElement();
     this.loginButton = new ElementButtonCreator({ text: 'log in', classes: 'primary-button' }).getElement();
     this.signupButton = new ElementButtonCreator({ text: 'sign up', classes: 'secondary-button' }).getElement();
     this.signoutButton = new ElementButtonCreator({ text: 'sign out', classes: 'secondary-button' })
@@ -133,7 +133,7 @@ export class Header extends HandlerLinks implements Observer {
     this.listOfLinks.push(aCustomer.getElement());
     divCustomer.appendNode(aCustomer);
 
-    const allBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-3' });
+    const allBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-3 md:gap-6' });
     this.loginBtns.append(divCart.getElement(), this.signupButton, this.loginButton);
     this.logoutBtns.append(divCart.getElement(), divCustomer.getElement(), this.signoutButton);
     allBtns.appendNode(divCart, this.loginBtns, this.logoutBtns);

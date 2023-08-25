@@ -78,19 +78,24 @@ export class Catalog {
   addProduct(product: ProductProjection): void {
     const localizedString = 'en-US';
     const productName = product.name[localizedString];
+    let productDescription = '';
+    // let price = 0;
+    // let priceDiscounted = 0;
+    console.log(product);
+    if (product.description) {
+      productDescription = product.description[localizedString];
+    }
     const card = new ElementCreator({
       tag: 'div',
-      classes: 'card w-60 h-72',
-      text: `${productName}`,
+      classes: 'card w-60 h-88 hover:scale-105 hover:cursor-pointer hover:border',
     });
     this.cardsElementCreator.appendNode(card);
     this.cardsList.push(card);
 
-    const rectangle = new ElementCreator({
+    const productImageBlock = new ElementCreator({
       tag: 'div',
       classes: 'w-60 h-60 border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-gray-200',
     });
-
     let url = '';
     const { variants } = product;
     if (variants) {
@@ -99,12 +104,14 @@ export class Catalog {
         url = images[0].url;
       }
     }
-
     const image = new ElementImageCreator({ alt: productName, src: url, classes: 'w-full h-full object-cover' });
+    productImageBlock.appendNode(image);
 
-    rectangle.appendNode(image);
+    const productNameBlock = new ElementCreator({ tag: 'h4', text: `${productName}` });
 
-    card.appendNode(rectangle);
+    const productDescriptionBlock = new ElementCreator({ tag: 'div', text: productDescription, classes: 'font-open-sans text-xs font-normal leading-4 tracking-normal h-8 overflow-hidden whitespace-normal overflow-ellipsis' });
+
+    card.appendNode(productImageBlock, productNameBlock, productDescriptionBlock);
   }
 
   getView(): ElementCreator<HTMLElement> {
