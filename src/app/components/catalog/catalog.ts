@@ -107,8 +107,9 @@ export class Catalog {
       if (prices?.length) {
         priceWithOutDiscount = `${prices[0].value.centAmount / prices[0].value.fractionDigits}${prices[0].value.currencyCode}`;
         if (prices[0].discounted && prices[0].discounted.value) {
-          price = `${prices[0].discounted.value.centAmount
-            / prices[0].discounted.value.fractionDigits}${prices[0].discounted.value.currencyCode}`;
+          price = `${prices[0].discounted.value.centAmount / prices[0].discounted.value.fractionDigits}${
+            prices[0].discounted.value.currencyCode
+          }`;
         } else {
           price = priceWithOutDiscount;
         }
@@ -129,7 +130,11 @@ export class Catalog {
     const productPricesBlock = new ElementCreator({ tag: 'div', classes: 'flex' });
 
     const productPriceBlock = new ElementCreator({ tag: 'div', text: `${price}` });
-    const productPriceWithOutDiscountBlock = new ElementCreator({ tag: 'div', text: `${priceWithOutDiscount}`, classes: 'line-through' });
+    const productPriceWithOutDiscountBlock = new ElementCreator({
+      tag: 'div',
+      text: `${priceWithOutDiscount}`,
+      classes: 'line-through',
+    });
 
     productPricesBlock.appendNode(productPriceBlock);
     if (price !== priceWithOutDiscount) {
