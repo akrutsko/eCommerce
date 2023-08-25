@@ -79,8 +79,8 @@ export class Catalog {
     const localizedString = 'en-US';
     const productName = product.name[localizedString];
     let productDescription = '';
-    // let price = 0;
-    // let priceDiscounted = 0;
+    let price = '';
+    let priceWithOutDiscount = '';
     console.log(product);
     if (product.description) {
       productDescription = product.description[localizedString];
@@ -103,6 +103,16 @@ export class Catalog {
       if (images) {
         url = images[0].url;
       }
+      const { prices } = variants[0];
+      if (prices?.length) {
+        priceWithOutDiscount = `${prices[0].value.centAmount / prices[0].value.fractionDigits}${prices[0].value.currencyCode}`;
+        if (prices[0].discounted && prices[0].discounted.value) {
+          price = `${prices[0].discounted.value.centAmount
+            / prices[0].discounted.value.fractionDigits}${prices[0].discounted.value.currencyCode}`;
+        } else {
+          price = priceWithOutDiscount;
+        }
+      }
     }
     const image = new ElementImageCreator({ alt: productName, src: url, classes: 'w-full h-full object-cover' });
     productImageBlock.appendNode(image);
@@ -116,7 +126,17 @@ export class Catalog {
         'font-open-sans text-xs font-normal leading-4 tracking-normal h-8 overflow-hidden whitespace-normal overflow-ellipsis',
     });
 
-    card.appendNode(productImageBlock, productNameBlock, productDescriptionBlock);
+    const productPricesBlock = new ElementCreator({ tag: 'div', classes: 'flex' });
+
+    const productPriceBlock = new ElementCreator({ tag: 'div', text: `${price}` });
+    const productPriceWithOutDiscountBlock = new ElementCreator({ tag: 'div', text: `${priceWithOutDiscount}`, classes: 'line-through' });
+
+    productPricesBlock.appendNode(productPriceBlock);
+    if (price !== priceWithOutDiscount) {
+      productPricesBlock.appendNode(productPriceWithOutDiscountBlock);
+    }
+
+    card.appendNode(productImageBlock, productNameBlock, productDescriptionBlock, productPricesBlock);
   }
 
   getView(): ElementCreator<HTMLElement> {
