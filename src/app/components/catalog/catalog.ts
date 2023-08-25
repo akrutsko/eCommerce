@@ -67,7 +67,6 @@ export class Catalog {
 
   async createCards(): Promise<void> {
     const productsResponse = await getProductProjections(getCtpClient());
-    console.log(productsResponse);
     if (productsResponse.statusCode === 200) {
       const { results } = productsResponse.body;
       results.forEach((product) => {
@@ -89,8 +88,7 @@ export class Catalog {
 
     const rectangle = new ElementCreator({
       tag: 'div',
-      classes:
-        'w-60 h-60 border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-gray-200',
+      classes: 'w-60 h-60 border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-gray-200',
     });
 
     let url = '';
