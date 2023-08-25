@@ -23,6 +23,11 @@ export interface ElementAnchorParams extends Partial<ElementParams> {
   href: string;
 }
 
+export interface ElementImageParams extends Partial<ElementParams> {
+  src: string;
+  alt: string;
+}
+
 export interface ElementOptionParams extends Partial<ElementParams> {
   value: string;
 }

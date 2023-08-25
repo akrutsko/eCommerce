@@ -6,6 +6,7 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
 import { getProductProjections } from '../../utils/api/api-product-projections';
 import { getCtpClient } from '../../utils/api/api-client';
+import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 
 export class Catalog {
   catalogView: ElementCreator<HTMLElement>;
@@ -80,30 +81,32 @@ export class Catalog {
     const productName = product.name[localizedString];
     const card = new ElementCreator({
       tag: 'div',
-      classes: 'card w-60 h-72 border border-1 border-blue-500',
+      classes: 'card w-60 h-72',
       text: `${productName}`,
     });
     this.cardsElementCreator.appendNode(card);
     this.cardsList.push(card);
 
-    const rectangle = document.createElement('div');
-    rectangle.classList.add('w-60', 'h-60', 'rounded-10', 'border-2', 'p-4');
+    const rectangle = new ElementCreator({
+      tag: 'div',
+      classes:
+        'w-60 h-60 border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-gray-200',
+    });
 
-    const image = document.createElement('img');
+    let url = '';
     const { variants } = product;
     if (variants) {
       const { images } = variants[0];
       if (images) {
-        const { url } = images[0];
-        image.src = url;
+        url = images[0].url;
       }
     }
-    image.alt = productName;
-    image.classList.add('w-full', 'h-full', 'object-cover');
 
-    rectangle.appendChild(image);
+    const image = new ElementImageCreator({ alt: productName, src: url, classes: 'w-full h-full object-cover' });
 
-    card.getElement().append(rectangle);
+    rectangle.appendNode(image);
+
+    card.appendNode(rectangle);
   }
 
   getView(): ElementCreator<HTMLElement> {
