@@ -3,7 +3,10 @@ import { ClientResponse, ProductProjectionPagedQueryResponse } from '@commerceto
 import { getApiRoot } from './api-client';
 
 export function getProductProjections(client: Client): Promise<ClientResponse<ProductProjectionPagedQueryResponse>> {
-  return getApiRoot(client).productProjections().get({ queryArgs: { staged: true, limit: 9, offset: 0 } }).execute();
+  return getApiRoot(client)
+    .productProjections()
+    .get({ queryArgs: { staged: true, limit: 9, offset: 0 } })
+    .execute();
   // return [
   //   {
   //     method: 'get',

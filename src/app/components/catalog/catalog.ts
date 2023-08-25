@@ -98,7 +98,7 @@ export class Catalog {
         image.src = url;
       }
     }
-    image.alt = 'Изображение';
+    image.alt = productName;
     image.classList.add('w-full', 'h-full', 'object-cover');
 
     rectangle.appendChild(image);
