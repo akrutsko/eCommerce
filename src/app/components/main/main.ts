@@ -16,7 +16,6 @@ export class Main implements Observer {
     this.mainView = new ElementCreator({
       tag: 'main',
       classes: 'container flex flex-col grow justify-center items-center h-full my-5 md:my-10',
-      text: 'main',
     }).getElement();
   }
 
@@ -69,6 +68,9 @@ export class Main implements Observer {
         break;
       case 'categories':
         this.showCategories(hashData);
+        break;
+      case 'product':
+        this.showProduct();
         break;
       default:
         this.show404();
@@ -127,6 +129,13 @@ export class Main implements Observer {
       const { Categories } = await import('../category/categories');
       this.mainView.append(new Categories().getElement());
     }
+  }
+
+  async showProduct(): Promise<void> {
+    const { Product } = await import('../product/product');
+    this.mainView.append(new Product(this.router, this.consumer, 'c43011cc-de74-406f-b68e-02c0441bcdb1').getElement()); // many images
+    // this.mainView.append(new Product(this.router, this.consumer, 'c57f7614-3912-4eaf-83c2-184d26b2df0b').getElement()); // 1 image
+    // this.mainView.append(new Product(this.router, this.consumer, 'ce2dbe51-075e-4b8f-b75a-843342cbe426').getElement()); // 2 images
   }
 
   async showSignup(): Promise<void> {

@@ -1,0 +1,8 @@
+.swiper-button-next::after {
+  content: "➠";
+  position: absolute;
+  z-index: 15;
+  right: 0;
+  top: 32px;
+  color: red;
+}
