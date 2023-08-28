@@ -8,15 +8,19 @@ import { getProductProjections } from '../../utils/api/api-product-projections';
 import { getCtpClient } from '../../utils/api/api-client';
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 import { Message } from '../../utils/message/toastify-message';
+import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
+import { HandlerLinks } from '../../router/handler-links';
+import { Router } from '../../router/router';
 
-export class Catalog {
+export class Catalog extends HandlerLinks {
   catalogView: ElementCreator<HTMLElement>;
 
   cardsList: ElementCreator<HTMLElement>[];
 
   cardsElementCreator: ElementCreator<HTMLElement>;
 
-  constructor() {
+  constructor(router: Router) {
+    super(router);
     this.cardsElementCreator = new ElementCreator({
       tag: 'div',
       classes: 'w-full md:w-2/4 lg:w-6/8 flex flex-wrap gap-3 justify-around grow',
@@ -99,7 +103,6 @@ export class Catalog {
     let productDescription = '';
     let price = '';
     let priceWithOutDiscount = '';
-    console.log(product);
     if (product.description) {
       productDescription = product.description[localizedString];
     }
@@ -161,7 +164,9 @@ export class Catalog {
       productPricesBlock.appendNode(productPriceWithOutDiscountBlock);
     }
 
-    card.appendNode(productImageBlock, productNameBlock, productDescriptionBlock, productPricesBlock);
+    const aCard = new ElementAnchorCreator({ href: `/product#${product.id}`, classes: 'absolute inset-0' });
+    this.listOfLinks.push(aCard.getElement());
+    card.appendNode(productImageBlock, productNameBlock, productDescriptionBlock, productPricesBlock, aCard);
   }
 
   getView(): ElementCreator<HTMLElement> {

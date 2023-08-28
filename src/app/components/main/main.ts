@@ -73,6 +73,9 @@ export class Main implements Observer {
       case 'categories':
         this.showCategories(hashData);
         break;
+      case 'product':
+        this.showProduct(hashData);
+        break;
       default:
         this.show404();
     }
@@ -99,7 +102,7 @@ export class Main implements Observer {
 
   async showCatalog(): Promise<void> {
     const { Catalog } = await import('../catalog/catalog');
-    this.mainView.append(new Catalog().getElement());
+    this.mainView.append(new Catalog(this.router).getElement());
   }
 
   async showProfile(): Promise<void> {
@@ -131,6 +134,18 @@ export class Main implements Observer {
       } else {
         this.show404();
       }
+    } else {
+      const { Categories } = await import('../category/categories');
+      this.mainView.append(new Categories().getElement());
+    }
+  }
+
+  async showProduct(hashData?: string): Promise<void> {
+    if (hashData) {
+      // TODO Show product
+      const { Category } = await import('../category/category');
+      const categories = new Category(hashData);
+      this.mainView.append(categories.getElement());
     } else {
       const { Categories } = await import('../category/categories');
       this.mainView.append(new Categories().getElement());
