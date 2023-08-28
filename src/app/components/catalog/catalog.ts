@@ -12,19 +12,20 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
 import { Store } from '../../enums/store';
+import { getCategories } from '../../utils/api/api-categories';
+import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
 
 export class Catalog extends HandlerLinks {
   catalogView: ElementCreator<HTMLElement>;
 
   products: ProductProjection[] = [];
 
-  categories: Category[];
+  categories: Category[] = [];
 
   cardsElementCreator: ElementCreator<HTMLElement>;
 
-  constructor(router: Router, categories: Category[]) {
+  constructor(router: Router) {
     super(router);
-    this.categories = categories;
     this.cardsElementCreator = new ElementCreator({
       tag: 'div',
       classes: 'w-full md:w-2/4 lg:w-6/8 flex flex-wrap gap-3 justify-around grow',
@@ -76,13 +77,23 @@ export class Catalog extends HandlerLinks {
     this.catalogView.appendNode(firstBlock, secondBlock, thirdBlock);
   }
 
-  createFilters(filtersElementCreator: ElementCreator<HTMLElement>): void {
-    const accordionCategory = new ElementCreator({
-      tag: 'h5',
-      text: 'Category',
-      classes: 'text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)]',
-    });
-    filtersElementCreator.appendNode(accordionCategory);
+  async createFilters(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
+    const categoriesResponse = await getCategories(getCtpClient());
+    if (categoriesResponse.statusCode === 200) {
+      this.categories = categoriesResponse.body.results;
+
+      const accordionCategory = new ElementCreator({
+        tag: 'h5',
+        text: 'Category',
+        classes: 'text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)]',
+      });
+      this.categories.forEach((category) => {
+        const categoryElement = new ElementInputCreator({ type: 'checkbox', classes: 'block', value: category.id });
+        const label = new ElementLabelCreator({ for: category.id, text: category.name[Store.Language] });
+        accordionCategory.appendNode(categoryElement, label);
+      });
+      filtersElementCreator.appendNode(accordionCategory);
+    }
   }
 
   async createCards(): Promise<void> {

@@ -1,4 +1,3 @@
-import { Category } from '@commercetools/platform-sdk';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { Router } from '../../router/router';
 import { Consumer } from '../consumer/consumer';
@@ -6,17 +5,13 @@ import { Consumer } from '../consumer/consumer';
 export class Main implements Observer {
   router: Router;
 
-  categories: Category[];
-
   consumer: Consumer;
 
   mainView: HTMLElement;
 
-  constructor(router: Router, consumer: Consumer, categories: Category[]) {
+  constructor(router: Router, consumer: Consumer) {
     this.router = router;
     this.consumer = consumer;
-    this.categories = categories;
-
     this.mainView = new ElementCreator({
       tag: 'main',
       classes: 'container flex flex-col grow justify-center items-center h-full my-5 md:my-10',
@@ -106,7 +101,7 @@ export class Main implements Observer {
 
   async showCatalog(): Promise<void> {
     const { Catalog } = await import('../catalog/catalog');
-    this.mainView.append(new Catalog(this.router, this.categories).getElement());
+    this.mainView.append(new Catalog(this.router).getElement());
   }
 
   async showProfile(): Promise<void> {
