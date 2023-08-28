@@ -92,7 +92,8 @@ export class Catalog extends HandlerLinks {
     const elementFilterName = new ElementCreator({
       tag: 'h5',
       text: filterName,
-      classes: 'flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)] cursor-pointer',
+      classes:
+        'flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)] cursor-pointer',
     });
     const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDown });
     elementFilterName.appendNode(elementFilterArrow);
@@ -118,7 +119,9 @@ export class Catalog extends HandlerLinks {
     if (categoriesResponse.statusCode === 200) {
       this.categories = categoriesResponse.body.results;
       const filterArray: FilterInterface[] = [];
-      this.categories.forEach((category) => { filterArray.push({ id: category.id, name: category.name[Store.Language] }); });
+      this.categories.forEach((category) => {
+        filterArray.push({ id: category.id, name: category.name[Store.Language] });
+      });
 
       this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
     }
