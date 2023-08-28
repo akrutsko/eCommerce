@@ -72,6 +72,8 @@ export class Consumer implements Observable {
     if (response) {
       this.consumer = response.body;
       this.status = ConsumerClient.Consumer;
+    } else {
+      localStorage.clear();
     }
     this.notify();
   }
