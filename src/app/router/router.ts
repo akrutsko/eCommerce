@@ -22,21 +22,22 @@ export class Router implements Observable {
     this.observers.slice(index, 1);
   }
 
-  notify(primaryData?: string, secondaryData?: string): void {
+  notify(primaryData?: string, secondaryData?: string, search?: string): void {
     if (primaryData) {
-      this.observers.forEach((observer) => observer.update(primaryData, secondaryData));
+      this.observers.forEach((observer) => observer.update(primaryData, secondaryData, search));
     }
   }
 
   public handleLocation = (): void => {
     const newPath = window.location.pathname;
     const newHash = window.location.hash.substring(1);
+    const { search } = window.location;
     if (newPath === this.previousPath && newHash === this.previousHash) {
       return;
     }
     this.previousPath = newPath;
     this.previousHash = newHash;
     const route = routes[newPath] || routes[404];
-    this.notify(route, newHash);
+    this.notify(route, newHash, search);
   };
 }

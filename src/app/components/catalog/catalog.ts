@@ -101,6 +101,7 @@ export class Catalog extends HandlerLinks {
       const productsResponse = await getProductProjections(getCtpClient());
       if (productsResponse.statusCode === 200) {
         this.products = productsResponse.body.results;
+        console.log(this.products);
         this.products.forEach((product) => {
           this.addProduct(product);
         });

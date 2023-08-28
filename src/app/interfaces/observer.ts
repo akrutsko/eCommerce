@@ -1,3 +1,3 @@
 interface Observer {
-  update(primaryData?: string, secondaryData?: string): void;
+  update(primaryData?: string, secondaryData?: string, search?: string): void;
 }
