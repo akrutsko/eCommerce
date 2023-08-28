@@ -8,6 +8,6 @@ export function getPrice(money: TypedMoney): string {
     style: 'currency',
     currency: money.currencyCode,
     currencyDisplay: 'narrowSymbol',
-    minimumFractionDigits: money.fractionDigits,
+    minimumFractionDigits: 2,
   }).format(value / 10 ** money.fractionDigits);
 }

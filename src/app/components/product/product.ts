@@ -14,6 +14,8 @@ import { ElementImageCreator } from '../../utils/element-creator/element-image-c
 import { Consumer } from '../consumer/consumer';
 import { getProductProjection } from '../../utils/api/api-product';
 import { Message } from '../../utils/message/toastify-message';
+import { Store } from '../../enums/store';
+import { getPrice } from '../../utils/price/price';
 
 export class Product extends HandlerLinks {
   consumer: Consumer;
@@ -25,8 +27,6 @@ export class Product extends HandlerLinks {
   productImage: HTMLImageElement | undefined;
 
   productData: ProductProjection | undefined;
-
-  swiper: Swiper | undefined;
 
   constructor(router: Router, consumer: Consumer, id: string) {
     super(router);
@@ -45,9 +45,12 @@ export class Product extends HandlerLinks {
 
     this.productData = productResponse.body;
 
-    const name = this.productData.name['en-US'];
-    const description = this.productData.description?.['en-US'] || '';
+    const name = this.productData.name[Store.Language];
+    const description = this.productData.description?.[Store.Language] || '';
     const mainImgUrl = this.productData.masterVariant.images?.[0].url || '';
+    const embeddedPrice = this.productData.masterVariant.prices?.filter((price) => price.country === Store.Country)[0];
+    const firmPrice = embeddedPrice?.value;
+    const discountedPrice = embeddedPrice?.discounted?.value;
 
     const breadcrumbWrapper = new ElementCreator({ tag: 'div', classes: 'mb-2.5' }); // TODO: generate breadcrumb
 
@@ -60,16 +63,27 @@ export class Product extends HandlerLinks {
 
     const productWrapper = new ElementCreator({ tag: 'div', classes: 'self-start grow' });
     const productName = new ElementCreator({ tag: 'h3', text: name });
-    const productDescription = new ElementCreator({ tag: 'p', text: description });
+    const productDescription = new ElementCreator({ tag: 'p', text: description, classes: 'mb-5' });
     productWrapper.appendNode(productName, productDescription);
 
-    const wrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col items-center gap-2.5 md:flex-row md:gap-14' });
     const swiper = new ElementCreator({ tag: 'div', classes: 'shrink-0 flex md:flex-col md:order-first select-none relative' });
+    const wrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col items-center gap-2.5 md:flex-row md:gap-14' });
     wrapper.appendNode(imageWrapper, swiper, productWrapper);
 
     this.productView.appendNode(breadcrumbWrapper, wrapper);
 
     this.initSwiper(swiper.getElement());
+
+    if (!firmPrice) return;
+    productWrapper.appendNode(
+      new ElementCreator({
+        tag: 'div',
+        classes: discountedPrice ? 'subtitle line-through' : 'price',
+        text: getPrice(firmPrice),
+      }),
+    );
+    if (!discountedPrice) return;
+    productWrapper.appendNode(new ElementCreator({ tag: 'div', classes: 'price', text: getPrice(discountedPrice) }));
   }
 
   initSwiper(wrapper: HTMLElement): void {
@@ -101,21 +115,14 @@ export class Product extends HandlerLinks {
     wrapper.append(swiperNavigation.getElement());
 
     const swiper = new Swiper('.swiper', {
-      enabled: images.length > 1,
       modules: [Navigation, Pagination],
       slidesPerView: 3,
       centerInsufficientSlides: true,
       spaceBetween: 10,
       direction: window.innerWidth < 768 ? 'horizontal' : 'vertical',
       loop: true,
-      navigation: {
-        prevEl: '.swiper-button-prev',
-        nextEl: '.swiper-button-next',
-      },
-      pagination: {
-        el: '.swiper-pagination',
-        clickable: true,
-      },
+      navigation: { prevEl: '.swiper-button-prev', nextEl: '.swiper-button-next' },
+      pagination: { el: '.swiper-pagination', clickable: true },
     });
 
     swiper.on('click', () => {
