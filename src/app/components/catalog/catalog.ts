@@ -1,6 +1,7 @@
 import { Category, ProductProjection, TypedMoney } from '@commercetools/platform-sdk';
-import searchIcon from '../../../assets/svg/search.svg';
+import arrowDown from '../../../assets/svg/arrow-down.svg';
 import './catalog.css';
+import searchIcon from '../../../assets/svg/search.svg';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
@@ -15,6 +16,10 @@ import { Store } from '../../enums/store';
 import { getCategories } from '../../utils/api/api-categories';
 import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
 
+interface FilterInterface {
+  id: string;
+  name: string;
+}
 export class Catalog extends HandlerLinks {
   catalogView: ElementCreator<HTMLElement>;
 
@@ -67,8 +72,7 @@ export class Catalog extends HandlerLinks {
     const filters = new ElementCreator({
       tag: 'div',
       classes:
-        'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap border border-1 border-blue-500 filters flex-grow-0 flex-shrink-0',
-      text: 'filters',
+        'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap border border-1 border-blue-500 filters flex-grow-0 flex-shrink-0 gap-2',
     });
     this.createFilters(filters);
 
@@ -77,23 +81,56 @@ export class Catalog extends HandlerLinks {
     this.catalogView.appendNode(firstBlock, secondBlock, thirdBlock);
   }
 
+  createCheckBoxFilter(
+    filterName: string,
+    filterArray: FilterInterface[],
+    filtersElementCreator: ElementCreator<HTMLElement>,
+  ): void {
+    const elementAccordion = new ElementCreator({
+      tag: 'div',
+    });
+    const elementFilterName = new ElementCreator({
+      tag: 'h5',
+      text: filterName,
+      classes: 'flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)] cursor-pointer',
+    });
+    const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDown });
+    elementFilterName.appendNode(elementFilterArrow);
+    const elementFilterPanel = new ElementCreator({ tag: 'div', classes: 'filter' });
+    elementAccordion.appendNode(elementFilterName, elementFilterPanel);
+    filterArray.forEach((filterElement) => {
+      const elementFilterWrapper = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm text-[#393E4D]' });
+      const elementFilterInput = new ElementInputCreator({ type: 'checkbox', classes: 'block', value: filterElement.id });
+      const elementFilterLabel = new ElementLabelCreator({ for: filterElement.id, text: filterElement.name });
+      elementFilterWrapper.appendNode(elementFilterInput, elementFilterLabel);
+      elementFilterPanel.appendNode(elementFilterWrapper);
+    });
+    filtersElementCreator.appendNode(elementAccordion);
+
+    elementFilterName.getElement().addEventListener('click', () => {
+      elementFilterPanel.toggleClass('active');
+      elementFilterArrow.toggleClass('arrow-active');
+    });
+  }
+
   async createFilters(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
     const categoriesResponse = await getCategories(getCtpClient());
     if (categoriesResponse.statusCode === 200) {
       this.categories = categoriesResponse.body.results;
+      const filterArray: FilterInterface[] = [];
+      this.categories.forEach((category) => { filterArray.push({ id: category.id, name: category.name[Store.Language] }); });
 
-      const accordionCategory = new ElementCreator({
-        tag: 'h5',
-        text: 'Category',
-        classes: 'text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)]',
-      });
-      this.categories.forEach((category) => {
-        const categoryElement = new ElementInputCreator({ type: 'checkbox', classes: 'block', value: category.id });
-        const label = new ElementLabelCreator({ for: category.id, text: category.name[Store.Language] });
-        accordionCategory.appendNode(categoryElement, label);
-      });
-      filtersElementCreator.appendNode(accordionCategory);
+      this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
     }
+
+    const elementFilterButton = new ElementButtonCreator({ text: 'filter', classes: 'primary-button' });
+    filtersElementCreator.appendNode(elementFilterButton);
+
+    elementFilterButton.getElement().addEventListener('click', () => {
+      // window.history.pushState({}, '', '/login');
+      // this.router.handleLocation();
+      // checked filters
+    });
   }
 
   async createCards(): Promise<void> {
@@ -161,7 +198,7 @@ export class Catalog extends HandlerLinks {
     const image = new ElementImageCreator({ alt: productName, src: url, classes: 'w-full h-full object-cover' });
     productImageBlock.appendNode(image);
 
-    const productNameBlock = new ElementCreator({ tag: 'h4', text: `${productName}` });
+    const productNameBlock = new ElementCreator({ tag: 'h4', text: `${productName}`, classes: 'text-[#393E4D]' });
 
     const productDescriptionBlock = new ElementCreator({
       tag: 'div',

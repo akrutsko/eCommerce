@@ -3,13 +3,17 @@
   height: fit-content;
 }
 
+.filter.active {
+  max-height: none;
+  transition: max-height 0.3s ease-in;
+}
+
 .filter {
   max-height: 0;
   overflow: hidden;
   transition: max-height 0.3s ease-out;
 }
 
-.filter.active {
-  max-height: auto;
-  transition: max-height 0.3s ease-in;
+.arrow-active {
+  transform: scaleY(-1);
 }
