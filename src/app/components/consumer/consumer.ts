@@ -1,8 +1,17 @@
 import { Client } from '@commercetools/sdk-client-v2';
 import { Customer } from '@commercetools/platform-sdk';
-import { getCtpClient, getPasswordClient, getToken, getTokenClient, clearTokenStore } from '../../utils/api/api-client';
+import {
+  getCtpClient,
+  getPasswordClient,
+  getToken,
+  getTokenClient,
+  clearTokenStore,
+  getRefreshToken,
+  getRefreshTokenClient,
+} from '../../utils/api/api-client';
 import { ConsumerClient } from '../../enums/consumer-client';
 import { getConsumer } from '../../utils/api/api-consumer';
+import { Token } from '../../enums/token';
 
 export class Consumer implements Observable {
   observers: Observer[] = [];
@@ -38,15 +47,31 @@ export class Consumer implements Observable {
   }
 
   async init(): Promise<void> {
-    const token = localStorage.getItem('ecomm-token');
+    let response;
+    const token = localStorage.getItem(Token.Access);
+
     if (token) {
       this.apiClient = getTokenClient(token);
-      await getConsumer(this.apiClient)
-        .then((res) => {
-          this.consumer = res.body;
-          this.status = ConsumerClient.Consumer;
-        })
-        .catch(() => {});
+      try {
+        response = await getConsumer(this.apiClient);
+      } catch {
+        const refreshToken = localStorage.getItem(Token.Refresh);
+        if (!refreshToken) return;
+
+        this.apiClient = getRefreshTokenClient(refreshToken);
+
+        try {
+          response = await getConsumer(this.apiClient);
+          localStorage.setItem(Token.Access, getToken());
+        } catch {
+          localStorage.clear();
+        }
+      }
+    }
+
+    if (response) {
+      this.consumer = response.body;
+      this.status = ConsumerClient.Consumer;
     }
     this.notify();
   }
@@ -54,7 +79,8 @@ export class Consumer implements Observable {
   async logIn(username: string, password: string): Promise<void> {
     this.apiClient = getPasswordClient(username, password);
     this.consumer = (await getConsumer(this.apiClient)).body;
-    localStorage.setItem('ecomm-token', getToken());
+    localStorage.setItem(Token.Access, getToken());
+    localStorage.setItem(Token.Refresh, getRefreshToken());
     this.status = ConsumerClient.Consumer;
     this.notify();
   }
