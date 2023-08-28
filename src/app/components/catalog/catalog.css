@@ -10,6 +10,6 @@
 }
 
 .filter.active {
-  max-height: auto; 
-  transition: max-height 0.3s ease-in; 
+  max-height: auto;
+  transition: max-height 0.3s ease-in;
 }
