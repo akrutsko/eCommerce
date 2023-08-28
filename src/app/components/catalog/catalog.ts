@@ -55,7 +55,8 @@ export class Catalog {
     const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full justify-between flex gap-3 flex-wrap' });
     const filters = new ElementCreator({
       tag: 'div',
-      classes: 'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap border border-1 border-blue-500 filters flex-grow-0 flex-shrink-0',
+      classes:
+        'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap border border-1 border-blue-500 filters flex-grow-0 flex-shrink-0',
       text: 'filters',
     });
 
@@ -144,7 +145,11 @@ export class Catalog {
 
     const productPricesBlock = new ElementCreator({ tag: 'div', classes: 'flex gap-2' });
 
-    const productPriceBlock = new ElementCreator({ tag: 'div', text: `${price}`, classes: 'font-sans text-xl font-semibold leading-6 tracking-wider text-[#DB5743]' });
+    const productPriceBlock = new ElementCreator({
+      tag: 'div',
+      text: `${price}`,
+      classes: 'font-sans text-xl font-semibold leading-6 tracking-wider text-[#DB5743]',
+    });
     const productPriceWithOutDiscountBlock = new ElementCreator({
       tag: 'div',
       text: `${priceWithOutDiscount}`,
