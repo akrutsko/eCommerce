@@ -56,15 +56,15 @@ export class Consumer implements Observable {
         response = await getConsumer(this.apiClient);
       } catch {
         const refreshToken = localStorage.getItem(Token.Refresh);
-        if (!refreshToken) return;
 
-        this.apiClient = getRefreshTokenClient(refreshToken);
-
-        try {
-          response = await getConsumer(this.apiClient);
-          localStorage.setItem(Token.Access, getToken());
-        } catch {
-          localStorage.clear();
+        if (refreshToken) {
+          this.apiClient = getRefreshTokenClient(refreshToken);
+          try {
+            response = await getConsumer(this.apiClient);
+            localStorage.setItem(Token.Access, getToken());
+          } catch {
+            localStorage.clear();
+          }
         }
       }
     }
