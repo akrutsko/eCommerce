@@ -1,4 +1,4 @@
-import { ProductProjection, TypedMoney } from '@commercetools/platform-sdk';
+import { Category, ProductProjection, TypedMoney } from '@commercetools/platform-sdk';
 import searchIcon from '../../../assets/svg/search.svg';
 import './catalog.css';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
@@ -11,26 +11,29 @@ import { Message } from '../../utils/message/toastify-message';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
+import { Store } from '../../enums/store';
 
 export class Catalog extends HandlerLinks {
   catalogView: ElementCreator<HTMLElement>;
 
-  cardsList: ElementCreator<HTMLElement>[];
+  products: ProductProjection[] = [];
+
+  categories: Category[];
 
   cardsElementCreator: ElementCreator<HTMLElement>;
 
-  constructor(router: Router) {
+  constructor(router: Router, categories: Category[]) {
     super(router);
+    this.categories = categories;
     this.cardsElementCreator = new ElementCreator({
       tag: 'div',
       classes: 'w-full md:w-2/4 lg:w-6/8 flex flex-wrap gap-3 justify-around grow',
     });
-    this.cardsList = [];
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
     this.createView();
   }
 
-  createView(): void {
+  async createView(): Promise<void> {
     const firstBlock = new ElementCreator({
       tag: 'div',
       classes: 'w-full items-top justify-between flex gap-6 flex-wrap flex-col md:flex-row',
@@ -52,8 +55,11 @@ export class Catalog extends HandlerLinks {
     firstBlock.appendNode(catalogNameBlock, form);
 
     const secondBlock = new ElementCreator({ tag: 'div', classes: 'w-full items-top justify-between flex gap-1' });
-    const selectedFilfers = new ElementCreator({ tag: 'div', classes: '', text: 'filters' });
-    const countOfResults = new ElementCreator({ tag: 'div', classes: '', text: '12 results' });
+    const selectedFilfers = new ElementCreator({ tag: 'div', classes: '', text: 'checked filters, sorting' });
+
+    await this.createCards();
+
+    const countOfResults = new ElementCreator({ tag: 'div', classes: '', text: `${this.products.length} results` });
     secondBlock.appendNode(selectedFilfers, countOfResults);
 
     const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full justify-between flex gap-3 flex-wrap' });
@@ -63,20 +69,24 @@ export class Catalog extends HandlerLinks {
         'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap border border-1 border-blue-500 filters flex-grow-0 flex-shrink-0',
       text: 'filters',
     });
+    this.createFilters(filters);
 
     thirdBlock.appendNode(filters, this.cardsElementCreator);
 
-    this.createCards();
-
     this.catalogView.appendNode(firstBlock, secondBlock, thirdBlock);
+  }
+
+  createFilters(filtersElementCreator: ElementCreator<HTMLElement>): void {
+    const accordionCategory = new ElementCreator({ tag: 'h5', text: 'Category', classes: 'text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)]' });
+    filtersElementCreator.appendNode(accordionCategory);
   }
 
   async createCards(): Promise<void> {
     try {
       const productsResponse = await getProductProjections(getCtpClient());
       if (productsResponse.statusCode === 200) {
-        const { results } = productsResponse.body;
-        results.forEach((product) => {
+        this.products = productsResponse.body.results;
+        this.products.forEach((product) => {
           this.addProduct(product);
         });
       } else {
@@ -98,20 +108,18 @@ export class Catalog extends HandlerLinks {
   }
 
   addProduct(product: ProductProjection): void {
-    const localizedString = 'en-US';
-    const productName = product.name[localizedString];
+    const productName = product.name[Store.Language];
     let productDescription = '';
     let price = '';
     let priceWithOutDiscount = '';
     if (product.description) {
-      productDescription = product.description[localizedString];
+      productDescription = product.description[Store.Language];
     }
     const card = new ElementCreator({
       tag: 'div',
-      classes: 'card w-60 h-88 hover:scale-105 hover:cursor-pointer hover:border',
+      classes: 'relative card w-60 h-88 hover:scale-105 hover:cursor-pointer hover:border',
     });
     this.cardsElementCreator.appendNode(card);
-    this.cardsList.push(card);
 
     const productImageBlock = new ElementCreator({
       tag: 'div',

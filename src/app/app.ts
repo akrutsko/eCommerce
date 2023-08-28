@@ -19,7 +19,7 @@ export default class App {
     this.router = new Router();
     this.consumer = new Consumer();
     this.header = new Header(this.router, this.consumer);
-    this.main = new Main(this.router, this.consumer);
+    this.main = new Main(this.router, this.consumer, this.header.getCategories());
     this.footer = new Footer(this.router);
   }
 

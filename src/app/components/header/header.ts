@@ -1,4 +1,5 @@
 import './header.css';
+import { Category } from '@commercetools/platform-sdk';
 import logotype from '../../../assets/svg/logo-header.svg';
 import cartSvg from '../../../assets/svg/cart.svg';
 import customerSvg from '../../../assets/svg/customer.svg';
@@ -9,8 +10,14 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { Router } from '../../router/router';
 import { HandlerLinks } from '../../router/handler-links';
+import { getCategories } from '../../utils/api/api-categories';
+import { getCtpClient } from '../../utils/api/api-client';
+import { Message } from '../../utils/message/toastify-message';
+import { Store } from '../../enums/store';
 
 export class Header extends HandlerLinks implements Observer {
+  categories: Category[] = [];
+
   consumer: Consumer;
 
   headerView: ElementCreator<HTMLElement>;
@@ -75,44 +82,8 @@ export class Header extends HandlerLinks implements Observer {
     this.listOfLinks.push(aAboutUs.getElement());
     liAboutUs.appendNode(aAboutUs);
 
-    const liSummerTime = new ElementCreator({ tag: 'li' });
-    const aSummerTime = new ElementAnchorCreator({
-      href: '/categories#summer-time',
-      classes: 'h5 hover:text-primary-color',
-      text: 'Summer time',
-    });
-    this.listOfLinks.push(aSummerTime.getElement());
-    liSummerTime.appendNode(aSummerTime);
-
-    const liPeakClimber = new ElementCreator({ tag: 'li' });
-    const aPeakClimber = new ElementAnchorCreator({
-      href: '/categories#peak-climber',
-      classes: 'h5 hover:text-primary-color',
-      text: 'Peak climber',
-    });
-    this.listOfLinks.push(aPeakClimber.getElement());
-    liPeakClimber.appendNode(aPeakClimber);
-
-    const liBallGames = new ElementCreator({ tag: 'li' });
-    const aBallGames = new ElementAnchorCreator({
-      href: '/categories#ball-games',
-      classes: 'h5 hover:text-primary-color',
-      text: 'Ball games',
-    });
-    this.listOfLinks.push(aBallGames.getElement());
-    liBallGames.appendNode(aBallGames);
-
-    const liIceAdventures = new ElementCreator({ tag: 'li' });
-    const aIceAdventures = new ElementAnchorCreator({
-      href: '/categories#ice-adventures',
-      classes: 'h5 hover:text-primary-color',
-      text: 'Ice adventures',
-    });
-    this.listOfLinks.push(aIceAdventures.getElement());
-    liIceAdventures.appendNode(aIceAdventures);
-
     const submenu = new ElementCreator({ tag: 'ul', classes: 'submenu relative md:absolute hidden bg-white px-2 py-1 w-max' });
-    submenu.appendNode(liSummerTime, liPeakClimber, liBallGames, liIceAdventures);
+    this.addCategories(submenu);
 
     const tab = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
     const catalog = new ElementAnchorCreator({
@@ -186,6 +157,36 @@ export class Header extends HandlerLinks implements Observer {
     });
   }
 
+  async addCategories(submenu: ElementCreator<HTMLElement>): Promise<void> {
+    try {
+      const categoriesResponse = await getCategories(getCtpClient());
+      if (categoriesResponse.statusCode === 200) {
+        this.categories = categoriesResponse.body.results;
+        this.categories.forEach((category) => {
+          const liCategory = new ElementCreator({ tag: 'li' });
+          const aCategory = new ElementAnchorCreator({
+            href: `/categories#${category.slug[Store.Language]}`,
+            classes: 'h5 hover:text-primary-color',
+            text: `${category.name[Store.Language]}`,
+          });
+          this.listOfLinks.push(aCategory.getElement());
+          liCategory.appendNode(aCategory);
+          submenu.appendNode(liCategory);
+        });
+      } else {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message) {
+          new Message(err.message, 'error').showMessage();
+        } else {
+          new Message('Something went wrong. Try later.', 'error').showMessage();
+        }
+      }
+    }
+  }
+
   getView(): ElementCreator<HTMLElement> {
     return this.headerView;
   }
@@ -202,5 +203,9 @@ export class Header extends HandlerLinks implements Observer {
       this.loginBtns.classList.remove('hidden');
       this.logoutBtns.classList.add('hidden');
     }
+  }
+
+  getCategories(): Category[] {
+    return this.categories;
   }
 }

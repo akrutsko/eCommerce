@@ -1,3 +1,4 @@
+import { Category } from '@commercetools/platform-sdk';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { Router } from '../../router/router';
 import { Consumer } from '../consumer/consumer';
@@ -5,13 +6,16 @@ import { Consumer } from '../consumer/consumer';
 export class Main implements Observer {
   router: Router;
 
+  categories: Category[];
+
   consumer: Consumer;
 
   mainView: HTMLElement;
 
-  constructor(router: Router, consumer: Consumer) {
+  constructor(router: Router, consumer: Consumer, categories: Category[]) {
     this.router = router;
     this.consumer = consumer;
+    this.categories = categories;
 
     this.mainView = new ElementCreator({
       tag: 'main',
@@ -102,7 +106,7 @@ export class Main implements Observer {
 
   async showCatalog(): Promise<void> {
     const { Catalog } = await import('../catalog/catalog');
-    this.mainView.append(new Catalog(this.router).getElement());
+    this.mainView.append(new Catalog(this.router, this.categories).getElement());
   }
 
   async showProfile(): Promise<void> {
@@ -127,8 +131,8 @@ export class Main implements Observer {
 
   async showCategories(hashData?: string): Promise<void> {
     if (hashData) {
-      const { Category } = await import('../category/category');
-      const categories = new Category(hashData);
+      const { CategoryView } = await import('../category/category');
+      const categories = new CategoryView(hashData);
       if (categories.validateCategory()) {
         this.mainView.append(categories.getElement());
       } else {
@@ -143,12 +147,13 @@ export class Main implements Observer {
   async showProduct(hashData?: string): Promise<void> {
     if (hashData) {
       // TODO Show product
-      const { Category } = await import('../category/category');
-      const categories = new Category(hashData);
+      const { CategoryView } = await import('../category/category');
+      const categories = new CategoryView(hashData);
       this.mainView.append(categories.getElement());
     } else {
-      const { Categories } = await import('../category/categories');
-      this.mainView.append(new Categories().getElement());
+      const { CategoryView } = await import('../category/category');
+      const categories = new CategoryView('');
+      this.mainView.append(categories.getElement());
     }
   }
 

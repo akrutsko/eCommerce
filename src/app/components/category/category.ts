@@ -1,6 +1,6 @@
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 
-export class Category {
+export class CategoryView {
   hash: string;
 
   categoryView: ElementCreator<HTMLElement>;
