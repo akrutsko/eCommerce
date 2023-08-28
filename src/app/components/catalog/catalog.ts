@@ -97,13 +97,13 @@ export class Catalog {
       classes: 'w-60 h-60 border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-gray-200',
     });
     let url = '';
-    const { variants } = product;
-    if (variants) {
-      const { images } = variants[0];
+    const { masterVariant } = product;
+    if (masterVariant) {
+      const { images } = masterVariant;
       if (images) {
         url = images[0].url;
       }
-      const { prices } = variants[0];
+      const { prices } = masterVariant;
       if (prices?.length) {
         priceWithOutDiscount = `${prices[0].value.centAmount / prices[0].value.fractionDigits}${prices[0].value.currencyCode}`;
         if (prices[0].discounted && prices[0].discounted.value) {
