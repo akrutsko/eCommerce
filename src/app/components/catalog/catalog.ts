@@ -77,7 +77,11 @@ export class Catalog extends HandlerLinks {
   }
 
   createFilters(filtersElementCreator: ElementCreator<HTMLElement>): void {
-    const accordionCategory = new ElementCreator({ tag: 'h5', text: 'Category', classes: 'text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)]' });
+    const accordionCategory = new ElementCreator({
+      tag: 'h5',
+      text: 'Category',
+      classes: 'text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)]',
+    });
     filtersElementCreator.appendNode(accordionCategory);
   }
 

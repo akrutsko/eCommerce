@@ -3,8 +3,5 @@ import { CategoryPagedQueryResponse, ClientResponse } from '@commercetools/platf
 import { getApiRoot } from './api-client';
 
 export function getCategories(client: Client): Promise<ClientResponse<CategoryPagedQueryResponse>> {
-  return getApiRoot(client)
-    .categories()
-    .get()
-    .execute();
+  return getApiRoot(client).categories().get().execute();
 }
