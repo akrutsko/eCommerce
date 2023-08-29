@@ -191,3 +191,15 @@ export const countryCodes: Record<string, string> = {
   Yemen: 'YE',
   Zambia: 'ZM',
 };
+
+function swapObjectKeysAndValues(obj: Record<string, string>): Record<string, string> {
+  const newObj: Record<string, string> = {};
+  return Object.entries(obj).reduce((accum, val) => {
+    const res = accum;
+    const [key, value] = val;
+    res[value] = key;
+    return accum;
+  }, newObj);
+}
+
+export const codeCountries: Record<string, string> = swapObjectKeysAndValues(countryCodes);

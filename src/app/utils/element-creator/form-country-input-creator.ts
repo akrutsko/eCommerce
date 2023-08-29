@@ -5,12 +5,13 @@ import { ElementOptionCreator } from './element-option-creator';
 import { FormInputCreator } from './form-input-creator';
 
 export class FormInputCountryCreator extends FormInputCreator {
-  constructor(containerClasses: string, list: string) {
-    super({ placeholder: 'country', containerClasses, validationCallback: validateCountry, list });
+  constructor(containerClasses: string) {
+    super({ placeholder: 'country', containerClasses, validationCallback: validateCountry, list: 'country-list' });
 
     const countryList = new ElementCreator({
       tag: 'datalist',
       classes: 'absolute overflow-y-auto bg-gray-100 w-full z-10 max-h-[232px]',
+      id: 'country-list',
     });
 
     Object.keys(countryCodes).forEach((country) => {

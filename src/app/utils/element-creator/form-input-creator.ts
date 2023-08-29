@@ -15,7 +15,7 @@ export class FormInputCreator {
   constructor(params: FormInputParams) {
     this.errorClass = 'error hidden left-3 text-xs text-primary-color absolute';
     this.input = new ElementInputCreator({
-      type: params.type || 'text',
+      type: params.type,
       placeholder: params.placeholder,
       classes: 'form-input',
       list: params.list,

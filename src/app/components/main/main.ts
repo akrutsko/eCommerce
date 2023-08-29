@@ -98,7 +98,7 @@ export class Main implements Observer {
 
   async showProfile(): Promise<void> {
     const { Profile } = await import('../profile/profile');
-    this.mainView.append(new Profile().getElement());
+    this.mainView.append(new Profile(this.router, this.consumer).getElement());
   }
 
   async showGoods(): Promise<void> {
