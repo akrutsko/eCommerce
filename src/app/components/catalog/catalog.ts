@@ -344,8 +344,11 @@ export class Catalog extends HandlerLinks {
   filterProducts(): void {
     const filterArray: string[] = [];
     this.selectedFilfersBlock.getElement().innerHTML = '';
-    const resetAllFiltersElement = new ElementButtonCreator({ text: 'reset filters', classes: 'secondary-button' });
-    this.selectedFilfersBlock.appendNode(resetAllFiltersElement);
+    if (this.priceFilter.min || this.priceFilter.max || this.selectedFilters.length) {
+      const resetAllFiltersElement = new ElementButtonCreator({ text: 'reset filters', classes: 'secondary-button' });
+      this.selectedFilfersBlock.appendNode(resetAllFiltersElement);
+      // TODO: implement reset filters
+    }
 
     if (this.priceFilter.min || this.priceFilter.max) {
       let from = '*';
@@ -385,6 +388,7 @@ export class Catalog extends HandlerLinks {
           const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
           resetPriceElement.appendNode(elementFilterDelete);
           this.selectedFilfersBlock.appendNode(resetPriceElement);
+          // TODO: implement reset filters
         } else if (filter.filterType === 'Color') {
           const resultArray = filter.values.map((element) => `"${element}"`);
           filterArray.push(`variants.attributes.color.key:${resultArray.join(',')}`);
@@ -396,6 +400,7 @@ export class Catalog extends HandlerLinks {
           const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
           resetPriceElement.appendNode(elementFilterDelete);
           this.selectedFilfersBlock.appendNode(resetPriceElement);
+          // TODO: implement reset filters
         } else if (filter.filterType === 'Brand') {
           const resultArray = filter.values.map((element) => `"${element}"`);
           filterArray.push(`variants.attributes.brand.key:${resultArray.join(',')}`);
@@ -407,6 +412,7 @@ export class Catalog extends HandlerLinks {
           const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
           resetPriceElement.appendNode(elementFilterDelete);
           this.selectedFilfersBlock.appendNode(resetPriceElement);
+          // TODO: implement reset filters
         }
       }
     });
