@@ -32,12 +32,15 @@ export class Catalog extends HandlerLinks {
 
   selectedFilters: SelectedFilters[] = [];
 
+  elementCountOfResults: ElementCreator<HTMLElement>;
+
   categories: Category[] = [];
 
   cardsElementCreator: ElementCreator<HTMLElement>;
 
   constructor(router: Router) {
     super(router);
+    this.elementCountOfResults = new ElementCreator({ tag: 'div', classes: '', text: '0 results' });
     this.cardsElementCreator = new ElementCreator({
       tag: 'div',
       classes: 'w-full md:w-2/4 lg:w-6/8 flex flex-wrap gap-3 justify-around grow',
@@ -72,8 +75,7 @@ export class Catalog extends HandlerLinks {
 
     await this.createCards();
 
-    const countOfResults = new ElementCreator({ tag: 'div', classes: '', text: `${this.products.length} results` });
-    secondBlock.appendNode(selectedFilfers, countOfResults);
+    secondBlock.appendNode(selectedFilfers, this.elementCountOfResults);
 
     const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full justify-between flex gap-3 flex-wrap' });
     const filters = new ElementCreator({
@@ -93,13 +95,13 @@ export class Catalog extends HandlerLinks {
     if (isChecked) {
       if (foundFilter) {
         if (!foundFilter.values.includes(value)) {
-          foundFilter.values.push(value);
+          foundFilter.values.push(`"${value}"`);
         }
       } else {
-        this.selectedFilters.push({ filterType: filterName, values: [value] });
+        this.selectedFilters.push({ filterType: filterName, values: [`"${value}"`] });
       }
     } else if (foundFilter) {
-      const index = foundFilter.values.indexOf(value);
+      const index = foundFilter.values.indexOf(`"${value}"`);
       if (index !== -1) {
         foundFilter.values.splice(index, 1);
       }
@@ -167,19 +169,23 @@ export class Catalog extends HandlerLinks {
   }
 
   filterProducts(): void {
-    // let where = '';
-    // this.selectedFilters.forEach((filter) => {
-    // });
-    // const categoryId = 'b45da64a-0f9d-4ad4-b0ad-1da10a3f4f46';
-    // const where = 'filter: \'categories.id:"b45da64a-0f9d-4ad4-b0ad-1da10a3f4f46"';
-    // , where: 'categories.id:"b45da64a-0f9d-4ad4-b0ad-1da10a3f4f46"'
+    let filterStr;
+    this.selectedFilters.forEach((filter) => {
+      if (filter.values.length) {
+        filterStr = `categories.id:${filter.values.join(',')}`;
+      }
+    });
+    // filterStr = 'categories.id:"b45da64a-0f9d-4ad4-b0ad-1da10a3f4f46","c35af45b-d097-4b5a-8d21-53b97881fa3e"';
+    this.createCards(filterStr);
   }
 
-  async createCards(): Promise<void> {
+  async createCards(filter?: string): Promise<void> {
+    this.cardsElementCreator.getElement().innerHTML = '';
     try {
-      const productsResponse = await getProductProjections(getCtpClient());
+      const productsResponse = await getProductProjections(getCtpClient(), filter);
       if (productsResponse.statusCode === 200) {
         this.products = productsResponse.body.results;
+        this.elementCountOfResults.getElement().textContent = `${this.products.length} results`;
         console.log(this.products);
         this.products.forEach((product) => {
           this.addProduct(product);
