@@ -131,7 +131,8 @@ export class Catalog extends HandlerLinks {
 
   createPriceFilter(min: number, max: number, filtersElementCreator: ElementCreator<HTMLElement>): void {
     const elementAccordion = new ElementCreator({
-      tag: 'div', classes: 'w-full',
+      tag: 'div',
+      classes: 'w-full',
     });
     const elementFilterName = new ElementCreator({
       tag: 'h5',
@@ -188,7 +189,8 @@ export class Catalog extends HandlerLinks {
     filtersElementCreator: ElementCreator<HTMLElement>,
   ): void {
     const elementAccordion = new ElementCreator({
-      tag: 'div', classes: 'w-full',
+      tag: 'div',
+      classes: 'w-full',
     });
     const elementFilterName = new ElementCreator({
       tag: 'h5',
