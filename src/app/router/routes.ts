@@ -10,4 +10,5 @@ export const routes: Record<string, string> = {
   '/aboutus': 'aboutus',
   '/contact': 'contact',
   '/categories': 'categories',
+  '/product': 'product',
 };
