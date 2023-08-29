@@ -10,6 +10,6 @@ export const routes: Record<string, string> = {
   '/aboutus': 'aboutus',
   '/contact': 'contact',
   '/catalog': 'catalog',
-  '/product': 'product',
   '/categories': 'categories',
+  '/product': 'product',
 };

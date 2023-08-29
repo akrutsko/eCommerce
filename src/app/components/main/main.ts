@@ -15,7 +15,6 @@ export class Main implements Observer {
     this.mainView = new ElementCreator({
       tag: 'main',
       classes: 'container flex flex-col grow justify-center items-center h-full my-5 md:my-10',
-      text: 'main',
     }).getElement();
   }
 
@@ -71,6 +70,9 @@ export class Main implements Observer {
         break;
       case 'categories':
         this.showCategories(hashData);
+        break;
+      case 'product':
+        this.showProduct();
         break;
       default:
         this.show404();
@@ -134,6 +136,11 @@ export class Main implements Observer {
       const { Categories } = await import('../category/categories');
       this.mainView.append(new Categories().getElement());
     }
+  }
+
+  async showProduct(): Promise<void> {
+    const { Product } = await import('../product/product');
+    this.mainView.append(new Product(this.router, this.consumer, 'c43011cc-de74-406f-b68e-02c0441bcdb1').getElement()); // TODO: implement routing
   }
 
   async showSignup(): Promise<void> {

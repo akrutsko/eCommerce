@@ -136,7 +136,7 @@ export class Login extends HandlerLinks {
       await this.consumer.logIn(this.emailInput.value, this.passwordInput.value);
       window.history.pushState({}, '', '/');
       this.router.handleLocation();
-      new Message('Welcome! Start shopping and reach new sports peak', 'info').showMessage();
+      new Message('Welcome! Start shopping and reach new sports peak.', 'info').showMessage();
     } catch (err) {
       if (err instanceof Error) {
         if (err.message) {

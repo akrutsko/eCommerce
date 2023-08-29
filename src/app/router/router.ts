@@ -8,7 +8,7 @@ export class Router implements Observable {
   private previousHash = '';
 
   constructor() {
-    window.onpopstate = this.handleLocation;
+    window.addEventListener('popstate', () => this.handleLocation());
   }
 
   subscribe(observer: Observer): void {
@@ -28,16 +28,15 @@ export class Router implements Observable {
     }
   }
 
-  public handleLocation = (): void => {
+  public handleLocation(): void {
     const newPath = window.location.pathname;
     const newHash = window.location.hash.substring(1);
-    const { search } = window.location;
     if (newPath === this.previousPath && newHash === this.previousHash) {
       return;
     }
     this.previousPath = newPath;
     this.previousHash = newHash;
     const route = routes[newPath] || routes[404];
-    this.notify(route, newHash, search);
-  };
+    this.notify(route, newHash);
+  }
 }
