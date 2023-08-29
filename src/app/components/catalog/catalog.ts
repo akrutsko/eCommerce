@@ -1,5 +1,6 @@
 import { Category, ProductProjection, ProductType } from '@commercetools/platform-sdk';
-import arrowDown from '../../../assets/svg/arrow-down.svg';
+import arrowDownSVG from '../../../assets/svg/arrow-down.svg';
+import deleteFilterSVG from '../../../assets/svg/delete-filter.svg';
 import './catalog.css';
 import searchIcon from '../../../assets/svg/search.svg';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
@@ -50,6 +51,8 @@ export class Catalog extends HandlerLinks {
 
   cardsElementCreator: ElementCreator<HTMLElement>;
 
+  selectedFilfersBlock: ElementCreator<HTMLElement>;
+
   constructor(router: Router) {
     super(router);
     this.elementCountOfResults = new ElementCreator({ tag: 'div', classes: '', text: '0 results' });
@@ -58,6 +61,7 @@ export class Catalog extends HandlerLinks {
       classes: 'w-full md:w-2/4 lg:w-6/8 flex flex-wrap gap-3 justify-around grow',
     });
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
+    this.selectedFilfersBlock = new ElementCreator({ tag: 'div', classes: 'flex' });
     this.createView();
   }
 
@@ -83,11 +87,10 @@ export class Catalog extends HandlerLinks {
     firstBlock.appendNode(catalogNameBlock, form);
 
     const secondBlock = new ElementCreator({ tag: 'div', classes: 'w-full items-top justify-between flex gap-1' });
-    const selectedFilfers = new ElementCreator({ tag: 'div', classes: '', text: 'checked filters, sorting' });
 
     await this.createCards();
 
-    secondBlock.appendNode(selectedFilfers, this.elementCountOfResults);
+    secondBlock.appendNode(this.selectedFilfersBlock, this.elementCountOfResults);
 
     const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full justify-between flex gap-3 flex-wrap' });
     const filtersPanel = new ElementCreator({
@@ -136,7 +139,7 @@ export class Catalog extends HandlerLinks {
       classes:
         'flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)] cursor-pointer',
     });
-    const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDown });
+    const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDownSVG });
     elementFilterName.appendNode(elementFilterArrow);
     const elementFilterPanel = new ElementCreator({ tag: 'div', classes: 'filter' });
     elementAccordion.appendNode(elementFilterName, elementFilterPanel);
@@ -145,7 +148,7 @@ export class Catalog extends HandlerLinks {
     const minmaxElement = new ElementCreator({ tag: 'div', classes: 'flex' });
     elementFilterPanel.appendNode(minmaxElement);
 
-    const minElement = new ElementInputCreator({ type: 'number' });
+    const minElement = new ElementInputCreator({ type: 'number', classes: 'border-1 rounded-lg border-solid border-[#E8E6E8]' });
     minElement.getElement().step = '0.01';
     minElement.getElement().min = `${min}`;
     minElement.getElement().max = `${max}`;
@@ -158,7 +161,7 @@ export class Catalog extends HandlerLinks {
       }
     });
 
-    const maxElement = new ElementInputCreator({ type: 'number' });
+    const maxElement = new ElementInputCreator({ type: 'number', classes: 'border-1 rounded-lg border-solid border-[#E8E6E8]' });
     maxElement.getElement().step = '0.01';
     maxElement.getElement().min = `${min}`;
     maxElement.getElement().max = `${max}`;
@@ -193,7 +196,7 @@ export class Catalog extends HandlerLinks {
       classes:
         'flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)] cursor-pointer',
     });
-    const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDown });
+    const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDownSVG });
     elementFilterName.appendNode(elementFilterArrow);
     const elementFilterPanel = new ElementCreator({ tag: 'div', classes: 'filter' });
     elementAccordion.appendNode(elementFilterName, elementFilterPanel);
@@ -340,18 +343,29 @@ export class Catalog extends HandlerLinks {
 
   filterProducts(): void {
     const filterArray: string[] = [];
+    this.selectedFilfersBlock.getElement().innerHTML = '';
+    const resetAllFiltersElement = new ElementButtonCreator({ text: 'reset filters', classes: 'secondary-button' });
+    this.selectedFilfersBlock.appendNode(resetAllFiltersElement);
 
     if (this.priceFilter.min || this.priceFilter.max) {
       let from = '*';
+      let fromStr = '0';
       if (this.priceFilter.min) {
         from = this.priceFilter.min.toString();
+        fromStr = (this.priceFilter.min / 100).toString();
       }
       let to = '*';
+      let toStr = '';
       if (this.priceFilter.max) {
         to = this.priceFilter.max.toString();
+        toStr = (this.priceFilter.max / 100).toString();
       }
       const filterStr = `variants.price.centAmount:range (${from} to ${to})`;
       filterArray.push(filterStr);
+      const resetPriceElement = new ElementCreator({ tag: 'button', text: `$${fromStr}-${toStr}`, classes: 'filter-button flex items-center' });
+      const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
+      resetPriceElement.appendNode(elementFilterDelete);
+      this.selectedFilfersBlock.appendNode(resetPriceElement);
     }
 
     this.selectedFilters.forEach((filter) => {
@@ -359,12 +373,24 @@ export class Catalog extends HandlerLinks {
         if (filter.filterType === 'Category') {
           const resultArray = filter.values.map((element) => `subtree("${element}")`);
           filterArray.push(`categories.id:${resultArray.join(',')}`);
+          const resetPriceElement = new ElementCreator({ tag: 'button', text: 'Categories', classes: 'filter-button flex items-center' });
+          const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
+          resetPriceElement.appendNode(elementFilterDelete);
+          this.selectedFilfersBlock.appendNode(resetPriceElement);
         } else if (filter.filterType === 'Color') {
           const resultArray = filter.values.map((element) => `"${element}"`);
           filterArray.push(`variants.attributes.color.key:${resultArray.join(',')}`);
+          const resetPriceElement = new ElementCreator({ tag: 'button', text: 'Color', classes: 'filter-button flex items-center' });
+          const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
+          resetPriceElement.appendNode(elementFilterDelete);
+          this.selectedFilfersBlock.appendNode(resetPriceElement);
         } else if (filter.filterType === 'Brand') {
           const resultArray = filter.values.map((element) => `"${element}"`);
           filterArray.push(`variants.attributes.brand.key:${resultArray.join(',')}`);
+          const resetPriceElement = new ElementCreator({ tag: 'button', text: 'Brand', classes: 'filter-button flex items-center' });
+          const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
+          resetPriceElement.appendNode(elementFilterDelete);
+          this.selectedFilfersBlock.appendNode(resetPriceElement);
         }
       }
     });
