@@ -30,6 +30,7 @@ export interface ElementImageParams extends Partial<ElementParams> {
 
 export interface ElementOptionParams extends Partial<ElementParams> {
   value: string;
+  hidden?: boolean;
 }
 
 export interface ElementLabelParams extends Partial<ElementParams> {
