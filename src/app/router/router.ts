@@ -22,9 +22,9 @@ export class Router implements Observable {
     this.observers.slice(index, 1);
   }
 
-  notify(primaryData?: string, secondaryData?: string, search?: string): void {
+  notify(primaryData?: string, secondaryData?: string): void {
     if (primaryData) {
-      this.observers.forEach((observer) => observer.update(primaryData, secondaryData, search));
+      this.observers.forEach((observer) => observer.update(primaryData, secondaryData));
     }
   }
 
