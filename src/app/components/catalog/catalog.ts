@@ -20,10 +20,17 @@ interface FilterInterface {
   id: string;
   name: string;
 }
+
+interface SelectedFilters {
+  filterType: string;
+  values: string[];
+}
 export class Catalog extends HandlerLinks {
   catalogView: ElementCreator<HTMLElement>;
 
   products: ProductProjection[] = [];
+
+  selectedFilters: SelectedFilters[] = [];
 
   categories: Category[] = [];
 
@@ -81,6 +88,24 @@ export class Catalog extends HandlerLinks {
     this.catalogView.appendNode(firstBlock, secondBlock, thirdBlock);
   }
 
+  changeSelectedFilters(filterName: string, isChecked: boolean, value: string): void {
+    const foundFilter = this.selectedFilters.find((filter) => filter.filterType === filterName);
+    if (isChecked) {
+      if (foundFilter) {
+        if (!foundFilter.values.includes(value)) {
+          foundFilter.values.push(value);
+        }
+      } else {
+        this.selectedFilters.push({ filterType: filterName, values: [value] });
+      }
+    } else if (foundFilter) {
+      const index = foundFilter.values.indexOf(value);
+      if (index !== -1) {
+        foundFilter.values.splice(index, 1);
+      }
+    }
+  }
+
   createCheckBoxFilter(
     filterName: string,
     filterArray: FilterInterface[],
@@ -105,6 +130,13 @@ export class Catalog extends HandlerLinks {
       const elementFilterLabel = new ElementLabelCreator({ for: filterElement.id, text: filterElement.name });
       elementFilterWrapper.appendNode(elementFilterInput, elementFilterLabel);
       elementFilterPanel.appendNode(elementFilterWrapper);
+      elementFilterInput.getElement().addEventListener('change', (event) => {
+        if (event.target) {
+          const isChecked = elementFilterInput.getElement().checked;
+          const { value } = elementFilterInput.getElement();
+          this.changeSelectedFilters(filterName, isChecked, value);
+        }
+      });
     });
     filtersElementCreator.appendNode(elementAccordion);
 
@@ -126,14 +158,21 @@ export class Catalog extends HandlerLinks {
       this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
     }
 
-    const elementFilterButton = new ElementButtonCreator({ text: 'filter', classes: 'primary-button' });
+    const elementFilterButton = new ElementButtonCreator({ text: 'apply filters', classes: 'primary-button' });
     filtersElementCreator.appendNode(elementFilterButton);
 
     elementFilterButton.getElement().addEventListener('click', () => {
-      // window.history.pushState({}, '', '/login');
-      // this.router.handleLocation();
-      // checked filters
+      this.filterProducts();
     });
+  }
+
+  filterProducts(): void {
+    // let where = '';
+    // this.selectedFilters.forEach((filter) => {
+    // });
+    // const categoryId = 'b45da64a-0f9d-4ad4-b0ad-1da10a3f4f46';
+    // const where = 'filter: \'categories.id:"b45da64a-0f9d-4ad4-b0ad-1da10a3f4f46"';
+    // , where: 'categories.id:"b45da64a-0f9d-4ad4-b0ad-1da10a3f4f46"'
   }
 
   async createCards(): Promise<void> {

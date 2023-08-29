@@ -5,6 +5,6 @@ import { getApiRoot } from './api-client';
 export function getProductProjections(client: Client): Promise<ClientResponse<ProductProjectionPagedQueryResponse>> {
   return getApiRoot(client)
     .productProjections()
-    .get({ queryArgs: { staged: true, limit: 30, offset: 0 } })
+    .get({ queryArgs: { limit: 30, offset: 0 } })
     .execute();
 }
