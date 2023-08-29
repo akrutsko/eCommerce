@@ -30,12 +30,19 @@ interface SelectedFilters {
   filterType: string;
   values: string[];
 }
+
+interface PriceFilter {
+  min: number;
+  max: number;
+}
 export class Catalog extends HandlerLinks {
   catalogView: ElementCreator<HTMLElement>;
 
   products: ProductProjection[] = [];
 
   selectedFilters: SelectedFilters[] = [];
+
+  priceFilter: PriceFilter = { min: 0, max: 0 };
 
   elementCountOfResults: ElementCreator<HTMLElement>;
 
@@ -135,7 +142,36 @@ export class Catalog extends HandlerLinks {
     elementAccordion.appendNode(elementFilterName, elementFilterPanel);
     filtersElementCreator.appendNode(elementAccordion);
 
-    // const minmaxElement =
+    const minmaxElement = new ElementCreator({ tag: 'div', classes: 'flex' });
+    elementFilterPanel.appendNode(minmaxElement);
+
+    const minElement = new ElementInputCreator({ type: 'number' });
+    minElement.getElement().step = '0.01';
+    minElement.getElement().min = `${min}`;
+    minElement.getElement().max = `${max}`;
+    minElement.getElement().placeholder = '$0.00';
+
+    minElement.getElement().addEventListener('change', (event) => {
+      if (event.target) {
+        const { value } = minElement.getElement();
+        this.priceFilter.min = parseFloat(value) * 100;
+      }
+    });
+
+    const maxElement = new ElementInputCreator({ type: 'number' });
+    maxElement.getElement().step = '0.01';
+    maxElement.getElement().min = `${min}`;
+    maxElement.getElement().max = `${max}`;
+    maxElement.getElement().placeholder = '$0.00';
+
+    maxElement.getElement().addEventListener('change', (event) => {
+      if (event.target) {
+        const { value } = maxElement.getElement();
+        this.priceFilter.max = parseFloat(value) * 100;
+      }
+    });
+
+    minmaxElement.appendNode(minElement, maxElement);
 
     elementFilterName.getElement().addEventListener('click', () => {
       elementFilterPanel.toggleClass('active');
@@ -265,7 +301,6 @@ export class Catalog extends HandlerLinks {
   }
 
   async createFiltersPanel(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
-    // TODO: add price filter
     const productsResponse = await getProductProjections(getCtpClient());
     if (productsResponse.statusCode === 200) {
       const sortedPrices = this.getSortedPrices(productsResponse.body.results);
@@ -305,6 +340,20 @@ export class Catalog extends HandlerLinks {
 
   filterProducts(): void {
     const filterArray: string[] = [];
+
+    if (this.priceFilter.min || this.priceFilter.max) {
+      let from = '*';
+      if (this.priceFilter.min) {
+        from = this.priceFilter.min.toString();
+      }
+      let to = '*';
+      if (this.priceFilter.max) {
+        to = this.priceFilter.max.toString();
+      }
+      const filterStr = `variants.price.centAmount:range (${from} to ${to})`;
+      filterArray.push(filterStr);
+    }
+
     this.selectedFilters.forEach((filter) => {
       if (filter.values.length) {
         if (filter.filterType === 'Category') {
@@ -320,9 +369,6 @@ export class Catalog extends HandlerLinks {
       }
     });
 
-    // const filterStr3 = 'variants.price.centAmount:range (3000 to 5000)';
-    // filterArray.push(filterStr3);
-
     this.createCards(filterArray);
   }
 
@@ -333,7 +379,6 @@ export class Catalog extends HandlerLinks {
       if (productsResponse.statusCode === 200) {
         this.products = productsResponse.body.results;
         this.elementCountOfResults.getElement().textContent = `${this.products.length} results`;
-        console.log(this.products);
         this.products.forEach((product) => {
           this.addProduct(product);
         });

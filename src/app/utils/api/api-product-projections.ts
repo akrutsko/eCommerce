@@ -5,14 +5,16 @@ import { getApiRoot } from './api-client';
 export function getProductProjections(
   client: Client,
   filter?: string | string[],
+  limit = 30,
+  offset = 0,
 ): Promise<ClientResponse<ProductProjectionPagedQueryResponse>> {
   return getApiRoot(client)
     .productProjections()
     .search()
     .get({
       queryArgs: {
-        limit: 30,
-        offset: 0,
+        limit,
+        offset,
         filter,
         markMatchingVariants: true,
       },
