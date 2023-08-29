@@ -21,7 +21,10 @@ interface FilterInterface {
   id: string;
   name: string;
 }
-
+interface Attribute {
+  key: string;
+  label: string;
+}
 interface SelectedFilters {
   filterType: string;
   values: string[];
@@ -160,7 +163,32 @@ export class Catalog extends HandlerLinks {
     });
   }
 
+  getUniqueAttributes(products: ProductProjection[], nameAttribute: string): FilterInterface[] {
+    const uniqueAttributes: Attribute[] = [];
+    products.forEach((product) => {
+      product.variants.push(product.masterVariant);
+      product.variants.forEach((variant) => {
+        if (variant.attributes) {
+          const attribute = variant.attributes.find((attr) => attr.name === nameAttribute);
+
+          if (attribute) {
+            attribute.value.forEach((brand: Attribute) => {
+              if (!uniqueAttributes.some((existingBrand) => existingBrand.key === brand.key)) {
+                uniqueAttributes.push(brand);
+              }
+            });
+          }
+        }
+      });
+    });
+    return uniqueAttributes.map((brand) => ({
+      id: brand.key,
+      name: brand.label,
+    }));
+  }
+
   async createFiltersPanel(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
+    // TODO: add price filter
     const categoriesResponse = await getCategories(getCtpClient());
     if (categoriesResponse.statusCode === 200) {
       this.categories = categoriesResponse.body.results;
@@ -172,6 +200,21 @@ export class Catalog extends HandlerLinks {
       this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
     }
 
+    const filterBrandString = 'variants.attributes.brand.key:exists';
+    const variantsWithBrand = await getProductProjections(getCtpClient(), filterBrandString);
+
+    if (variantsWithBrand.statusCode === 200) {
+      const filterArray = this.getUniqueAttributes(variantsWithBrand.body.results, 'brand');
+      this.createCheckBoxFilter('Brand', filterArray, filtersElementCreator);
+    }
+
+    const filterColorString = 'variants.attributes.color.key:exists';
+    const variantsWithColor = await getProductProjections(getCtpClient(), filterColorString);
+
+    if (variantsWithColor.statusCode === 200) {
+      const filterArray = this.getUniqueAttributes(variantsWithColor.body.results, 'color');
+      this.createCheckBoxFilter('Color', filterArray, filtersElementCreator);
+    }
     const elementFilterButton = new ElementButtonCreator({ text: 'apply filters', classes: 'primary-button' });
     filtersElementCreator.appendNode(elementFilterButton);
 
@@ -181,21 +224,26 @@ export class Catalog extends HandlerLinks {
   }
 
   filterProducts(): void {
-    let filterStr = '';
+    const filterArray: string[] = [];
     this.selectedFilters.forEach((filter) => {
-      if (filter.filterType === 'Category') {
-        if (filter.values.length) {
+      if (filter.values.length) {
+        if (filter.filterType === 'Category') {
           const resultArray = filter.values.map((element) => `subtree("${element}")`);
-          filterStr = `categories.id:${resultArray.join(',')}`;
+          filterArray.push(`categories.id:${resultArray.join(',')}`);
+        } else if (filter.filterType === 'Color') {
+          const resultArray = filter.values.map((element) => `"${element}"`);
+          filterArray.push(`variants.attributes.color.key:${resultArray.join(',')}`);
+        } else if (filter.filterType === 'Brand') {
+          const resultArray = filter.values.map((element) => `"${element}"`);
+          filterArray.push(`variants.attributes.brand.key:${resultArray.join(',')}`);
         }
       }
     });
-    // filterStr = 'categories.id:
-    // subtree("b45da64a-0f9d-4ad4-b0ad-1da10a3f4f46"), subtree("c35af45b-d097-4b5a-8d21-53b97881fa3e")';
-    // filterStr = 'variants.attributes.brand.key:"new-googles"';
-    const filterStr2 = 'variants.price.centAmount:range (1000 to 3700)';
-    const filterStr3 = [filterStr, filterStr2];
-    this.createCards(filterStr3);
+
+    // const filterStr3 = 'variants.price.centAmount:range (3000 to 5000)';
+    // filterArray.push(filterStr3);
+
+    this.createCards(filterArray);
   }
 
   async createCards(filter?: string | string[]): Promise<void> {
@@ -242,22 +290,30 @@ export class Catalog extends HandlerLinks {
       classes: 'w-60 h-60 border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-bg-color',
     });
     let url = '';
-    const { masterVariant } = product;
-    if (masterVariant) {
-      const { images } = masterVariant;
-      if (images) {
-        url = images[0].url;
-      }
-      const { prices } = masterVariant;
-      if (prices?.length) {
-        priceWithOutDiscount = getPrice(prices[0].value);
-        if (prices[0].discounted && prices[0].discounted.value) {
-          price = getPrice(prices[0].discounted.value);
-        } else {
-          price = priceWithOutDiscount;
+    let { masterVariant } = product;
+    const { variants } = product;
+    if (!masterVariant.isMatchingVariant) {
+      if (variants.length) {
+        const newMatchingVariant = variants.find((variant) => variant.isMatchingVariant);
+        if (newMatchingVariant) {
+          masterVariant = newMatchingVariant;
         }
       }
     }
+    const { images } = masterVariant;
+    if (images) {
+      url = images[0].url;
+    }
+    const { prices } = masterVariant;
+    if (prices?.length) {
+      priceWithOutDiscount = getPrice(prices[0].value);
+      if (prices[0].discounted && prices[0].discounted.value) {
+        price = getPrice(prices[0].discounted.value);
+      } else {
+        price = priceWithOutDiscount;
+      }
+    }
+
     const image = new ElementImageCreator({ alt: productName, src: url, classes: 'w-full h-full object-cover' });
     productImageBlock.appendNode(image);
 
