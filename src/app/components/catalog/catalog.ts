@@ -362,7 +362,11 @@ export class Catalog extends HandlerLinks {
       }
       const filterStr = `variants.price.centAmount:range (${from} to ${to})`;
       filterArray.push(filterStr);
-      const resetPriceElement = new ElementCreator({ tag: 'button', text: `$${fromStr}-${toStr}`, classes: 'filter-button flex items-center' });
+      const resetPriceElement = new ElementCreator({
+        tag: 'button',
+        text: `$${fromStr}-${toStr}`,
+        classes: 'filter-button flex items-center',
+      });
       const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
       resetPriceElement.appendNode(elementFilterDelete);
       this.selectedFilfersBlock.appendNode(resetPriceElement);
@@ -373,21 +377,33 @@ export class Catalog extends HandlerLinks {
         if (filter.filterType === 'Category') {
           const resultArray = filter.values.map((element) => `subtree("${element}")`);
           filterArray.push(`categories.id:${resultArray.join(',')}`);
-          const resetPriceElement = new ElementCreator({ tag: 'button', text: 'Categories', classes: 'filter-button flex items-center' });
+          const resetPriceElement = new ElementCreator({
+            tag: 'button',
+            text: 'Categories',
+            classes: 'filter-button flex items-center',
+          });
           const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
           resetPriceElement.appendNode(elementFilterDelete);
           this.selectedFilfersBlock.appendNode(resetPriceElement);
         } else if (filter.filterType === 'Color') {
           const resultArray = filter.values.map((element) => `"${element}"`);
           filterArray.push(`variants.attributes.color.key:${resultArray.join(',')}`);
-          const resetPriceElement = new ElementCreator({ tag: 'button', text: 'Color', classes: 'filter-button flex items-center' });
+          const resetPriceElement = new ElementCreator({
+            tag: 'button',
+            text: 'Color',
+            classes: 'filter-button flex items-center',
+          });
           const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
           resetPriceElement.appendNode(elementFilterDelete);
           this.selectedFilfersBlock.appendNode(resetPriceElement);
         } else if (filter.filterType === 'Brand') {
           const resultArray = filter.values.map((element) => `"${element}"`);
           filterArray.push(`variants.attributes.brand.key:${resultArray.join(',')}`);
-          const resetPriceElement = new ElementCreator({ tag: 'button', text: 'Brand', classes: 'filter-button flex items-center' });
+          const resetPriceElement = new ElementCreator({
+            tag: 'button',
+            text: 'Brand',
+            classes: 'filter-button flex items-center',
+          });
           const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
           resetPriceElement.appendNode(elementFilterDelete);
           this.selectedFilfersBlock.appendNode(resetPriceElement);
