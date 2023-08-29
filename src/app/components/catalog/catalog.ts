@@ -78,30 +78,32 @@ export class Catalog extends HandlerLinks {
     secondBlock.appendNode(selectedFilfers, this.elementCountOfResults);
 
     const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full justify-between flex gap-3 flex-wrap' });
-    const filters = new ElementCreator({
+    const filtersPanel = new ElementCreator({
       tag: 'div',
       classes:
-        'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap border border-1 border-blue-500 filters flex-grow-0 flex-shrink-0 gap-2',
+        'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap filters flex-grow-0 flex-shrink-0 gap-2 bg-bg-color rounded-lg p-4',
     });
-    this.createFilters(filters);
+    const filtersPanelHeader = new ElementCreator({ tag: 'h4', text: 'Set filters', classes: 'text-center font-ubuntu text-base font-medium leading-5 tracking-normal' });
+    filtersPanel.appendNode(filtersPanelHeader);
+    this.createFiltersPanel(filtersPanel);
 
-    thirdBlock.appendNode(filters, this.cardsElementCreator);
+    thirdBlock.appendNode(filtersPanel, this.cardsElementCreator);
 
     this.catalogView.appendNode(firstBlock, secondBlock, thirdBlock);
   }
 
-  changeSelectedFilters(filterName: string, isChecked: boolean, value: string): void {
+  changeArraySelectedFilters(filterName: string, isChecked: boolean, value: string): void {
     const foundFilter = this.selectedFilters.find((filter) => filter.filterType === filterName);
     if (isChecked) {
       if (foundFilter) {
         if (!foundFilter.values.includes(value)) {
-          foundFilter.values.push(`"${value}"`);
+          foundFilter.values.push(value);
         }
       } else {
-        this.selectedFilters.push({ filterType: filterName, values: [`"${value}"`] });
+        this.selectedFilters.push({ filterType: filterName, values: [value] });
       }
     } else if (foundFilter) {
-      const index = foundFilter.values.indexOf(`"${value}"`);
+      const index = foundFilter.values.indexOf(value);
       if (index !== -1) {
         foundFilter.values.splice(index, 1);
       }
@@ -128,7 +130,7 @@ export class Catalog extends HandlerLinks {
     elementAccordion.appendNode(elementFilterName, elementFilterPanel);
     filterArray.forEach((filterElement) => {
       const elementFilterWrapper = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm text-[#393E4D]' });
-      const elementFilterInput = new ElementInputCreator({ type: 'checkbox', classes: 'block', value: filterElement.id });
+      const elementFilterInput = new ElementInputCreator({ type: 'checkbox', classes: 'block', value: filterElement.id, id: filterElement.id });
       const elementFilterLabel = new ElementLabelCreator({ for: filterElement.id, text: filterElement.name });
       elementFilterWrapper.appendNode(elementFilterInput, elementFilterLabel);
       elementFilterPanel.appendNode(elementFilterWrapper);
@@ -136,7 +138,7 @@ export class Catalog extends HandlerLinks {
         if (event.target) {
           const isChecked = elementFilterInput.getElement().checked;
           const { value } = elementFilterInput.getElement();
-          this.changeSelectedFilters(filterName, isChecked, value);
+          this.changeArraySelectedFilters(filterName, isChecked, value);
         }
       });
     });
@@ -148,7 +150,7 @@ export class Catalog extends HandlerLinks {
     });
   }
 
-  async createFilters(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
+  async createFiltersPanel(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
     const categoriesResponse = await getCategories(getCtpClient());
     if (categoriesResponse.statusCode === 200) {
       this.categories = categoriesResponse.body.results;
@@ -171,11 +173,15 @@ export class Catalog extends HandlerLinks {
   filterProducts(): void {
     let filterStr;
     this.selectedFilters.forEach((filter) => {
-      if (filter.values.length) {
-        filterStr = `categories.id:${filter.values.join(',')}`;
+      if (filter.filterType === 'Category') {
+        if (filter.values.length) {
+          const resultArray = filter.values.map((element) => `subtree("${element}")`);
+          filterStr = `categories.id:${resultArray.join(',')}`;
+        }
       }
     });
-    // filterStr = 'categories.id:"b45da64a-0f9d-4ad4-b0ad-1da10a3f4f46","c35af45b-d097-4b5a-8d21-53b97881fa3e"';
+    // filterStr = 'categories.id:
+    // subtree("b45da64a-0f9d-4ad4-b0ad-1da10a3f4f46"), subtree("c35af45b-d097-4b5a-8d21-53b97881fa3e")';
     this.createCards(filterStr);
   }
 
@@ -224,7 +230,7 @@ export class Catalog extends HandlerLinks {
 
     const productImageBlock = new ElementCreator({
       tag: 'div',
-      classes: 'w-60 h-60 border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-gray-200',
+      classes: 'w-60 h-60 border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-bg-color',
     });
     let url = '';
     const { masterVariant } = product;
