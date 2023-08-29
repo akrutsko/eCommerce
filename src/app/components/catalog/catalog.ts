@@ -101,7 +101,7 @@ export class Catalog extends HandlerLinks {
     const filtersPanelHeader = new ElementCreator({
       tag: 'h4',
       text: 'Set filters',
-      classes: 'text-center font-ubuntu text-base font-medium leading-5 tracking-normal',
+      classes: 'f-full ext-center font-ubuntu text-base font-medium leading-5 tracking-normal',
     });
     filtersPanel.appendNode(filtersPanelHeader);
     this.createFiltersPanel(filtersPanel);
@@ -131,7 +131,7 @@ export class Catalog extends HandlerLinks {
 
   createPriceFilter(min: number, max: number, filtersElementCreator: ElementCreator<HTMLElement>): void {
     const elementAccordion = new ElementCreator({
-      tag: 'div',
+      tag: 'div', classes: 'w-full',
     });
     const elementFilterName = new ElementCreator({
       tag: 'h5',
@@ -188,20 +188,20 @@ export class Catalog extends HandlerLinks {
     filtersElementCreator: ElementCreator<HTMLElement>,
   ): void {
     const elementAccordion = new ElementCreator({
-      tag: 'div',
+      tag: 'div', classes: 'w-full',
     });
     const elementFilterName = new ElementCreator({
       tag: 'h5',
       text: filterName,
       classes:
-        'flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)] cursor-pointer',
+        'w-full flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)] cursor-pointer',
     });
     const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDownSVG });
     elementFilterName.appendNode(elementFilterArrow);
-    const elementFilterPanel = new ElementCreator({ tag: 'div', classes: 'filter' });
+    const elementFilterPanel = new ElementCreator({ tag: 'div', classes: 'w-full filter' });
     elementAccordion.appendNode(elementFilterName, elementFilterPanel);
     filterArray.forEach((filterElement) => {
-      const elementFilterWrapper = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm text-[#393E4D]' });
+      const elementFilterWrapper = new ElementCreator({ tag: 'div', classes: 'w-full flex gap-2 text-sm text-[#393E4D]' });
       const elementFilterInput = new ElementInputCreator({
         type: 'checkbox',
         classes: 'block',
@@ -333,7 +333,7 @@ export class Catalog extends HandlerLinks {
       this.createCheckBoxFilter('Color', filterArrayColor, filtersElementCreator);
     }
 
-    const elementFilterButton = new ElementButtonCreator({ text: 'apply filters', classes: 'primary-button' });
+    const elementFilterButton = new ElementButtonCreator({ text: 'apply filters', classes: 'w-full primary-button' });
     filtersElementCreator.appendNode(elementFilterButton);
 
     elementFilterButton.getElement().addEventListener('click', () => {
