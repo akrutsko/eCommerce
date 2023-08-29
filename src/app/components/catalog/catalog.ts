@@ -83,7 +83,11 @@ export class Catalog extends HandlerLinks {
       classes:
         'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap filters flex-grow-0 flex-shrink-0 gap-2 bg-bg-color rounded-lg p-4',
     });
-    const filtersPanelHeader = new ElementCreator({ tag: 'h4', text: 'Set filters', classes: 'text-center font-ubuntu text-base font-medium leading-5 tracking-normal' });
+    const filtersPanelHeader = new ElementCreator({
+      tag: 'h4',
+      text: 'Set filters',
+      classes: 'text-center font-ubuntu text-base font-medium leading-5 tracking-normal',
+    });
     filtersPanel.appendNode(filtersPanelHeader);
     this.createFiltersPanel(filtersPanel);
 
@@ -130,7 +134,12 @@ export class Catalog extends HandlerLinks {
     elementAccordion.appendNode(elementFilterName, elementFilterPanel);
     filterArray.forEach((filterElement) => {
       const elementFilterWrapper = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm text-[#393E4D]' });
-      const elementFilterInput = new ElementInputCreator({ type: 'checkbox', classes: 'block', value: filterElement.id, id: filterElement.id });
+      const elementFilterInput = new ElementInputCreator({
+        type: 'checkbox',
+        classes: 'block',
+        value: filterElement.id,
+        id: filterElement.id,
+      });
       const elementFilterLabel = new ElementLabelCreator({ for: filterElement.id, text: filterElement.name });
       elementFilterWrapper.appendNode(elementFilterInput, elementFilterLabel);
       elementFilterPanel.appendNode(elementFilterWrapper);
