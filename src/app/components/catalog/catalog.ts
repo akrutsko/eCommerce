@@ -1,4 +1,4 @@
-import { Category, ProductProjection } from '@commercetools/platform-sdk';
+import { Category, ProductProjection, ProductType } from '@commercetools/platform-sdk';
 import arrowDown from '../../../assets/svg/arrow-down.svg';
 import './catalog.css';
 import searchIcon from '../../../assets/svg/search.svg';
@@ -16,6 +16,7 @@ import { Store } from '../../enums/store';
 import { getCategories } from '../../utils/api/api-categories';
 import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
 import { getPrice } from '../../utils/price/price';
+import { getProductTypes } from '../../utils/api/api-product';
 
 interface FilterInterface {
   id: string;
@@ -118,6 +119,30 @@ export class Catalog extends HandlerLinks {
     }
   }
 
+  createPriceFilter(min: number, max: number, filtersElementCreator: ElementCreator<HTMLElement>): void {
+    const elementAccordion = new ElementCreator({
+      tag: 'div',
+    });
+    const elementFilterName = new ElementCreator({
+      tag: 'h5',
+      text: 'Price',
+      classes:
+        'flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)] cursor-pointer',
+    });
+    const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDown });
+    elementFilterName.appendNode(elementFilterArrow);
+    const elementFilterPanel = new ElementCreator({ tag: 'div', classes: 'filter' });
+    elementAccordion.appendNode(elementFilterName, elementFilterPanel);
+    filtersElementCreator.appendNode(elementAccordion);
+
+    // const minmaxElement =
+
+    elementFilterName.getElement().addEventListener('click', () => {
+      elementFilterPanel.toggleClass('active');
+      elementFilterArrow.toggleClass('arrow-active');
+    });
+  }
+
   createCheckBoxFilter(
     filterName: string,
     filterArray: FilterInterface[],
@@ -163,7 +188,9 @@ export class Catalog extends HandlerLinks {
     });
   }
 
-  getUniqueAttributes(products: ProductProjection[], nameAttribute: string): FilterInterface[] {
+  getUniqueAttributesInProducts(products: ProductProjection[], nameAttribute: string): FilterInterface[] {
+    // TODO: maybe use this instead getUniqueAttributesByKey
+    // with filter string const filterBrandString = 'variants.attributes.brand.key:exists';
     const uniqueAttributes: Attribute[] = [];
     products.forEach((product) => {
       product.variants.push(product.masterVariant);
@@ -187,8 +214,66 @@ export class Catalog extends HandlerLinks {
     }));
   }
 
+  getUniqueAttributesByKey(products: ProductType[], nameAttribute: string): FilterInterface[] {
+    const uniqueAttributes: Attribute[] = [];
+    products.forEach((product) => {
+      if (product.attributes) {
+        const attribute = product.attributes.find((attr) => attr.name === nameAttribute);
+
+        if (attribute) {
+          if (attribute.type.name === 'set') {
+            if (attribute.type.elementType.name === 'enum') {
+              attribute.type.elementType.values.forEach((brand: Attribute) => {
+                if (!uniqueAttributes.some((existingBrand) => existingBrand.key === brand.key)) {
+                  uniqueAttributes.push(brand);
+                }
+              });
+            }
+          }
+        }
+      }
+    });
+    return uniqueAttributes.map((brand) => ({
+      id: brand.key,
+      name: brand.label,
+    }));
+  }
+
+  getSortedPrices(products: ProductProjection[]): number[] {
+    const allPrices: number[] = [];
+
+    products.forEach((product) => {
+      product.variants.push(product.masterVariant);
+      product.variants.forEach((variant) => {
+        if (variant.prices) {
+          const prices = variant.prices.filter((price) => price.value.currencyCode === Store.Currency);
+
+          prices.forEach((price) => {
+            if (price.discounted) {
+              allPrices.push(price.discounted.value.centAmount / 10 ** price.discounted.value.fractionDigits);
+            } else {
+              allPrices.push(price.value.centAmount / 10 ** price.value.fractionDigits);
+            }
+          });
+        }
+      });
+    });
+
+    allPrices.sort((a, b) => a - b);
+
+    return allPrices;
+  }
+
   async createFiltersPanel(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
     // TODO: add price filter
+    const productsResponse = await getProductProjections(getCtpClient());
+    if (productsResponse.statusCode === 200) {
+      const sortedPrices = this.getSortedPrices(productsResponse.body.results);
+      if (sortedPrices.length) {
+        this.createPriceFilter(sortedPrices[0], sortedPrices[sortedPrices.length - 1], filtersElementCreator);
+      }
+    }
+
     const categoriesResponse = await getCategories(getCtpClient());
     if (categoriesResponse.statusCode === 200) {
       this.categories = categoriesResponse.body.results;
@@ -200,21 +285,16 @@ export class Catalog extends HandlerLinks {
       this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
     }
 
-    const filterBrandString = 'variants.attributes.brand.key:exists';
-    const variantsWithBrand = await getProductProjections(getCtpClient(), filterBrandString);
+    const productTypesResponse = await getProductTypes(getCtpClient());
 
-    if (variantsWithBrand.statusCode === 200) {
-      const filterArray = this.getUniqueAttributes(variantsWithBrand.body.results, 'brand');
-      this.createCheckBoxFilter('Brand', filterArray, filtersElementCreator);
+    if (productTypesResponse.statusCode === 200) {
+      const filterArrayBrand = this.getUniqueAttributesByKey(productTypesResponse.body.results, 'brand');
+      this.createCheckBoxFilter('Brand', filterArrayBrand, filtersElementCreator);
+
+      const filterArrayColor = this.getUniqueAttributesByKey(productTypesResponse.body.results, 'color');
+      this.createCheckBoxFilter('Color', filterArrayColor, filtersElementCreator);
     }
 
-    const filterColorString = 'variants.attributes.color.key:exists';
-    const variantsWithColor = await getProductProjections(getCtpClient(), filterColorString);
-
-    if (variantsWithColor.statusCode === 200) {
-      const filterArray = this.getUniqueAttributes(variantsWithColor.body.results, 'color');
-      this.createCheckBoxFilter('Color', filterArray, filtersElementCreator);
-    }
     const elementFilterButton = new ElementButtonCreator({ text: 'apply filters', classes: 'primary-button' });
     filtersElementCreator.appendNode(elementFilterButton);
 
