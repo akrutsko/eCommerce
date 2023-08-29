@@ -1,4 +1,4 @@
-import { Category, ProductProjection, TypedMoney } from '@commercetools/platform-sdk';
+import { Category, ProductProjection } from '@commercetools/platform-sdk';
 import arrowDown from '../../../assets/svg/arrow-down.svg';
 import './catalog.css';
 import searchIcon from '../../../assets/svg/search.svg';
@@ -15,6 +15,7 @@ import { Router } from '../../router/router';
 import { Store } from '../../enums/store';
 import { getCategories } from '../../utils/api/api-categories';
 import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
+import { getPrice } from '../../utils/price/price';
 
 interface FilterInterface {
   id: string;
@@ -55,7 +56,7 @@ export class Catalog extends HandlerLinks {
       classes: 'w-full items-top justify-between flex gap-6 flex-wrap flex-col md:flex-row',
     });
     const catalogNameBlock = new ElementCreator({ tag: 'div', classes: 'order-2 md:order-1' });
-    const breadcrumbsBlock = new ElementCreator({ tag: 'div', text: '1>2', classes: 'breadcrumbs' });
+    const breadcrumbsBlock = new ElementCreator({ tag: 'div', text: 'Catalog>', classes: 'breadcrumbs' });
     const catalogName = new ElementCreator({ tag: 'h2', text: 'Catalog', classes: 'h2' });
     catalogNameBlock.appendNode(catalogName, breadcrumbsBlock);
 
@@ -81,7 +82,7 @@ export class Catalog extends HandlerLinks {
     const filtersPanel = new ElementCreator({
       tag: 'div',
       classes:
-        'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap filters flex-grow-0 flex-shrink-0 gap-2 bg-bg-color rounded-lg p-4',
+        'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap filters flex-grow-0 flex-shrink-0 gap-2 bg-bg-color border-1 rounded-lg border-solid border-[#fbedec] p-4',
     });
     const filtersPanelHeader = new ElementCreator({
       tag: 'h4',
@@ -180,7 +181,7 @@ export class Catalog extends HandlerLinks {
   }
 
   filterProducts(): void {
-    let filterStr;
+    let filterStr = '';
     this.selectedFilters.forEach((filter) => {
       if (filter.filterType === 'Category') {
         if (filter.values.length) {
@@ -191,10 +192,13 @@ export class Catalog extends HandlerLinks {
     });
     // filterStr = 'categories.id:
     // subtree("b45da64a-0f9d-4ad4-b0ad-1da10a3f4f46"), subtree("c35af45b-d097-4b5a-8d21-53b97881fa3e")';
-    this.createCards(filterStr);
+    // filterStr = 'variants.attributes.brand.key:"new-googles"';
+    const filterStr2 = 'variants.price.centAmount:range (1000 to 3700)';
+    const filterStr3 = [filterStr, filterStr2];
+    this.createCards(filterStr3);
   }
 
-  async createCards(filter?: string): Promise<void> {
+  async createCards(filter?: string | string[]): Promise<void> {
     this.cardsElementCreator.getElement().innerHTML = '';
     try {
       const productsResponse = await getProductProjections(getCtpClient(), filter);
@@ -217,10 +221,6 @@ export class Catalog extends HandlerLinks {
         }
       }
     }
-  }
-
-  formatPrice(price: TypedMoney): string {
-    return `$${(price.centAmount / (100 * price.fractionDigits)).toFixed(2)}`;
   }
 
   addProduct(product: ProductProjection): void {
@@ -250,9 +250,9 @@ export class Catalog extends HandlerLinks {
       }
       const { prices } = masterVariant;
       if (prices?.length) {
-        priceWithOutDiscount = this.formatPrice(prices[0].value);
+        priceWithOutDiscount = getPrice(prices[0].value);
         if (prices[0].discounted && prices[0].discounted.value) {
-          price = this.formatPrice(prices[0].discounted.value);
+          price = getPrice(prices[0].discounted.value);
         } else {
           price = priceWithOutDiscount;
         }
