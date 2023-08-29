@@ -55,6 +55,7 @@ export class Consumer implements Observable {
       try {
         response = await getConsumer(this.apiClient);
       } catch {
+        localStorage.removeItem(Token.Access);
         const refreshToken = localStorage.getItem(Token.Refresh);
 
         if (refreshToken) {
@@ -63,7 +64,7 @@ export class Consumer implements Observable {
             response = await getConsumer(this.apiClient);
             localStorage.setItem(Token.Access, getToken());
           } catch {
-            localStorage.clear();
+            localStorage.removeItem(Token.Refresh);
           }
         }
       }
@@ -72,8 +73,6 @@ export class Consumer implements Observable {
     if (response) {
       this.consumer = response.body;
       this.status = ConsumerClient.Consumer;
-    } else {
-      localStorage.clear();
     }
     this.notify();
   }
