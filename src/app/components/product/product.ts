@@ -60,13 +60,14 @@ export class Product extends HandlerLinks {
     });
     this.productImage = new ElementImageCreator({ src: mainImgUrl, alt: name, classes: 'h-full object-cover' }).getElement();
     this.productImage.addEventListener('click', () => {
-      const index = this.productData?.masterVariant.images?.findIndex((image) => image.url === this.productImage?.src) || 0;
-      if (this.productData) {
-        const modal = new ProductModal(this.productData);
-        document.body.append(modal.getElement());
-        modal.showModal();
-        modal.initSwiper(index);
-      }
+      if (!this.productData) return;
+
+      const modal = new ProductModal(this.productData);
+      document.body.append(modal.getElement());
+      modal.showModal();
+
+      const index = this.productData.masterVariant.images?.findIndex((image) => image.url === this.productImage?.src) || 0;
+      modal.initSwiper(index);
     });
     imageWrapper.appendNode(this.productImage);
 
