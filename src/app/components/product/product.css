@@ -1,19 +1,17 @@
-.swiper-button-prev,
-.swiper-button-next {
-  --swiper-navigation-size: 44px;
-  --swiper-navigation-top-offset: 50%;
+.swiper-button-prev-product,
+.swiper-button-next-product {
   --swiper-navigation-sides-offset: -32px;
   --swiper-navigation-color: var(--main-color);
 }
 
 @media (width >= 768px) {
-  .swiper-button-prev,
-  .swiper-button-next {
+  .swiper-button-prev-product,
+  .swiper-button-next-product {
     display: none;
   }
 }
 
 .swiper-pagination {
-  --swiper-pagination-color: var(--main-color);
   --swiper-pagination-right: -32px;
+  --swiper-pagination-color: var(--main-color);
 }

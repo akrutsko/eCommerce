@@ -3,10 +3,12 @@ import {
   Product,
   ProductPagedQueryResponse,
   ProductProjection,
+  ProductProjectionPagedQueryResponse,
   ProductTypePagedQueryResponse,
 } from '@commercetools/platform-sdk';
 import { Client } from '@commercetools/sdk-client-v2';
 import { getApiRoot } from './api-client';
+import { Store } from '../../enums/store';
 
 export function getProducts(client: Client): Promise<ClientResponse<ProductPagedQueryResponse>> {
   return getApiRoot(client).products().get().execute();
@@ -22,4 +24,11 @@ export function getProduct(client: Client, id: string): Promise<ClientResponse<P
 
 export function getProductProjection(client: Client, id: string): Promise<ClientResponse<ProductProjection>> {
   return getApiRoot(client).productProjections().withId({ ID: id }).get().execute();
+}
+
+export function getProductIdBySlug(client: Client, slug: string): Promise<ClientResponse<ProductProjectionPagedQueryResponse>> {
+  return getApiRoot(client)
+    .productProjections()
+    .get({ queryArgs: { where: `slug(${Store.Language}="${slug}")` } })
+    .execute();
 }

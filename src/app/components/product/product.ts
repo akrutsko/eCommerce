@@ -1,7 +1,6 @@
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-
 import './product.css';
 
 import Swiper from 'swiper';
@@ -16,6 +15,7 @@ import { getProductProjection } from '../../utils/api/api-product';
 import { Message } from '../../utils/message/toastify-message';
 import { Store } from '../../enums/store';
 import { getPrice } from '../../utils/price/price';
+import { ProductModal } from '../modal/product-modal';
 
 export class Product extends HandlerLinks {
   consumer: Consumer;
@@ -59,6 +59,15 @@ export class Product extends HandlerLinks {
       classes: 'max-w-sm w-72 aspect-square bg-white rounded-xl cursor-zoom-in',
     });
     this.productImage = new ElementImageCreator({ src: mainImgUrl, alt: name, classes: 'h-full object-cover' }).getElement();
+    this.productImage.addEventListener('click', () => {
+      const index = this.productData?.masterVariant.images?.findIndex((image) => image.url === this.productImage?.src) || 0;
+      if (this.productData) {
+        const modal = new ProductModal(this.productData);
+        document.body.append(modal.getElement());
+        modal.showModal();
+        modal.initSwiper(index);
+      }
+    });
     imageWrapper.appendNode(this.productImage);
 
     const productWrapper = new ElementCreator({ tag: 'div', classes: 'self-start grow' });
@@ -91,28 +100,22 @@ export class Product extends HandlerLinks {
 
     const images = this.productData.masterVariant.images.map((image) => image.url);
 
-    const swiperContainer = new ElementCreator({
-      tag: 'div',
-      classes: 'swiper w-[212px] md:w-16 h-16 md:h-[212px]',
-    });
+    const swiperContainer = new ElementCreator({ tag: 'div', classes: 'swiper w-[212px] md:w-16 h-16 md:h-[212px]' });
     const swiperWrapper = new ElementCreator({ tag: 'div', classes: 'swiper-wrapper' });
     images.forEach((image) => {
-      const imgWrapper = new ElementCreator({
-        tag: 'div',
-        classes: 'swiper-slide aspect-square bg-white rounded-md object-cover cursor-pointer',
-      });
+      const imgWrapper = new ElementCreator({ tag: 'div', classes: 'swiper-slide bg-white rounded-md cursor-pointer' });
       const sliderImage = new ElementImageCreator({ src: image, alt: '', classes: 'h-full object-cover' });
       imgWrapper.appendNode(sliderImage);
       swiperWrapper.appendNode(imgWrapper);
     });
     swiperContainer.appendNode(swiperWrapper);
 
-    const swiperPrevButton = new ElementCreator({ tag: 'div', classes: 'swiper-button-prev' });
-    const swiperNextButton = new ElementCreator({ tag: 'div', classes: 'swiper-button-next' });
+    const swiperPrevButton = new ElementCreator({ tag: 'div', classes: 'swiper-button-prev swiper-button-prev-product' });
+    const swiperNextButton = new ElementCreator({ tag: 'div', classes: 'swiper-button-next swiper-button-next-product' });
     wrapper.append(swiperContainer.getElement(), swiperPrevButton.getElement(), swiperNextButton.getElement());
 
-    const swiperNavigation = new ElementCreator({ tag: 'div', classes: 'swiper-pagination hidden md:block' });
-    wrapper.append(swiperNavigation.getElement());
+    const swiperPagination = new ElementCreator({ tag: 'div', classes: 'swiper-pagination hidden md:block' });
+    wrapper.append(swiperPagination.getElement());
 
     const swiper = new Swiper('.swiper', {
       modules: [Navigation, Pagination],
@@ -121,7 +124,7 @@ export class Product extends HandlerLinks {
       spaceBetween: 10,
       direction: window.innerWidth < 768 ? 'horizontal' : 'vertical',
       loop: true,
-      navigation: { prevEl: '.swiper-button-prev', nextEl: '.swiper-button-next' },
+      navigation: { prevEl: '.swiper-button-prev-product', nextEl: '.swiper-button-next-product' },
       pagination: { el: '.swiper-pagination', clickable: true },
     });
 
