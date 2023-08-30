@@ -2,8 +2,8 @@ import { validateDateOfBirth } from '../validation/input-validation';
 import { FormInputCreator } from './form-input-creator';
 
 export class FormInputBirthdateCreator extends FormInputCreator {
-  constructor(containerClasses: string) {
-    super({ placeholder: 'date of birth', containerClasses, validationCallback: validateDateOfBirth });
+  constructor(name: string, containerClasses: string) {
+    super({ placeholder: 'date of birth', containerClasses, validation: validateDateOfBirth, name });
 
     this.input.addEventListener('focus', () => {
       this.input.type = 'date';

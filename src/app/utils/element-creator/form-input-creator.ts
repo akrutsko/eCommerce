@@ -21,10 +21,10 @@ export class FormInputCreator {
       list: params.list,
     }).getElement();
     this.error = new ElementCreator({ tag: 'div', classes: this.errorClass }).getElement();
-    this.inputContainer = new ElementCreator({ tag: 'div', classes: params.containerClasses });
+    this.inputContainer = new ElementCreator({ tag: 'div', classes: `relative w-full ${params.checkInput || ''}` });
     this.inputContainer.appendNode(this.input, this.error);
 
-    this.input.addEventListener('input', () => this.validateInput(params.validationCallback, params.checkInput));
+    this.input.addEventListener('input', () => this.validateInput(params.validation, params.checkInput));
   }
 
   validateInput(callback: (value: string, checkValue?: string) => ValidationResult, checkInput?: HTMLInputElement): void {

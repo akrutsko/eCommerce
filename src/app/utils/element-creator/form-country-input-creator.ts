@@ -5,8 +5,8 @@ import { ElementOptionCreator } from './element-option-creator';
 import { FormInputCreator } from './form-input-creator';
 
 export class FormInputCountryCreator extends FormInputCreator {
-  constructor(containerClasses: string) {
-    super({ placeholder: 'country', containerClasses, validationCallback: validateCountry, list: 'country-list' });
+  constructor(name: string, containerClasses?: string) {
+    super({ placeholder: 'country', containerClasses, validation: validateCountry, list: 'country-list', name });
 
     const countryList = new ElementCreator({
       tag: 'datalist',

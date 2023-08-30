@@ -1,10 +1,13 @@
-import { Customer } from '@commercetools/platform-sdk';
+import { Customer, CustomerUpdate, CustomerUpdateAction } from '@commercetools/platform-sdk';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 
 import arrow from '../../../assets/svg/arrow.svg';
+import { getCtpClient } from '../../utils/api/api-client';
+import { updateConsumer } from '../../utils/api/api-consumer';
+import { Message } from '../../utils/message/toastify-message';
 
-export class AccordionTab {
+export abstract class AccordionTab {
   consumerData: Customer;
 
   tab: ElementCreator<HTMLElement>;
@@ -17,35 +20,23 @@ export class AccordionTab {
 
   cancelButton: HTMLButtonElement;
 
-  content: HTMLElement;
+  actions: CustomerUpdateAction[];
 
-  editContent: HTMLElement;
-
-  contentCallback: () => HTMLElement;
-
-  editCallback: () => HTMLElement;
-
-  constructor(
-    consumerData: Customer,
-    svg: string,
-    heading: string,
-    contentCallback: () => HTMLElement,
-    editCallback: () => HTMLElement,
-  ) {
+  constructor(consumerData: Customer, svg: string, heading: string) {
     this.consumerData = consumerData;
-    this.contentCallback = contentCallback;
-    this.editCallback = editCallback;
-    this.content = contentCallback();
-    this.editContent = editCallback();
     this.tab = new ElementCreator({ tag: 'div', classes: 'tab w-full p-4 md:p-6 bg-white rounded-xl' });
     this.contentField = new ElementCreator({ tag: 'div', classes: 'content mx-2 sm:mx-4 md:mx-8 mt-2 hidden' });
     this.editButton = new ElementButtonCreator({ classes: 'primary-button mt-3 py-1', text: 'edit' }).getElement();
     this.saveButton = new ElementButtonCreator({ disabled: true, classes: 'primary-button py-1', text: 'save' }).getElement();
     this.cancelButton = new ElementButtonCreator({ classes: 'secondary-button py-1', text: 'cancel' }).getElement();
+    this.actions = [];
 
     this.createView(svg, heading);
     this.initialize();
   }
+
+  abstract createContent(): HTMLElement;
+  abstract createEdit(): HTMLElement;
 
   createView(svg: string, heading: string): void {
     const header = new ElementCreator({
@@ -59,7 +50,7 @@ export class AccordionTab {
     titleContainer.appendNode(title);
     header.appendNode(titleContainer);
 
-    this.contentField.appendNode(this.content, this.editButton);
+    this.contentField.appendNode(this.createContent(), this.editButton);
 
     this.tab.appendNode(header, this.contentField);
 
@@ -72,14 +63,14 @@ export class AccordionTab {
     this.editButton.addEventListener('click', () => this.openEditMode());
     this.saveButton.addEventListener('click', () => this.saveChanges());
     this.cancelButton.addEventListener('click', () => this.cancelChanges());
-
-    this.updateView();
   }
 
   validateSaveButton(): void {
+    const allInputs = this.getElement().querySelectorAll('input');
     const allErrors = this.getElement().querySelectorAll('div.error');
+    const emptyInputs = [...allInputs].filter((input) => input.value.length === 0);
     const showingErrors = [...allErrors].filter((error) => !error.classList.contains('hidden'));
-    this.saveButton.disabled = Boolean(showingErrors.length);
+    this.saveButton.disabled = Boolean(showingErrors.length || emptyInputs.length);
   }
 
   createSaveCancelButton(): HTMLElement {
@@ -94,10 +85,11 @@ export class AccordionTab {
 
   private openEditMode(): void {
     this.contentField.getElement().innerHTML = '';
-    this.editContent = this.editCallback();
-    this.contentField.appendNode(this.editContent, this.createSaveCancelButton());
-    const inputs = this.editContent.querySelectorAll('input');
-    const select = this.editContent.querySelector('select');
+    const edit = this.createEdit();
+    this.contentField.appendNode(edit, this.createSaveCancelButton());
+
+    const inputs = edit.querySelectorAll('input');
+    const select = edit.querySelector('select');
 
     select?.addEventListener('change', () => this.validateSaveButton());
     inputs.forEach((input) => {
@@ -107,20 +99,37 @@ export class AccordionTab {
     });
   }
 
-  private saveChanges(): void {
+  async saveChanges(): Promise<void> {
     this.saveButton.disabled = true;
+    await this.updateCustomer();
     this.contentField.getElement().innerHTML = '';
-    this.content = this.contentCallback();
-    this.contentField.appendNode(this.content, this.editButton);
+    this.contentField.appendNode(this.createContent(), this.editButton);
   }
 
   private cancelChanges(): void {
     this.saveButton.disabled = true;
     this.contentField.getElement().innerHTML = '';
-    this.contentField.appendNode(this.content, this.editButton);
+    this.contentField.appendNode(this.createContent(), this.editButton);
   }
 
-  private updateView(): void {
-    this.contentField.getElement().querySelectorAll('.data-field');
+  async updateCustomer(): Promise<void> {
+    try {
+      const consumerUpdate: CustomerUpdate = {
+        version: this.consumerData.version,
+        actions: this.actions,
+      };
+
+      await updateConsumer(getCtpClient(), this.consumerData.id, consumerUpdate).then((res) => {
+        this.consumerData = res.body;
+      });
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message) {
+          new Message(err.message, 'error').showMessage();
+        } else {
+          new Message('Something went wrong. Try later.', 'error').showMessage();
+        }
+      }
+    }
   }
 }
