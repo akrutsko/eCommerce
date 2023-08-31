@@ -1,9 +1,9 @@
-import { Customer } from '@commercetools/platform-sdk';
 import { AccordionTab } from '../tab';
 import { ElementCreator } from '../../../utils/element-creator/element-creator';
 import { FormInputCreator } from '../../../utils/element-creator/form-input-creator';
 import { validateOnlyLetters } from '../../../utils/validation/input-validation';
 import { FormInputBirthdateCreator } from '../../../utils/element-creator/form-birthdate-inputCreator';
+import { Consumer } from '../../consumer/consumer';
 
 export class PersonalTab extends AccordionTab {
   nameInputContainer: FormInputCreator;
@@ -12,21 +12,21 @@ export class PersonalTab extends AccordionTab {
 
   dateInputContainer: FormInputBirthdateCreator;
 
-  constructor(consumerData: Customer, svg: string, heading: string) {
-    super(consumerData, svg, heading);
+  constructor(consumer: Consumer, svg: string, heading: string) {
+    super(consumer, svg, heading);
     this.nameInputContainer = new FormInputCreator({ placeholder: 'name', validation: validateOnlyLetters });
     this.surnameInputContainer = new FormInputCreator({ placeholder: 'surname', validation: validateOnlyLetters });
     this.dateInputContainer = new FormInputBirthdateCreator('dateOfBirth', 'relative w-full');
   }
 
   createContent(): HTMLElement {
-    if (!this.consumerData) throw new Error('consumerData is undefined');
+    if (!this.consumer.consumer) throw new Error('consumerData is undefined');
 
     const nameContainer = new ElementCreator({ tag: 'div' });
     const nameTitle = new ElementCreator({ tag: 'div', text: 'name', classes: 'opacity-60 h5' });
     const name = new ElementCreator({
       tag: 'div',
-      text: this.consumerData.firstName,
+      text: this.consumer.consumer.firstName,
       classes: 'data-field text-xs font-medium',
     });
     nameContainer.appendNode(nameTitle, name);
@@ -35,7 +35,7 @@ export class PersonalTab extends AccordionTab {
     const surnameTitle = new ElementCreator({ tag: 'div', text: 'surname', classes: 'opacity-60 h5' });
     const surname = new ElementCreator({
       tag: 'div',
-      text: this.consumerData.lastName,
+      text: this.consumer.consumer.lastName,
       classes: 'data-field text-xs font-medium',
     });
     surnameContainer.appendNode(surnameTitle, surname);
@@ -45,7 +45,7 @@ export class PersonalTab extends AccordionTab {
 
     const date = new ElementCreator({
       tag: 'div',
-      text: this.consumerData.dateOfBirth,
+      text: this.consumer.consumer.dateOfBirth,
       classes: 'data-field text-xs font-medium',
     });
     dateContainer.appendNode(dateTitle, date);
@@ -68,10 +68,10 @@ export class PersonalTab extends AccordionTab {
     this.surnameInputContainer.addLabel('surname');
     this.dateInputContainer.addLabel('date of birth');
 
-    if (this.consumerData) {
-      if (this.consumerData.firstName) this.nameInputContainer.setInputValue(this.consumerData.firstName);
-      if (this.consumerData.lastName) this.surnameInputContainer.setInputValue(this.consumerData.lastName);
-      if (this.consumerData.dateOfBirth) this.dateInputContainer.setInputValue(this.consumerData.dateOfBirth);
+    if (this.consumer.consumer) {
+      if (this.consumer.consumer.firstName) this.nameInputContainer.setInputValue(this.consumer.consumer.firstName);
+      if (this.consumer.consumer.lastName) this.surnameInputContainer.setInputValue(this.consumer.consumer.lastName);
+      if (this.consumer.consumer.dateOfBirth) this.dateInputContainer.setInputValue(this.consumer.consumer.dateOfBirth);
     }
 
     inputsContainer.appendNode(
@@ -84,13 +84,14 @@ export class PersonalTab extends AccordionTab {
   }
 
   setActions(newFirstName: string, newLastName: string, newDateOfBirth: string): void {
-    if (newFirstName !== this.consumerData.firstName) {
+    if (!this.consumer.consumer) throw Error('consumerData does not exist');
+    if (newFirstName !== this.consumer.consumer.firstName) {
       this.actions.push({ action: 'setFirstName', firstName: newFirstName });
     }
-    if (newLastName !== this.consumerData.lastName) {
+    if (newLastName !== this.consumer.consumer.lastName) {
       this.actions.push({ action: 'setLastName', lastName: newLastName });
     }
-    if (newDateOfBirth !== this.consumerData.dateOfBirth) {
+    if (newDateOfBirth !== this.consumer.consumer.dateOfBirth) {
       this.actions.push({ action: 'setDateOfBirth', dateOfBirth: newDateOfBirth });
     }
   }

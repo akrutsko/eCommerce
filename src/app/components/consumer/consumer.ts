@@ -77,6 +77,13 @@ export class Consumer implements Observable {
     this.notify();
   }
 
+  async updateConsumer(): Promise<void> {
+    const response = await getConsumer(this.apiClient);
+    if (response) {
+      this.consumer = response.body;
+    }
+  }
+
   async logIn(username: string, password: string): Promise<void> {
     this.apiClient = getPasswordClient(username, password);
     this.consumer = (await getConsumer(this.apiClient)).body;

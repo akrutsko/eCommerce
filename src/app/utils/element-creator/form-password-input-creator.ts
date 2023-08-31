@@ -10,12 +10,12 @@ export class FormInputPasswordCreator extends FormInputCreator {
 
   constructor(
     placeholder: string,
-    containerClasses: string,
     validation: (checkValue: string, value?: string) => ValidationResult,
+    containerClasses?: string,
   ) {
     super({ placeholder, containerClasses, validation, type: 'password' });
     this.button = new ElementButtonCreator({ classes: 'absolute top-1/4 right-3', html: passwordHide }).getElement();
-    this.button.addEventListener('click', this.changePasswordVisibility);
+    this.button.addEventListener('click', () => this.changePasswordVisibility());
     this.inputContainer.appendNode(this.button);
   }
 

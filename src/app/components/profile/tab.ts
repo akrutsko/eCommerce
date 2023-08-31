@@ -1,4 +1,4 @@
-import { Customer, CustomerUpdate, CustomerUpdateAction } from '@commercetools/platform-sdk';
+import { CustomerUpdate, CustomerUpdateAction } from '@commercetools/platform-sdk';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 
@@ -6,10 +6,9 @@ import arrow from '../../../assets/svg/arrow.svg';
 import { getCtpClient } from '../../utils/api/api-client';
 import { updateConsumer } from '../../utils/api/api-consumer';
 import { Message } from '../../utils/message/toastify-message';
+import { Consumer } from '../consumer/consumer';
 
 export abstract class AccordionTab {
-  consumerData: Customer;
-
   tab: ElementCreator<HTMLElement>;
 
   contentField: ElementCreator<HTMLElement>;
@@ -22,8 +21,10 @@ export abstract class AccordionTab {
 
   actions: CustomerUpdateAction[];
 
-  constructor(consumerData: Customer, svg: string, heading: string) {
-    this.consumerData = consumerData;
+  consumer: Consumer;
+
+  constructor(consumer: Consumer, svg: string, heading: string) {
+    this.consumer = consumer;
     this.tab = new ElementCreator({ tag: 'div', classes: 'tab w-full p-4 md:p-6 bg-white rounded-xl' });
     this.contentField = new ElementCreator({ tag: 'div', classes: 'content mx-2 sm:mx-4 md:mx-8 mt-2 hidden' });
     this.editButton = new ElementButtonCreator({ classes: 'primary-button mt-3 py-1', text: 'edit' }).getElement();
@@ -113,15 +114,15 @@ export abstract class AccordionTab {
   }
 
   async updateCustomer(): Promise<void> {
+    if (!this.consumer.consumer) throw Error('consumerData does not exist');
     try {
       const consumerUpdate: CustomerUpdate = {
-        version: this.consumerData.version,
+        version: this.consumer.consumer.version,
         actions: this.actions,
       };
 
-      await updateConsumer(getCtpClient(), this.consumerData.id, consumerUpdate).then((res) => {
-        this.consumerData = res.body;
-      });
+      await updateConsumer(getCtpClient(), this.consumer.consumer.id, consumerUpdate);
+      await this.consumer.updateConsumer();
     } catch (err) {
       if (err instanceof Error) {
         if (err.message) {
