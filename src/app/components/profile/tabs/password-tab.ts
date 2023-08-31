@@ -1,5 +1,3 @@
-import key from '../../../../assets/svg/key.svg';
-
 import { AccordionTab } from '../tab';
 import { ElementCreator } from '../../../utils/element-creator/element-creator';
 import { validatePassword } from '../../../utils/validation/input-validation';
@@ -12,8 +10,8 @@ export class PasswordTab extends AccordionTab {
 
   newInputContainer: FormInputPasswordCreator;
 
-  constructor(consumer: Consumer) {
-    super(consumer, key, 'Change password');
+  constructor(consumer: Consumer, svg: string, heading: string) {
+    super(consumer, svg, heading);
     this.currentInputContainer = new FormInputPasswordCreator('current password', validatePassword);
     this.newInputContainer = new FormInputPasswordCreator('new password', validatePassword);
   }

@@ -14,6 +14,13 @@ export function getConsumer(client: Client): Promise<ClientResponse<Customer>> {
   return getApiRoot(client).me().get().execute();
 }
 
+export function changeEmail(client: Client, version: number, email: string): Promise<ClientResponse<Customer>> {
+  return getApiRoot(client)
+    .me()
+    .post({ body: { version, actions: [{ action: 'changeEmail', email }] } })
+    .execute();
+}
+
 export function changePassword(
   client: Client,
   version: number,

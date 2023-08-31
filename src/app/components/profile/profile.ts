@@ -1,7 +1,8 @@
 import info from '../../../assets/svg/info.svg';
 import delivery from '../../../assets/svg/delivery.svg';
-import login from '../../../assets/svg/login.svg';
 import billing from '../../../assets/svg/billing.svg';
+import login from '../../../assets/svg/login.svg';
+import key from '../../../assets/svg/key.svg';
 
 import { Consumer } from '../consumer/consumer';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
@@ -41,7 +42,7 @@ export class Profile {
     const deliveryTab = new AddressTab(this.consumer, delivery, 'Delivery addresses', Addresses.Shipping).getElement();
     const billingTab = new AddressTab(this.consumer, billing, 'Billing addresses', Addresses.Billing).getElement();
     const loginTab = new LoginTab(this.consumer, login, 'Login info').getElement();
-    const passwordTab = new PasswordTab(this.consumer).getElement();
+    const passwordTab = new PasswordTab(this.consumer, key, 'Change password').getElement();
 
     accordion.appendNode(personalTab, deliveryTab, billingTab, loginTab, passwordTab);
 

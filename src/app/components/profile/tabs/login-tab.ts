@@ -3,6 +3,7 @@ import { ElementCreator } from '../../../utils/element-creator/element-creator';
 import { FormInputCreator } from '../../../utils/element-creator/form-input-creator';
 import { validateEmail } from '../../../utils/validation/input-validation';
 import { Consumer } from '../../consumer/consumer';
+import { Message } from '../../../utils/message/toastify-message';
 
 export class LoginTab extends AccordionTab {
   emailInputContainer: FormInputCreator;
@@ -13,28 +14,42 @@ export class LoginTab extends AccordionTab {
   }
 
   createContent(): HTMLElement {
-    if (!this.consumer.consumerData) throw new Error('consumerData is undefined');
-
     const container = new ElementCreator({ tag: 'div' });
-    const emailTitle = new ElementCreator({ tag: 'div', text: 'Login(email)', classes: 'opacity-60 h5' });
-    const email = new ElementCreator({ tag: 'div', text: this.consumer.consumerData.email, classes: 'text-xs font-medium' });
+    const emailTitle = new ElementCreator({ tag: 'div', text: 'email', classes: 'opacity-60 h5' });
+    const email = new ElementCreator({
+      tag: 'div',
+      text: this.consumer.consumerData?.email || '',
+      classes: 'text-xs font-medium',
+    });
 
     container.appendNode(emailTitle, email);
     return container.getElement();
   }
 
   createEdit(): HTMLElement {
-    if (!this.consumer.consumerData) throw new Error('consumerData is undefined');
-
     const container = new ElementCreator({ tag: 'div' });
-    const emailTitle = new ElementCreator({ tag: 'div', text: 'Login(email)', classes: 'opacity-60 h5' }).getElement();
+    const emailTitle = new ElementCreator({ tag: 'div', text: 'email', classes: 'opacity-60 h5' }).getElement();
 
-    if (this.consumer.consumerData.email) this.emailInputContainer.setInputValue(this.consumer.consumerData.email);
+    this.emailInputContainer.setInputValue(this.consumer.consumerData?.email || '');
     container.appendNode(emailTitle, this.emailInputContainer.getContainer());
     return container.getElement();
   }
 
   async saveChanges(): Promise<void> {
-    // const newEmail = this.emailInputContainer.getInput().value;
+    const newEmail = this.emailInputContainer.getInput().value;
+
+    try {
+      await this.consumer.changeEmail(newEmail);
+      new Message('Email has been changed.', 'info').showMessage();
+      this.resetState();
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message) {
+          new Message(err.message, 'error').showMessage();
+        } else {
+          new Message('Something went wrong. Try later.', 'error').showMessage();
+        }
+      }
+    }
   }
 }
