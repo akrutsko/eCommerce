@@ -1,6 +1,5 @@
 import 'swiper/css';
 import 'swiper/css/navigation';
-import 'swiper/css/pagination';
 import './product-modal.css';
 
 import Swiper from 'swiper';
