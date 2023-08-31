@@ -16,8 +16,8 @@ describe('Tests for product API', () => {
   });
 
   test('Get the product by slug', async () => {
-    const productId = await getProductIdBySlug(getCtpClient(), 'cozytrek-camping-tent');
+    const productResponse = await getProductIdBySlug(getCtpClient(), 'cozytrek-camping-tent');
 
-    expect(productId.body.results[0].id).toBe('c43011cc-de74-406f-b68e-02c0441bcdb1');
+    expect(productResponse.body.results[0].id).toBe('c43011cc-de74-406f-b68e-02c0441bcdb1');
   });
 });

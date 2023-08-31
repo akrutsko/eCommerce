@@ -3,5 +3,5 @@ interface Observable {
 
   unsubscribe(observer: Observer): void;
 
-  notify(): void;
+  notify(primaryData?: string, secondaryData?: string[]): void;
 }
