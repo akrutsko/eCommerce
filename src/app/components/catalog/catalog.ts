@@ -306,24 +306,28 @@ export class Catalog extends HandlerLinks {
   }
 
   async createFiltersPanel(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
-    const productsResponse = await getProductProjections(getCtpClient());
-    if (productsResponse.statusCode === 200) {
-      const sortedPrices = this.getSortedPrices(productsResponse.body.results);
-      if (sortedPrices.length) {
-        this.createPriceFilter(sortedPrices[0], sortedPrices[sortedPrices.length - 1], filtersElementCreator);
-      }
+    const productsResponse = await getProductProjections(getCtpClient()).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+    if (!productsResponse) return;
+
+    const sortedPrices = this.getSortedPrices(productsResponse.body.results);
+    if (sortedPrices.length) {
+      this.createPriceFilter(sortedPrices[0], sortedPrices[sortedPrices.length - 1], filtersElementCreator);
     }
 
-    const categoriesResponse = await getCategories(getCtpClient());
-    if (categoriesResponse.statusCode === 200) {
-      this.categories = categoriesResponse.body.results;
-      const filterArray: FilterInterface[] = [];
-      this.categories.forEach((category) => {
-        filterArray.push({ id: category.id, name: category.name[Store.Language] });
-      });
+    const categoriesResponse = await getCategories(getCtpClient()).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+    if (!categoriesResponse) return;
 
-      this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
-    }
+    this.categories = categoriesResponse.body.results;
+    const filterArray: FilterInterface[] = [];
+    this.categories.forEach((category) => {
+      filterArray.push({ id: category.id, name: category.name[Store.Language] });
+    });
+
+    this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
 
     const productTypesResponse = await getProductTypes(getCtpClient());
 
