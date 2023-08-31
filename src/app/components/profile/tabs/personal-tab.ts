@@ -20,13 +20,11 @@ export class PersonalTab extends AccordionTab {
   }
 
   createContent(): HTMLElement {
-    if (!this.consumer.consumerData) throw new Error('consumerData is undefined');
-
     const nameContainer = new ElementCreator({ tag: 'div' });
     const nameTitle = new ElementCreator({ tag: 'div', text: 'name', classes: 'opacity-60 h5' });
     const name = new ElementCreator({
       tag: 'div',
-      text: this.consumer.consumerData.firstName,
+      text: this.consumer.consumerData?.firstName || '',
       classes: 'data-field text-xs font-medium',
     });
     nameContainer.appendNode(nameTitle, name);
@@ -35,7 +33,7 @@ export class PersonalTab extends AccordionTab {
     const surnameTitle = new ElementCreator({ tag: 'div', text: 'surname', classes: 'opacity-60 h5' });
     const surname = new ElementCreator({
       tag: 'div',
-      text: this.consumer.consumerData.lastName,
+      text: this.consumer.consumerData?.lastName || '',
       classes: 'data-field text-xs font-medium',
     });
     surnameContainer.appendNode(surnameTitle, surname);
@@ -45,7 +43,7 @@ export class PersonalTab extends AccordionTab {
 
     const date = new ElementCreator({
       tag: 'div',
-      text: this.consumer.consumerData.dateOfBirth,
+      text: this.consumer.consumerData?.dateOfBirth || '',
       classes: 'data-field text-xs font-medium',
     });
     dateContainer.appendNode(dateTitle, date);
@@ -68,11 +66,9 @@ export class PersonalTab extends AccordionTab {
     this.surnameInputContainer.addLabel('surname');
     this.dateInputContainer.addLabel('date of birth');
 
-    if (this.consumer.consumerData) {
-      if (this.consumer.consumerData.firstName) this.nameInputContainer.setInputValue(this.consumer.consumerData.firstName);
-      if (this.consumer.consumerData.lastName) this.surnameInputContainer.setInputValue(this.consumer.consumerData.lastName);
-      if (this.consumer.consumerData.dateOfBirth) this.dateInputContainer.setInputValue(this.consumer.consumerData.dateOfBirth);
-    }
+    this.nameInputContainer.setInputValue(this.consumer.consumerData?.firstName || '');
+    this.surnameInputContainer.setInputValue(this.consumer.consumerData?.lastName || '');
+    this.dateInputContainer.setInputValue(this.consumer.consumerData?.dateOfBirth || '');
 
     inputsContainer.appendNode(
       this.nameInputContainer.getContainer(),
@@ -84,9 +80,6 @@ export class PersonalTab extends AccordionTab {
   }
 
   async saveChanges(): Promise<void> {
-    // const newFirstName = this.nameInputContainer.getInput().value; // newFirstName !== this.consumer.consumerData.firstName
-    // const newLastName = this.surnameInputContainer.getInput().value; // newLastName !== this.consumer.consumerData.lastName
-    // eslint-disable-next-line max-len
-    // const newDateOfBirth = this.dateInputContainer.getInput().value; // newDateOfBirth !== this.consumer.consumerData.dateOfBirth
+    // TODO: implement API
   }
 }
