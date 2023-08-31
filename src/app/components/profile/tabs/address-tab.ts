@@ -1,7 +1,7 @@
-import { Address, CustomerAddAddressAction, CustomerChangeAddressAction } from '@commercetools/platform-sdk';
+import { Address } from '@commercetools/platform-sdk';
 import { AccordionTab } from '../tab';
 import { ElementCreator } from '../../../utils/element-creator/element-creator';
-import { codeCountries, countryCodes } from '../../../data/country-codes';
+import { codeCountries } from '../../../data/country-codes';
 import { ElementOptionCreator } from '../../../utils/element-creator/element-option-creator';
 import { FormInputCountryCreator } from '../../../utils/element-creator/form-country-input-creator';
 import { FormInputCreator } from '../../../utils/element-creator/form-input-creator';
@@ -174,10 +174,10 @@ export class AddressTab extends AccordionTab {
       const addressId = inputsContainer.getElement().id;
 
       if (this.currentAddresses.find((addr) => addr.id === addressId)) {
-        this.actions.push({
-          action: 'removeAddress',
-          addressId: `${inputsContainer.getElement().id}`,
-        });
+        // this.actions.push({
+        //   action: 'removeAddress',
+        //   addressId: `${inputsContainer.getElement().id}`,
+        // });
         this.currentAddresses = this.currentAddresses.filter((addr) => addr.id !== inputsContainer.getElement().id);
       } else {
         this.newAddresses = this.newAddresses.filter((addr) => addr.id !== inputsContainer.getElement().id);
@@ -209,58 +209,52 @@ export class AddressTab extends AccordionTab {
     return inputsContainer.getElement();
   }
 
-  setActions(): void {
-    this.newAddresses.forEach((addr) => {
-      const action: CustomerAddAddressAction = {
-        action: 'addAddress',
-        address: {
-          country: countryCodes[addr.countryInput.value],
-          city: addr.cityInput.value,
-          streetName: addr.streetInput.value,
-          postalCode: addr.postalCodeInput.value,
-        },
-      };
-      this.actions.push(action);
-    });
-    this.currentAddresses.forEach((addr) => {
-      const action: CustomerChangeAddressAction = {
-        action: 'changeAddress',
-        addressId: addr.id,
-        address: {
-          country: countryCodes[addr.countryInput.value],
-          city: addr.cityInput.value,
-          streetName: addr.streetInput.value,
-          postalCode: addr.postalCodeInput.value,
-        },
-      };
-      this.actions.push(action);
-    });
-  }
+  // setActions(): void {
+  //   this.newAddresses.forEach((addr) => {
+  //     const action: CustomerAddAddressAction = {
+  //       action: 'addAddress',
+  //       address: {
+  //         country: countryCodes[addr.countryInput.value],
+  //         city: addr.cityInput.value,
+  //         streetName: addr.streetInput.value,
+  //         postalCode: addr.postalCodeInput.value,
+  //       },
+  //     };
+  //     this.actions.push(action);
+  //   });
+  //   this.currentAddresses.forEach((addr) => {
+  //     const action: CustomerChangeAddressAction = {
+  //       action: 'changeAddress',
+  //       addressId: addr.id,
+  //       address: {
+  //         country: countryCodes[addr.countryInput.value],
+  //         city: addr.cityInput.value,
+  //         streetName: addr.streetInput.value,
+  //         postalCode: addr.postalCodeInput.value,
+  //       },
+  //     };
+  //     this.actions.push(action);
+  //   });
+  // }
 
   async saveChanges(): Promise<void> {
-    this.setActions();
-
-    await super.saveChanges();
+    super.saveChanges();
   }
 
   getAddressesList(tab: Addresses): Address[] | undefined {
-    if (!this.consumer.consumer) return undefined;
+    if (!this.consumer.consumerData) return undefined;
     if (tab === Addresses.Billing) {
-      return this.consumer.consumer.addresses.filter(
-        (addr) => addr.id && this.consumer.consumer?.billingAddressIds?.includes(addr.id),
+      return this.consumer.consumerData.addresses.filter(
+        (addr) => addr.id && this.consumer.consumerData?.billingAddressIds?.includes(addr.id),
       );
     }
-    return this.consumer.consumer.addresses.filter(
-      (addr) => addr.id && this.consumer.consumer?.shippingAddressIds?.includes(addr.id),
+    return this.consumer.consumerData.addresses.filter(
+      (addr) => addr.id && this.consumer.consumerData?.shippingAddressIds?.includes(addr.id),
     );
   }
 
   getDefaultAddressId(tab: Addresses): string | undefined {
-    if (tab === Addresses.Billing) return this.consumer.consumer?.defaultBillingAddressId;
-    return this.consumer.consumer?.defaultShippingAddressId;
-  }
-
-  updateCustomer(): Promise<void> {
-    return super.updateCustomer();
+    if (tab === Addresses.Billing) return this.consumer.consumerData?.defaultBillingAddressId;
+    return this.consumer.consumerData?.defaultShippingAddressId;
   }
 }

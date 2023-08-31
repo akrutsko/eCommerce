@@ -20,13 +20,13 @@ export class PersonalTab extends AccordionTab {
   }
 
   createContent(): HTMLElement {
-    if (!this.consumer.consumer) throw new Error('consumerData is undefined');
+    if (!this.consumer.consumerData) throw new Error('consumerData is undefined');
 
     const nameContainer = new ElementCreator({ tag: 'div' });
     const nameTitle = new ElementCreator({ tag: 'div', text: 'name', classes: 'opacity-60 h5' });
     const name = new ElementCreator({
       tag: 'div',
-      text: this.consumer.consumer.firstName,
+      text: this.consumer.consumerData.firstName,
       classes: 'data-field text-xs font-medium',
     });
     nameContainer.appendNode(nameTitle, name);
@@ -35,7 +35,7 @@ export class PersonalTab extends AccordionTab {
     const surnameTitle = new ElementCreator({ tag: 'div', text: 'surname', classes: 'opacity-60 h5' });
     const surname = new ElementCreator({
       tag: 'div',
-      text: this.consumer.consumer.lastName,
+      text: this.consumer.consumerData.lastName,
       classes: 'data-field text-xs font-medium',
     });
     surnameContainer.appendNode(surnameTitle, surname);
@@ -45,7 +45,7 @@ export class PersonalTab extends AccordionTab {
 
     const date = new ElementCreator({
       tag: 'div',
-      text: this.consumer.consumer.dateOfBirth,
+      text: this.consumer.consumerData.dateOfBirth,
       classes: 'data-field text-xs font-medium',
     });
     dateContainer.appendNode(dateTitle, date);
@@ -68,10 +68,10 @@ export class PersonalTab extends AccordionTab {
     this.surnameInputContainer.addLabel('surname');
     this.dateInputContainer.addLabel('date of birth');
 
-    if (this.consumer.consumer) {
-      if (this.consumer.consumer.firstName) this.nameInputContainer.setInputValue(this.consumer.consumer.firstName);
-      if (this.consumer.consumer.lastName) this.surnameInputContainer.setInputValue(this.consumer.consumer.lastName);
-      if (this.consumer.consumer.dateOfBirth) this.dateInputContainer.setInputValue(this.consumer.consumer.dateOfBirth);
+    if (this.consumer.consumerData) {
+      if (this.consumer.consumerData.firstName) this.nameInputContainer.setInputValue(this.consumer.consumerData.firstName);
+      if (this.consumer.consumerData.lastName) this.surnameInputContainer.setInputValue(this.consumer.consumerData.lastName);
+      if (this.consumer.consumerData.dateOfBirth) this.dateInputContainer.setInputValue(this.consumer.consumerData.dateOfBirth);
     }
 
     inputsContainer.appendNode(
@@ -83,26 +83,11 @@ export class PersonalTab extends AccordionTab {
     return content.appendNode(inputsContainer.getElement()).getElement();
   }
 
-  setActions(newFirstName: string, newLastName: string, newDateOfBirth: string): void {
-    if (!this.consumer.consumer) throw Error('consumerData does not exist');
-    if (newFirstName !== this.consumer.consumer.firstName) {
-      this.actions.push({ action: 'setFirstName', firstName: newFirstName });
-    }
-    if (newLastName !== this.consumer.consumer.lastName) {
-      this.actions.push({ action: 'setLastName', lastName: newLastName });
-    }
-    if (newDateOfBirth !== this.consumer.consumer.dateOfBirth) {
-      this.actions.push({ action: 'setDateOfBirth', dateOfBirth: newDateOfBirth });
-    }
-  }
-
   async saveChanges(): Promise<void> {
-    const newFirstName = this.nameInputContainer.getInput().value;
-    const newLastName = this.surnameInputContainer.getInput().value;
-    const newDateOfBirth = this.dateInputContainer.getInput().value;
-
-    this.setActions(newFirstName, newLastName, newDateOfBirth);
-
-    await super.saveChanges();
+    // const newFirstName = this.nameInputContainer.getInput().value; // newFirstName !== this.consumer.consumerData.firstName
+    // const newLastName = this.surnameInputContainer.getInput().value; // newLastName !== this.consumer.consumerData.lastName
+    // eslint-disable-next-line max-len
+    // const newDateOfBirth = this.dateInputContainer.getInput().value; // newDateOfBirth !== this.consumer.consumerData.dateOfBirth
+    super.saveChanges();
   }
 }

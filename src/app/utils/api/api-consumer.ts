@@ -14,6 +14,15 @@ export function getConsumer(client: Client): Promise<ClientResponse<Customer>> {
   return getApiRoot(client).me().get().execute();
 }
 
+export function changePassword(
+  client: Client,
+  version: number,
+  currentPassword: string,
+  newPassword: string,
+): Promise<ClientResponse<Customer>> {
+  return getApiRoot(client).me().password().post({ body: { version, currentPassword, newPassword } }).execute();
+}
+
 export function updateConsumer(client: Client, id: string, customer: CustomerUpdate): Promise<ClientResponse<Customer>> {
   return getApiRoot(client).customers().withId({ ID: id }).post({ body: customer }).execute();
 }

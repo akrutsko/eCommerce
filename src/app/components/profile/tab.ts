@@ -1,11 +1,7 @@
-import { CustomerUpdate, CustomerUpdateAction } from '@commercetools/platform-sdk';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 
 import arrow from '../../../assets/svg/arrow.svg';
-import { getCtpClient } from '../../utils/api/api-client';
-import { updateConsumer } from '../../utils/api/api-consumer';
-import { Message } from '../../utils/message/toastify-message';
 import { Consumer } from '../consumer/consumer';
 
 export abstract class AccordionTab {
@@ -19,8 +15,6 @@ export abstract class AccordionTab {
 
   cancelButton: HTMLButtonElement;
 
-  actions: CustomerUpdateAction[];
-
   consumer: Consumer;
 
   constructor(consumer: Consumer, svg: string, heading: string) {
@@ -30,7 +24,6 @@ export abstract class AccordionTab {
     this.editButton = new ElementButtonCreator({ classes: 'primary-button mt-3 py-1', text: 'edit' }).getElement();
     this.saveButton = new ElementButtonCreator({ disabled: true, classes: 'primary-button py-1', text: 'save' }).getElement();
     this.cancelButton = new ElementButtonCreator({ classes: 'secondary-button py-1', text: 'cancel' }).getElement();
-    this.actions = [];
 
     this.createView(svg, heading);
     this.initialize();
@@ -100,37 +93,21 @@ export abstract class AccordionTab {
     });
   }
 
-  async saveChanges(): Promise<void> {
+  saveChanges(): void {
     this.saveButton.disabled = true;
-    await this.updateCustomer();
     this.contentField.getElement().innerHTML = '';
     this.contentField.appendNode(this.createContent(), this.editButton);
   }
 
   private cancelChanges(): void {
+    this.getElement()
+      .querySelectorAll('input')
+      .forEach((input) => {
+        const inputTag = input;
+        inputTag.value = '';
+      });
     this.saveButton.disabled = true;
     this.contentField.getElement().innerHTML = '';
     this.contentField.appendNode(this.createContent(), this.editButton);
-  }
-
-  async updateCustomer(): Promise<void> {
-    if (!this.consumer.consumer) throw Error('consumerData does not exist');
-    try {
-      const consumerUpdate: CustomerUpdate = {
-        version: this.consumer.consumer.version,
-        actions: this.actions,
-      };
-
-      await updateConsumer(getCtpClient(), this.consumer.consumer.id, consumerUpdate);
-      await this.consumer.updateConsumer();
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message) {
-          new Message(err.message, 'error').showMessage();
-        } else {
-          new Message('Something went wrong. Try later.', 'error').showMessage();
-        }
-      }
-    }
   }
 }

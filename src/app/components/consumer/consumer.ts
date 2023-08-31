@@ -10,7 +10,7 @@ import {
   getRefreshTokenClient,
 } from '../../utils/api/api-client';
 import { ConsumerClient } from '../../enums/consumer-client';
-import { getConsumer } from '../../utils/api/api-consumer';
+import { changePassword, getConsumer } from '../../utils/api/api-consumer';
 import { Token } from '../../enums/token';
 
 export class Consumer implements Observable {
@@ -20,7 +20,7 @@ export class Consumer implements Observable {
 
   status: ConsumerClient;
 
-  consumer: Customer | null = null;
+  consumerData: Customer | null = null;
 
   get isConsumer(): boolean {
     return this.status === ConsumerClient.Consumer;
@@ -71,7 +71,7 @@ export class Consumer implements Observable {
     }
 
     if (response) {
-      this.consumer = response.body;
+      this.consumerData = response.body;
       this.status = ConsumerClient.Consumer;
     }
     this.notify();
@@ -80,13 +80,13 @@ export class Consumer implements Observable {
   async updateConsumer(): Promise<void> {
     const response = await getConsumer(this.apiClient);
     if (response) {
-      this.consumer = response.body;
+      this.consumerData = response.body;
     }
   }
 
   async logIn(username: string, password: string): Promise<void> {
     this.apiClient = getPasswordClient(username, password);
-    this.consumer = (await getConsumer(this.apiClient)).body;
+    this.consumerData = (await getConsumer(this.apiClient)).body;
     localStorage.setItem(Token.Access, getToken());
     localStorage.setItem(Token.Refresh, getRefreshToken());
     this.status = ConsumerClient.Consumer;
@@ -96,9 +96,14 @@ export class Consumer implements Observable {
   logOut(): void {
     localStorage.clear();
     this.status = ConsumerClient.CommerceTools;
-    this.consumer = null;
+    this.consumerData = null;
     clearTokenStore();
     this.apiClient = getCtpClient();
     this.notify();
+  }
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    if (!this.consumerData) return;
+    this.consumerData = (await changePassword(this.apiClient, this.consumerData.version, currentPassword, newPassword)).body;
   }
 }
