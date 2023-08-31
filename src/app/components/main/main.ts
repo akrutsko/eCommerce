@@ -1,6 +1,8 @@
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { Router } from '../../router/router';
 import { Consumer } from '../consumer/consumer';
+import { getProductIdBySlug } from '../../utils/api/api-product';
+import { Message } from '../../utils/message/toastify-message';
 
 export class Main implements Observer {
   router: Router;
@@ -23,10 +25,11 @@ export class Main implements Observer {
     return this.mainView;
   }
 
-  update(data?: string, hashData?: string): void {
+  update(rootRoute: string, pathRoutes: string[]): void {
     this.mainView.innerHTML = '';
 
-    switch (data) {
+    switch (rootRoute) {
+      case '':
       case 'main':
         this.showMain();
         break;
@@ -44,7 +47,7 @@ export class Main implements Observer {
         break;
       case 'profile':
         if (!this.consumer.isConsumer) {
-          window.history.pushState({}, '', '/signup');
+          window.history.pushState({}, '', '/login');
           this.router.handleLocation();
         } else {
           this.showProfile();
@@ -66,11 +69,15 @@ export class Main implements Observer {
           this.showSignup();
         }
         break;
-      case 'categories':
-        this.showCategories(hashData);
+      case 'categories': // TODO: refactor when sub-categories are available
+        if (pathRoutes.length) {
+          this.showCategories(pathRoutes[0]);
+        } else {
+          this.showCategories();
+        }
         break;
       case 'product':
-        this.showProduct();
+        this.showProduct(pathRoutes[0]);
         break;
       default:
         this.show404();
@@ -116,10 +123,10 @@ export class Main implements Observer {
     this.mainView.append(new Login(this.router, this.consumer).getElement());
   }
 
-  async showCategories(hashData?: string): Promise<void> {
-    if (hashData) {
+  async showCategories(subCategory?: string): Promise<void> {
+    if (subCategory) {
       const { Category } = await import('../category/category');
-      const categories = new Category(hashData);
+      const categories = new Category(subCategory);
       if (categories.validateCategory()) {
         this.mainView.append(categories.getElement());
       } else {
@@ -131,9 +138,20 @@ export class Main implements Observer {
     }
   }
 
-  async showProduct(): Promise<void> {
+  async showProduct(slug: string): Promise<void> {
+    const productResponse = await getProductIdBySlug(this.consumer.apiClient, slug).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+    if (!productResponse) return;
+
+    const productId = productResponse.body.results[0]?.id;
+    if (!productId) {
+      this.show404();
+      return;
+    }
+
     const { Product } = await import('../product/product');
-    this.mainView.append(new Product(this.router, this.consumer, 'c43011cc-de74-406f-b68e-02c0441bcdb1').getElement()); // TODO: implement routing
+    this.mainView.append(new Product(this.router, this.consumer, productId).getElement());
   }
 
   async showSignup(): Promise<void> {
