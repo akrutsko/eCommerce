@@ -237,9 +237,7 @@ export class AddressTab extends AccordionTab {
   //   });
   // }
 
-  async saveChanges(): Promise<void> {
-    super.saveChanges();
-  }
+  async saveChanges(): Promise<void> {}
 
   getAddressesList(tab: Addresses): Address[] | undefined {
     if (!this.consumer.consumerData) return undefined;

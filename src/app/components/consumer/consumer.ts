@@ -85,6 +85,7 @@ export class Consumer implements Observable {
   }
 
   async logIn(username: string, password: string): Promise<void> {
+    clearTokenStore();
     this.apiClient = getPasswordClient(username, password);
     this.consumerData = (await getConsumer(this.apiClient)).body;
     localStorage.setItem(Token.Access, getToken());

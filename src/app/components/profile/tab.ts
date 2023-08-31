@@ -31,6 +31,7 @@ export abstract class AccordionTab {
 
   abstract createContent(): HTMLElement;
   abstract createEdit(): HTMLElement;
+  abstract saveChanges(): void;
 
   createView(svg: string, heading: string): void {
     const header = new ElementCreator({
@@ -56,7 +57,7 @@ export abstract class AccordionTab {
   initialize(): void {
     this.editButton.addEventListener('click', () => this.openEditMode());
     this.saveButton.addEventListener('click', () => this.saveChanges());
-    this.cancelButton.addEventListener('click', () => this.cancelChanges());
+    this.cancelButton.addEventListener('click', () => this.resetState());
   }
 
   validateSaveButton(): void {
@@ -93,13 +94,7 @@ export abstract class AccordionTab {
     });
   }
 
-  saveChanges(): void {
-    this.saveButton.disabled = true;
-    this.contentField.getElement().innerHTML = '';
-    this.contentField.appendNode(this.createContent(), this.editButton);
-  }
-
-  private cancelChanges(): void {
+  resetState(): void {
     this.getElement()
       .querySelectorAll('input')
       .forEach((input) => {

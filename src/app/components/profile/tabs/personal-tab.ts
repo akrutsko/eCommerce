@@ -88,6 +88,5 @@ export class PersonalTab extends AccordionTab {
     // const newLastName = this.surnameInputContainer.getInput().value; // newLastName !== this.consumer.consumerData.lastName
     // eslint-disable-next-line max-len
     // const newDateOfBirth = this.dateInputContainer.getInput().value; // newDateOfBirth !== this.consumer.consumerData.dateOfBirth
-    super.saveChanges();
   }
 }

@@ -6,7 +6,6 @@ import { validatePassword } from '../../../utils/validation/input-validation';
 import { Consumer } from '../../consumer/consumer';
 import { FormInputPasswordCreator } from '../../../utils/element-creator/form-password-input-creator';
 import { Message } from '../../../utils/message/toastify-message';
-import { clearTokenStore } from '../../../utils/api/api-client';
 
 export class PasswordTab extends AccordionTab {
   currentInputContainer: FormInputPasswordCreator;
@@ -39,9 +38,8 @@ export class PasswordTab extends AccordionTab {
       new Message('Password has been changed.', 'info').showMessage();
 
       if (this.consumer.consumerData) {
-        clearTokenStore();
         await this.consumer.logIn(this.consumer.consumerData.email, newPassword);
-        super.saveChanges();
+        this.resetState();
       }
     } catch (err) {
       if (err instanceof Error) {

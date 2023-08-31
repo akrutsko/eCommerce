@@ -36,7 +36,5 @@ export class LoginTab extends AccordionTab {
 
   async saveChanges(): Promise<void> {
     // const newEmail = this.emailInputContainer.getInput().value;
-
-    super.saveChanges();
   }
 }
