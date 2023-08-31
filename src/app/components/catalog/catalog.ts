@@ -519,7 +519,7 @@ export class Catalog extends HandlerLinks {
       productPricesBlock.appendNode(productPriceWithOutDiscountBlock);
     }
 
-    const aCard = new ElementAnchorCreator({ href: `/product#${product.id}`, classes: 'absolute inset-0' });
+    const aCard = new ElementAnchorCreator({ href: `/product/${product.slug}`, classes: 'absolute inset-0' });
     this.listOfLinks.push(aCard.getElement());
     card.appendNode(productImageBlock, productNameBlock, productDescriptionBlock, productPricesBlock, aCard);
   }
