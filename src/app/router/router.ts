@@ -1,11 +1,7 @@
-import { routes } from './routes';
-
 export class Router implements Observable {
   private observers: Observer[] = [];
 
   private previousPath = '';
-
-  private previousHash = '';
 
   constructor() {
     window.addEventListener('popstate', () => this.handleLocation());
@@ -22,21 +18,16 @@ export class Router implements Observable {
     this.observers.slice(index, 1);
   }
 
-  notify(primaryData?: string, secondaryData?: string): void {
-    if (primaryData) {
-      this.observers.forEach((observer) => observer.update(primaryData, secondaryData));
-    }
+  notify(rootRout: string, pathRoutes: string[]): void {
+    this.observers.forEach((observer) => observer.update(rootRout, pathRoutes));
   }
 
   public handleLocation(): void {
     const newPath = window.location.pathname;
-    const newHash = window.location.hash.substring(1);
-    if (newPath === this.previousPath && newHash === this.previousHash) {
-      return;
-    }
+    if (newPath === this.previousPath) return;
     this.previousPath = newPath;
-    this.previousHash = newHash;
-    const route = routes[newPath] || routes[404];
-    this.notify(route, newHash);
+
+    const [rootRoute, ...pathRoutes] = newPath.slice(1).split('/');
+    this.notify(rootRoute, pathRoutes);
   }
 }
