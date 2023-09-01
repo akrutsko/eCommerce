@@ -7,7 +7,6 @@ import searchIcon from '../../../assets/svg/search.svg';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
-import { getProductProjections } from '../../utils/api/api-product-projections';
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 import { Message } from '../../utils/message/toastify-message';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
@@ -17,7 +16,7 @@ import { Store } from '../../enums/store';
 import { getCategories } from '../../utils/api/api-categories';
 import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
 import { getPrice } from '../../utils/price/price';
-import { getProductTypes } from '../../utils/api/api-product';
+import { getProductProjections, getProductTypes } from '../../utils/api/api-product';
 import { Consumer } from '../consumer/consumer';
 
 export class Catalog extends HandlerLinks {
@@ -375,7 +374,7 @@ export class Catalog extends HandlerLinks {
   async createCards(filter?: string | string[]): Promise<void> {
     this.cardsView.getElement().innerHTML = '';
 
-    const productsResponse = await getProductProjections(this.consumer.apiClient, filter).catch(() => {
+    const productsResponse = await getProductProjections(this.consumer.apiClient, 30, 0, filter).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!productsResponse) return;
