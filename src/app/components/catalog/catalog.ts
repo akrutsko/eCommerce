@@ -1,8 +1,9 @@
 import { Category, ProductProjection, ProductType } from '@commercetools/platform-sdk';
+import './catalog.css';
 import arrowDownSVG from '../../../assets/svg/arrow-down.svg';
 import deleteFilterSVG from '../../../assets/svg/delete-filter.svg';
-import './catalog.css';
 import searchIcon from '../../../assets/svg/search.svg';
+
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
@@ -19,52 +20,38 @@ import { getPrice } from '../../utils/price/price';
 import { getProductTypes } from '../../utils/api/api-product';
 import { Consumer } from '../consumer/consumer';
 
-interface FilterInterface {
-  id: string;
-  name: string;
-}
-interface Attribute {
-  key: string;
-  label: string;
-}
-interface SelectedFilters {
-  filterType: string;
-  values: string[];
-}
-
-interface PriceFilter {
-  min: number;
-  max: number;
-}
 export class Catalog extends HandlerLinks {
   catalogView: ElementCreator<HTMLElement>;
 
+  countOfResultsView: ElementCreator<HTMLElement>;
+
+  cardsView: ElementCreator<HTMLElement>;
+
+  checkBoxFilterViews: ElementCreator<HTMLInputElement>[] = [];
+
+  minPriceFilterView: ElementCreator<HTMLInputElement>;
+
+  maxPriceFilterView: ElementCreator<HTMLInputElement>;
+
   consumer: Consumer;
-
-  products: ProductProjection[] = [];
-
-  selectedFilters: SelectedFilters[] = [];
-
-  priceFilter: PriceFilter = { min: 0, max: 0 };
-
-  elementCountOfResults: ElementCreator<HTMLElement>;
 
   categories: Category[] = [];
 
-  cardsElementCreator: ElementCreator<HTMLElement>;
+  products: ProductProjection[] = [];
 
-  selectedFilfersBlock: ElementCreator<HTMLElement>;
+  selectedCheckBoxFilters: SelectedFilters[] = [];
 
   constructor(router: Router, consumer: Consumer) {
     super(router);
     this.consumer = consumer;
-    this.elementCountOfResults = new ElementCreator({ tag: 'div', classes: '', text: '0 results' });
-    this.cardsElementCreator = new ElementCreator({
+    this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
+    this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
+    this.cardsView = new ElementCreator({
       tag: 'div',
       classes: 'w-full md:w-2/4 lg:w-6/8 flex flex-wrap gap-3 justify-around grow',
     });
-    this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
-    this.selectedFilfersBlock = new ElementCreator({ tag: 'div', classes: 'flex' });
+    this.minPriceFilterView = new ElementInputCreator({ type: 'number', classes: 'border-1 rounded-lg border-solid border-[#E8E6E8]' });
+    this.maxPriceFilterView = new ElementInputCreator({ type: 'number', classes: 'border-1 rounded-lg border-solid border-[#E8E6E8]' });
     this.createView();
   }
 
@@ -93,7 +80,8 @@ export class Catalog extends HandlerLinks {
 
     await this.createCards();
 
-    secondBlock.appendNode(this.selectedFilfersBlock, this.elementCountOfResults);
+    const sortByNameElement = new ElementCreator({ tag: 'div', classes: 'filter-button', text: 'Sort by name' });
+    secondBlock.appendNode(sortByNameElement, this.countOfResultsView);
 
     const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full justify-between flex gap-3 flex-wrap' });
     const filtersPanel = new ElementCreator({
@@ -107,22 +95,23 @@ export class Catalog extends HandlerLinks {
       classes: 'f-full ext-center font-ubuntu text-base font-medium leading-5 tracking-normal',
     });
     filtersPanel.appendNode(filtersPanelHeader);
-    this.createFiltersPanel(filtersPanel);
 
-    thirdBlock.appendNode(filtersPanel, this.cardsElementCreator);
+    this.createFiltersView(filtersPanel);
+
+    thirdBlock.appendNode(filtersPanel, this.cardsView);
 
     this.catalogView.appendNode(firstBlock, secondBlock, thirdBlock);
   }
 
   changeArraySelectedFilters(filterName: string, isChecked: boolean, value: string): void {
-    const foundFilter = this.selectedFilters.find((filter) => filter.filterType === filterName);
+    const foundFilter = this.selectedCheckBoxFilters.find((filter) => filter.filterType === filterName);
     if (isChecked) {
       if (foundFilter) {
         if (!foundFilter.values.includes(value)) {
           foundFilter.values.push(value);
         }
       } else {
-        this.selectedFilters.push({ filterType: filterName, values: [value] });
+        this.selectedCheckBoxFilters.push({ filterType: filterName, values: [value] });
       }
     } else if (foundFilter) {
       const index = foundFilter.values.indexOf(value);
@@ -152,33 +141,17 @@ export class Catalog extends HandlerLinks {
     const minmaxElement = new ElementCreator({ tag: 'div', classes: 'flex' });
     elementFilterPanel.appendNode(minmaxElement);
 
-    const minElement = new ElementInputCreator({ type: 'number', classes: 'border-1 rounded-lg border-solid border-[#E8E6E8]' });
-    minElement.getElement().step = '0.01';
-    minElement.getElement().min = `${min}`;
-    minElement.getElement().max = `${max}`;
-    minElement.getElement().placeholder = '$0.00';
+    this.minPriceFilterView.getElement().step = '0.01';
+    this.minPriceFilterView.getElement().min = `${min}`;
+    this.minPriceFilterView.getElement().max = `${max}`;
+    this.minPriceFilterView.getElement().placeholder = '$0.00';
 
-    minElement.getElement().addEventListener('change', (event) => {
-      if (event.target) {
-        const { value } = minElement.getElement();
-        this.priceFilter.min = parseFloat(value) * 100;
-      }
-    });
+    this.maxPriceFilterView.getElement().step = '0.01';
+    this.maxPriceFilterView.getElement().min = `${min}`;
+    this.maxPriceFilterView.getElement().max = `${max}`;
+    this.maxPriceFilterView.getElement().placeholder = '$0.00';
 
-    const maxElement = new ElementInputCreator({ type: 'number', classes: 'border-1 rounded-lg border-solid border-[#E8E6E8]' });
-    maxElement.getElement().step = '0.01';
-    maxElement.getElement().min = `${min}`;
-    maxElement.getElement().max = `${max}`;
-    maxElement.getElement().placeholder = '$0.00';
-
-    maxElement.getElement().addEventListener('change', (event) => {
-      if (event.target) {
-        const { value } = maxElement.getElement();
-        this.priceFilter.max = parseFloat(value) * 100;
-      }
-    });
-
-    minmaxElement.appendNode(minElement, maxElement);
+    minmaxElement.appendNode(this.minPriceFilterView, this.maxPriceFilterView);
 
     elementFilterName.getElement().addEventListener('click', () => {
       elementFilterPanel.toggleClass('active');
@@ -188,7 +161,7 @@ export class Catalog extends HandlerLinks {
 
   createCheckBoxFilter(
     filterName: string,
-    filterArray: FilterInterface[],
+    filterArray: Attribute[],
     filtersElementCreator: ElementCreator<HTMLElement>,
   ): void {
     const elementAccordion = new ElementCreator({
@@ -210,10 +183,11 @@ export class Catalog extends HandlerLinks {
       const elementFilterInput = new ElementInputCreator({
         type: 'checkbox',
         classes: 'block',
-        value: filterElement.id,
-        id: filterElement.id,
+        value: filterElement.key,
+        id: filterElement.key,
       });
-      const elementFilterLabel = new ElementLabelCreator({ for: filterElement.id, text: filterElement.name });
+      this.checkBoxFilterViews.push(elementFilterInput);
+      const elementFilterLabel = new ElementLabelCreator({ for: filterElement.key, text: filterElement.label });
       elementFilterWrapper.appendNode(elementFilterInput, elementFilterLabel);
       elementFilterPanel.appendNode(elementFilterWrapper);
       elementFilterInput.getElement().addEventListener('change', (event) => {
@@ -232,44 +206,18 @@ export class Catalog extends HandlerLinks {
     });
   }
 
-  getUniqueAttributesInProducts(products: ProductProjection[], nameAttribute: string): FilterInterface[] {
-    // TODO: maybe use this instead getUniqueAttributesByKey
-    // with filter string const filterBrandString = 'variants.attributes.brand.key:exists';
+  getUniqueAttributesByKey(productTypes: ProductType[], nameAttribute: string): Attribute[] {
     const uniqueAttributes: Attribute[] = [];
-    products.forEach((product) => {
-      product.variants.push(product.masterVariant);
-      product.variants.forEach((variant) => {
-        if (variant.attributes) {
-          const attribute = variant.attributes.find((attr) => attr.name === nameAttribute);
-
-          if (attribute) {
-            attribute.value.forEach((brand: Attribute) => {
-              if (!uniqueAttributes.some((existingBrand) => existingBrand.key === brand.key)) {
-                uniqueAttributes.push(brand);
-              }
-            });
-          }
-        }
-      });
-    });
-    return uniqueAttributes.map((brand) => ({
-      id: brand.key,
-      name: brand.label,
-    }));
-  }
-
-  getUniqueAttributesByKey(products: ProductType[], nameAttribute: string): FilterInterface[] {
-    const uniqueAttributes: Attribute[] = [];
-    products.forEach((product) => {
-      if (product.attributes) {
-        const attribute = product.attributes.find((attr) => attr.name === nameAttribute);
+    productTypes.forEach((productType) => {
+      if (productType.attributes) {
+        const attribute = productType.attributes.find((attr) => attr.name === nameAttribute);
 
         if (attribute) {
           if (attribute.type.name === 'set') {
             if (attribute.type.elementType.name === 'enum') {
-              attribute.type.elementType.values.forEach((brand: Attribute) => {
-                if (!uniqueAttributes.some((existingBrand) => existingBrand.key === brand.key)) {
-                  uniqueAttributes.push(brand);
+              attribute.type.elementType.values.forEach((gettedAttribute: Attribute) => {
+                if (!uniqueAttributes.some((existingBrand) => existingBrand.key === gettedAttribute.key)) {
+                  uniqueAttributes.push(gettedAttribute);
                 }
               });
             }
@@ -277,10 +225,7 @@ export class Catalog extends HandlerLinks {
         }
       }
     });
-    return uniqueAttributes.map((brand) => ({
-      id: brand.key,
-      name: brand.label,
-    }));
+    return uniqueAttributes;
   }
 
   getSortedPrices(products: ProductProjection[]): number[] {
@@ -308,70 +253,75 @@ export class Catalog extends HandlerLinks {
     return allPrices;
   }
 
-  async createFiltersPanel(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
+  async createFiltersView(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
     const productsResponse = await getProductProjections(this.consumer.apiClient).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!productsResponse) return;
+
+    const categoriesResponse = await getCategories(this.consumer.apiClient, ['parent is not defined']).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+    if (!categoriesResponse) return;
+    this.categories = categoriesResponse.body.results;
+    const filterArray: Attribute[] = [];
+    this.categories.forEach((category) => {
+      filterArray.push({ key: category.id, label: category.name[Store.Language] });
+    });
+    this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
 
     const sortedPrices = this.getSortedPrices(productsResponse.body.results);
     if (sortedPrices.length) {
       this.createPriceFilter(sortedPrices[0], sortedPrices[sortedPrices.length - 1], filtersElementCreator);
     }
 
-    const categoriesResponse = await getCategories(this.consumer.apiClient, ['parent is not defined']).catch(() => {
-      new Message('Something went wrong. Try later.', 'error').showMessage();
-    });
-    if (!categoriesResponse) return;
-
-    this.categories = categoriesResponse.body.results;
-    const filterArray: FilterInterface[] = [];
-    this.categories.forEach((category) => {
-      filterArray.push({ id: category.id, name: category.name[Store.Language] });
-    });
-
-    this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
-
     const productTypesResponse = await getProductTypes(this.consumer.apiClient).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!productTypesResponse) return;
 
-    const filterArrayBrand = this.getUniqueAttributesByKey(productTypesResponse.body.results, 'brand');
-    this.createCheckBoxFilter('Brand', filterArrayBrand, filtersElementCreator);
+    const filters: Attribute[] = [{ key: 'brand', label: 'Brand' }, { key: 'color', label: 'Color' }];
 
-    const filterArrayColor = this.getUniqueAttributesByKey(productTypesResponse.body.results, 'color');
-    this.createCheckBoxFilter('Color', filterArrayColor, filtersElementCreator);
+    filters.forEach((filter) => {
+      const filterArrayBrand = this.getUniqueAttributesByKey(productTypesResponse.body.results, filter.key);
+      this.createCheckBoxFilter(filter.label, filterArrayBrand, filtersElementCreator);
+    });
 
-    const elementFilterButton = new ElementButtonCreator({ text: 'apply filters', classes: 'w-full primary-button' });
-    filtersElementCreator.appendNode(elementFilterButton);
+    const btsWrapper = new ElementCreator({ tag: 'div', classes: 'flex gap-1 justify-between' });
+    filtersElementCreator.appendNode(btsWrapper);
 
-    elementFilterButton.getElement().addEventListener('click', () => {
-      this.filterProducts();
+    const btbApplyFilters = new ElementButtonCreator({ text: 'apply', classes: 'w-full primary-button' });
+
+    btbApplyFilters.getElement().addEventListener('click', () => {
+      this.applyFilters();
+    });
+
+    const btbResetFilters = new ElementButtonCreator({ text: 'reset', classes: 'w-full primary-button' });
+    btsWrapper.appendNode(btbApplyFilters, btbResetFilters);
+
+    btbResetFilters.getElement().addEventListener('click', () => {
+      this.resetFilters();
     });
   }
 
-  filterProducts(): void {
+  applyFilters(): void {
     const filterArray: string[] = [];
-    this.selectedFilfersBlock.getElement().innerHTML = '';
-    if (this.priceFilter.min || this.priceFilter.max || this.selectedFilters.length) {
-      const resetAllFiltersElement = new ElementButtonCreator({ text: 'reset filters', classes: 'secondary-button' });
-      this.selectedFilfersBlock.appendNode(resetAllFiltersElement);
-      // TODO: implement reset filters
-    }
 
-    if (this.priceFilter.min || this.priceFilter.max) {
+    const min = parseFloat(this.minPriceFilterView.getElement().value) * 100;
+    const max = parseFloat(this.maxPriceFilterView.getElement().value) * 100;
+
+    if (min || max) {
       let from = '*';
       let fromStr = '0';
-      if (this.priceFilter.min) {
-        from = this.priceFilter.min.toString();
-        fromStr = (this.priceFilter.min / 100).toString();
+      if (min) {
+        from = min.toString();
+        fromStr = (min / 100).toString();
       }
       let to = '*';
       let toStr = '';
-      if (this.priceFilter.max) {
-        to = this.priceFilter.max.toString();
-        toStr = (this.priceFilter.max / 100).toString();
+      if (max) {
+        to = max.toString();
+        toStr = (max / 100).toString();
       }
       const filterStr = `variants.price.centAmount:range (${from} to ${to})`;
       filterArray.push(filterStr);
@@ -382,10 +332,9 @@ export class Catalog extends HandlerLinks {
       });
       const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
       resetPriceElement.appendNode(elementFilterDelete);
-      this.selectedFilfersBlock.appendNode(resetPriceElement);
     }
 
-    this.selectedFilters.forEach((filter) => {
+    this.selectedCheckBoxFilters.forEach((filter) => {
       if (filter.values.length) {
         if (filter.filterType === 'Category') {
           const resultArray = filter.values.map((element) => `subtree("${element}")`);
@@ -397,7 +346,6 @@ export class Catalog extends HandlerLinks {
           });
           const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
           resetPriceElement.appendNode(elementFilterDelete);
-          this.selectedFilfersBlock.appendNode(resetPriceElement);
           // TODO: implement reset filters
         } else if (filter.filterType === 'Color') {
           const resultArray = filter.values.map((element) => `"${element}"`);
@@ -409,7 +357,6 @@ export class Catalog extends HandlerLinks {
           });
           const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
           resetPriceElement.appendNode(elementFilterDelete);
-          this.selectedFilfersBlock.appendNode(resetPriceElement);
           // TODO: implement reset filters
         } else if (filter.filterType === 'Brand') {
           const resultArray = filter.values.map((element) => `"${element}"`);
@@ -421,7 +368,6 @@ export class Catalog extends HandlerLinks {
           });
           const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
           resetPriceElement.appendNode(elementFilterDelete);
-          this.selectedFilfersBlock.appendNode(resetPriceElement);
           // TODO: implement reset filters
         }
       }
@@ -430,8 +376,19 @@ export class Catalog extends HandlerLinks {
     this.createCards(filterArray);
   }
 
+  resetFilters(): void {
+    this.checkBoxFilterViews.forEach((element) => {
+      const checkBox = element.getElement();
+      checkBox.checked = false;
+    });
+    this.selectedCheckBoxFilters = [];
+    this.minPriceFilterView.getElement().value = '';
+    this.maxPriceFilterView.getElement().value = '';
+    this.applyFilters();
+  }
+
   async createCards(filter?: string | string[]): Promise<void> {
-    this.cardsElementCreator.getElement().innerHTML = '';
+    this.cardsView.getElement().innerHTML = '';
 
     const productsResponse = await getProductProjections(this.consumer.apiClient, filter).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
@@ -439,7 +396,7 @@ export class Catalog extends HandlerLinks {
     if (!productsResponse) return;
 
     this.products = productsResponse.body.results;
-    this.elementCountOfResults.getElement().textContent = `${this.products.length} results`;
+    this.countOfResultsView.getElement().textContent = `${this.products.length} results`;
     this.products.forEach((product) => {
       this.addProduct(product);
     });
@@ -457,7 +414,7 @@ export class Catalog extends HandlerLinks {
       tag: 'div',
       classes: 'relative card w-60 h-88 hover:scale-105 hover:cursor-pointer hover:border',
     });
-    this.cardsElementCreator.appendNode(card);
+    this.cardsView.appendNode(card);
 
     const productImageBlock = new ElementCreator({
       tag: 'div',
