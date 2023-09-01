@@ -193,12 +193,10 @@ export class Catalog extends HandlerLinks {
       });
       elementFilterWrapper.appendNode(elementFilterInput, elementFilterLabel);
       elementFilterPanel.appendNode(elementFilterWrapper);
-      elementFilterInput.getElement().addEventListener('change', (event) => {
-        if (event.target) {
-          const isChecked = elementFilterInput.getElement().checked;
-          const { value } = elementFilterInput.getElement();
-          this.changeArraySelectedFilters(filterName, isChecked, value);
-        }
+      elementFilterInput.getElement().addEventListener('change', () => {
+        const isChecked = elementFilterInput.getElement().checked;
+        const { value } = elementFilterInput.getElement();
+        this.changeArraySelectedFilters(filterName, isChecked, value);
       });
     });
     filtersElementCreator.appendNode(elementAccordion);
@@ -309,21 +307,21 @@ export class Catalog extends HandlerLinks {
   applyFilters(): void {
     const filterArray: string[] = [];
 
-    const min = parseFloat(this.minPriceFilterView.getElement().value) * 100;
-    const max = parseFloat(this.maxPriceFilterView.getElement().value) * 100;
+    const min = parseFloat(this.minPriceFilterView.getElement().value) * 10 ** Store.FractionDigits;
+    const max = parseFloat(this.maxPriceFilterView.getElement().value) * 10 ** Store.FractionDigits;
 
     if (min || max) {
       let from = '*';
       let fromStr = '0';
       if (min) {
         from = min.toString();
-        fromStr = (min / 100).toString();
+        fromStr = (min / 10 ** Store.FractionDigits).toString();
       }
       let to = '*';
       let toStr = '';
       if (max) {
         to = max.toString();
-        toStr = (max / 100).toString();
+        toStr = (max / 10 ** Store.FractionDigits).toString();
       }
       const filterStr = `variants.price.centAmount:range (${from} to ${to})`;
       filterArray.push(filterStr);
