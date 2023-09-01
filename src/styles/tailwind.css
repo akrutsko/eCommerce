@@ -123,4 +123,8 @@
   .breadcrumbs {
     @apply text-base font-medium leading-6 text-left text-[#DB5743];
   }
+
+  .sorting-button {
+    @apply text-sm font-normal border-2 border-primary-color transition-colors outline-transparent focus:outline-transparent disabled:pointer-events-none disabled:opacity-50 text-secondary-color bg-transparent hover:bg-red-600 hover:border-red-600 hover:text-white px-2 py-1;
+  }
 }

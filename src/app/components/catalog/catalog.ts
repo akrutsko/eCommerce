@@ -32,6 +32,8 @@ export class Catalog extends HandlerLinks {
 
   maxPriceFilterView: ElementCreator<HTMLInputElement>;
 
+  selectedFiltersView: ElementCreator<HTMLElement>;
+
   consumer: Consumer;
 
   categories: Category[] = [];
@@ -40,11 +42,16 @@ export class Catalog extends HandlerLinks {
 
   selectedCheckBoxFilters: SelectedFilters[] = [];
 
+  currentSortingString: string | undefined;
+
+  currentFilters: string | string[] = [];
+
   constructor(router: Router, consumer: Consumer) {
     super(router);
     this.consumer = consumer;
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
+    this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex' });
     this.cardsView = new ElementCreator({
       tag: 'div',
       classes: 'w-full md:w-2/4 lg:w-6/8 flex flex-wrap gap-3 justify-around grow',
@@ -58,6 +65,12 @@ export class Catalog extends HandlerLinks {
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] min-w-0',
     });
     this.createView();
+  }
+
+  sort(fieldName: String, method: String): void {
+    const sortingSrting = `${fieldName} ${method}`;
+    this.createCards(this.currentFilters, sortingSrting);
+    this.currentSortingString = sortingSrting;
   }
 
   async createView(): Promise<void> {
@@ -81,12 +94,46 @@ export class Catalog extends HandlerLinks {
     form.appendNode(search, submitButton);
     firstBlock.appendNode(catalogNameBlock, form);
 
-    const secondBlock = new ElementCreator({ tag: 'div', classes: 'w-full items-top justify-between flex gap-1' });
+    const secondBlock = new ElementCreator({ tag: 'div', classes: 'm-1 w-full items-top justify-between flex gap-1' });
 
     await this.createCards();
 
-    const sortByNameElement = new ElementCreator({ tag: 'div', classes: 'filter-button', text: 'Sort by name' });
-    secondBlock.appendNode(sortByNameElement, this.countOfResultsView);
+    const sortByNameElement = new ElementButtonCreator({ classes: 'sorting-button  rounded-l-full', text: 'Sort by name' });
+    const sortByPriceElement = new ElementButtonCreator({ classes: 'sorting-button  rounded-r-full', text: 'Sort by price' });
+
+    sortByNameElement.getElement().addEventListener('click', () => {
+      let sortingMethod = 'asc';
+      if (sortByNameElement.getElement().classList.contains('asc')) {
+        sortingMethod = 'desc';
+        sortByNameElement.removeClass('asc');
+        sortByNameElement.addClass('desc');
+      } else {
+        sortByNameElement.removeClass('desc');
+        sortByNameElement.addClass('asc');
+      }
+      sortByPriceElement.removeClass('asc');
+      sortByPriceElement.removeClass('desc');
+      this.sort(`name.${Store.Language}`, sortingMethod);
+    });
+
+    sortByPriceElement.getElement().addEventListener('click', () => {
+      let sortingMethod = 'asc';
+      if (sortByPriceElement.getElement().classList.contains('asc')) {
+        sortingMethod = 'desc';
+        sortByPriceElement.removeClass('asc');
+        sortByPriceElement.addClass('desc');
+      } else {
+        sortByPriceElement.removeClass('desc');
+        sortByPriceElement.addClass('asc');
+      }
+      sortByNameElement.removeClass('asc');
+      sortByNameElement.removeClass('desc');
+      this.sort('price', sortingMethod);
+    });
+
+    const resultSortingView = new ElementCreator({ tag: 'div', classes: 'flex gap-1 items-center' });
+    resultSortingView.appendNode(this.countOfResultsView, sortByNameElement, sortByPriceElement);
+    secondBlock.appendNode(this.selectedFiltersView, resultSortingView);
 
     const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full justify-between flex gap-3 flex-wrap' });
     const filtersPanel = new ElementCreator({
@@ -349,7 +396,8 @@ export class Catalog extends HandlerLinks {
       }
     });
 
-    this.createCards(filterArray);
+    this.createCards(filterArray, this.currentSortingString);
+    this.currentFilters = filterArray;
   }
 
   resetFilters(): void {
@@ -363,10 +411,10 @@ export class Catalog extends HandlerLinks {
     this.applyFilters();
   }
 
-  async createCards(filter?: string | string[]): Promise<void> {
+  async createCards(filter?: string | string[], sort?: string): Promise<void> {
     this.cardsView.getElement().innerHTML = '';
 
-    const productsResponse = await getProductProjections(this.consumer.apiClient, 30, 0, filter).catch(() => {
+    const productsResponse = await getProductProjections(this.consumer.apiClient, 30, 0, filter, sort).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!productsResponse) return;

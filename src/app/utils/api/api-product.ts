@@ -38,6 +38,7 @@ export function getProductProjections(
   limit = 30,
   offset = 0,
   filter?: string | string[],
+  sort?: string,
 ): Promise<ClientResponse<ProductProjectionPagedQueryResponse>> {
   return getApiRoot(client)
     .productProjections()
@@ -47,6 +48,7 @@ export function getProductProjections(
         limit,
         offset,
         filter,
+        sort,
         markMatchingVariants: true,
       },
     })
