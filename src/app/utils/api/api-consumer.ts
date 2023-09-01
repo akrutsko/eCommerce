@@ -1,4 +1,4 @@
-import { ClientResponse, Customer, CustomerDraft, CustomerSignInResult, CustomerUpdate } from '@commercetools/platform-sdk';
+import { ClientResponse, Customer, CustomerDraft, CustomerSignInResult } from '@commercetools/platform-sdk';
 import { Client } from '@commercetools/sdk-client-v2';
 import { getApiRoot } from './api-client';
 
@@ -21,6 +21,28 @@ export function changeEmail(client: Client, version: number, email: string): Pro
     .execute();
 }
 
+export function changePersonal(
+  client: Client,
+  version: number,
+  firstName: string,
+  lastName: string,
+  dateOfBirth: string,
+): Promise<ClientResponse<Customer>> {
+  return getApiRoot(client)
+    .me()
+    .post({
+      body: {
+        version,
+        actions: [
+          { action: 'setFirstName', firstName },
+          { action: 'setLastName', lastName },
+          { action: 'setDateOfBirth', dateOfBirth },
+        ],
+      },
+    })
+    .execute();
+}
+
 export function changePassword(
   client: Client,
   version: number,
@@ -28,8 +50,4 @@ export function changePassword(
   newPassword: string,
 ): Promise<ClientResponse<Customer>> {
   return getApiRoot(client).me().password().post({ body: { version, currentPassword, newPassword } }).execute();
-}
-
-export function updateConsumer(client: Client, id: string, customer: CustomerUpdate): Promise<ClientResponse<Customer>> {
-  return getApiRoot(client).customers().withId({ ID: id }).post({ body: customer }).execute();
 }

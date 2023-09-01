@@ -10,7 +10,7 @@ import {
   getRefreshTokenClient,
 } from '../../utils/api/api-client';
 import { ConsumerClient } from '../../enums/consumer-client';
-import { changeEmail, changePassword, getConsumer } from '../../utils/api/api-consumer';
+import { changeEmail, changePassword, changePersonal, getConsumer } from '../../utils/api/api-consumer';
 import { Token } from '../../enums/token';
 
 export class Consumer implements Observable {
@@ -106,6 +106,13 @@ export class Consumer implements Observable {
       this.consumerData = await this.getConsumer();
     }
     this.consumerData = (await changeEmail(this.apiClient, this.consumerData.version, email)).body;
+  }
+
+  async changePersonal(firstName: string, lastName: string, dateOfBirth: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await changePersonal(this.apiClient, this.consumerData.version, firstName, lastName, dateOfBirth)).body;
   }
 
   async changePassword(currentPassword: string, newPassword: string): Promise<void> {

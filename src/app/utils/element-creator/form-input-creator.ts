@@ -35,12 +35,17 @@ export class FormInputCreator {
   }
 
   addLabel(labelValue: string): void {
-    const label = new ElementCreator({
-      tag: 'label',
-      classes: 'h5 opacity-60 font-medium',
-      text: labelValue,
-    }).getElement();
-    this.inputContainer.getElement().prepend(label);
+    let label = this.inputContainer.getElement().querySelector('.label');
+    if (label) {
+      label.innerHTML = labelValue;
+    } else {
+      label = new ElementCreator({
+        tag: 'label',
+        classes: 'h5 label opacity-60 font-medium',
+        text: labelValue,
+      }).getElement();
+      this.inputContainer.getElement().prepend(label);
+    }
   }
 
   setInputValue(value: string): void {

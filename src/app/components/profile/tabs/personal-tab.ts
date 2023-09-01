@@ -4,6 +4,7 @@ import { FormInputCreator } from '../../../utils/element-creator/form-input-crea
 import { validateOnlyLetters } from '../../../utils/validation/input-validation';
 import { FormInputBirthdateCreator } from '../../../utils/element-creator/form-birthdate-inputCreator';
 import { Consumer } from '../../consumer/consumer';
+import { Message } from '../../../utils/message/toastify-message';
 
 export class PersonalTab extends AccordionTab {
   nameInputContainer: FormInputCreator;
@@ -80,6 +81,22 @@ export class PersonalTab extends AccordionTab {
   }
 
   async saveChanges(): Promise<void> {
-    // TODO: implement API
+    const firstName = this.nameInputContainer.getInputValue();
+    const lastName = this.surnameInputContainer.getInputValue();
+    const dateOfBirth = this.dateInputContainer.getInputValue();
+
+    try {
+      await this.consumer.changePersonal(firstName, lastName, dateOfBirth);
+      new Message('Personal info has been updated.', 'info').showMessage();
+      this.resetState();
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message) {
+          new Message(err.message, 'error').showMessage();
+        } else {
+          new Message('Something went wrong. Try later.', 'error').showMessage();
+        }
+      }
+    }
   }
 }
