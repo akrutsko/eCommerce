@@ -36,7 +36,7 @@ export abstract class AccordionTab {
   createView(svg: string, heading: string): void {
     const header = new ElementCreator({
       tag: 'div',
-      classes: 'tab-header flex flex-row-reverse cursor-pointer justify-between items-center',
+      classes: 'flex flex-row-reverse cursor-pointer justify-between items-center',
       html: arrow,
     });
 
@@ -47,13 +47,18 @@ export abstract class AccordionTab {
 
     this.tab.appendNode(header, this.contentField);
 
-    header.getElement().addEventListener('click', () => {
-      if (this.contentField.getElement().classList.contains('hidden')) {
-        this.contentField.getElement().innerHTML = '';
-        this.contentField.appendNode(this.createContent(), this.editButton);
-      }
-      this.contentField.getElement().classList.toggle('hidden');
-    });
+    header.setHandler('click', () => this.handleHeaderClick());
+  }
+
+  handleHeaderClick(): void {
+    const content = this.contentField.getElement();
+    if (content.classList.contains('hidden')) {
+      content.innerHTML = '';
+      content.classList.remove('hidden');
+      this.contentField.appendNode(this.createContent(), this.editButton);
+    } else {
+      content.classList.add('hidden');
+    }
   }
 
   initialize(): void {
@@ -65,7 +70,7 @@ export abstract class AccordionTab {
   validateSaveButton(): void {
     const allInputs = this.getElement().querySelectorAll('input');
     const allErrors = this.getElement().querySelectorAll('div.error');
-    const emptyInputs = [...allInputs].filter((input) => input.value.length === 0);
+    const emptyInputs = [...allInputs].filter((input) => input.type !== 'checkbox' && input.value.length === 0);
     const showingErrors = [...allErrors].filter((error) => !error.classList.contains('hidden'));
     this.saveButton.disabled = Boolean(showingErrors.length || emptyInputs.length);
   }
@@ -86,9 +91,7 @@ export abstract class AccordionTab {
     this.contentField.appendNode(edit, this.createSaveCancelButton());
 
     const inputs = edit.querySelectorAll('input');
-    const select = edit.querySelector('select');
 
-    select?.addEventListener('change', () => this.validateSaveButton());
     inputs.forEach((input) => {
       input.addEventListener('input', () => {
         this.validateSaveButton();

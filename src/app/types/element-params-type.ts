@@ -36,3 +36,7 @@ export interface ElementOptionParams extends Partial<ElementParams> {
 export interface ElementLabelParams extends Partial<ElementParams> {
   for: string;
 }
+
+export interface ElementSelectParams extends Partial<ElementParams> {
+  disabled?: boolean;
+}
