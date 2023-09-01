@@ -159,7 +159,7 @@ export class Header extends HandlerLinks implements Observer {
 
   async addCategories(submenu: ElementCreator<HTMLElement>): Promise<void> {
     try {
-      const categoriesResponse = await getCategories(getCtpClient());
+      const categoriesResponse = await getCategories(getCtpClient(), ['parent is not defined']);
       if (categoriesResponse.statusCode === 200) {
         this.categories = categoriesResponse.body.results;
         this.categories.forEach((category) => {

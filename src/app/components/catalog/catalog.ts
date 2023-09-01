@@ -316,7 +316,7 @@ export class Catalog extends HandlerLinks {
       this.createPriceFilter(sortedPrices[0], sortedPrices[sortedPrices.length - 1], filtersElementCreator);
     }
 
-    const categoriesResponse = await getCategories(getCtpClient()).catch(() => {
+    const categoriesResponse = await getCategories(getCtpClient(), ['parent is not defined']).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!categoriesResponse) return;
