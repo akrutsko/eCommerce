@@ -50,8 +50,14 @@ export class Catalog extends HandlerLinks {
       tag: 'div',
       classes: 'w-full md:w-2/4 lg:w-6/8 flex flex-wrap gap-3 justify-around grow',
     });
-    this.minPriceFilterView = new ElementInputCreator({ type: 'number', classes: 'border-1 rounded-lg border-solid border-[#E8E6E8]' });
-    this.maxPriceFilterView = new ElementInputCreator({ type: 'number', classes: 'border-1 rounded-lg border-solid border-[#E8E6E8]' });
+    this.minPriceFilterView = new ElementInputCreator({
+      type: 'number',
+      classes: 'border-1 rounded-lg border-solid border-[#E8E6E8]',
+    });
+    this.maxPriceFilterView = new ElementInputCreator({
+      type: 'number',
+      classes: 'border-1 rounded-lg border-solid border-[#E8E6E8]',
+    });
     this.createView();
   }
 
@@ -159,11 +165,7 @@ export class Catalog extends HandlerLinks {
     });
   }
 
-  createCheckBoxFilter(
-    filterName: string,
-    filterArray: Attribute[],
-    filtersElementCreator: ElementCreator<HTMLElement>,
-  ): void {
+  createCheckBoxFilter(filterName: string, filterArray: Attribute[], filtersElementCreator: ElementCreator<HTMLElement>): void {
     const elementAccordion = new ElementCreator({
       tag: 'div',
       classes: 'w-full',
@@ -280,7 +282,10 @@ export class Catalog extends HandlerLinks {
     });
     if (!productTypesResponse) return;
 
-    const filters: Attribute[] = [{ key: 'brand', label: 'Brand' }, { key: 'color', label: 'Color' }];
+    const filters: Attribute[] = [
+      { key: 'brand', label: 'Brand' },
+      { key: 'color', label: 'Color' },
+    ];
 
     filters.forEach((filter) => {
       const filterArrayBrand = this.getUniqueAttributesByKey(productTypesResponse.body.results, filter.key);
