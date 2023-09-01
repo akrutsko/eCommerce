@@ -14,7 +14,6 @@ export class Main implements Observer {
   constructor(router: Router, consumer: Consumer) {
     this.router = router;
     this.consumer = consumer;
-
     this.mainView = new ElementCreator({
       tag: 'main',
       classes: 'container flex flex-col grow justify-center items-center h-full my-5 md:my-10',
@@ -44,6 +43,9 @@ export class Main implements Observer {
         break;
       case 'cart':
         this.showCart();
+        break;
+      case 'catalog':
+        this.showCatalog();
         break;
       case 'profile':
         if (!this.consumer.isConsumer) {
@@ -101,6 +103,11 @@ export class Main implements Observer {
   async showCart(): Promise<void> {
     const { Cart } = await import('../cart/cart');
     this.mainView.append(new Cart().getElement());
+  }
+
+  async showCatalog(): Promise<void> {
+    const { Catalog } = await import('../catalog/catalog');
+    this.mainView.append(new Catalog(this.router, this.consumer).getElement());
   }
 
   async showProfile(): Promise<void> {

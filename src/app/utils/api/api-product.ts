@@ -32,3 +32,23 @@ export function getProductIdBySlug(client: Client, slug: string): Promise<Client
     .get({ queryArgs: { where: `slug(${Store.Language}="${slug}")` } })
     .execute();
 }
+
+export function getProductProjections(
+  client: Client,
+  limit = 30,
+  offset = 0,
+  filter?: string | string[],
+): Promise<ClientResponse<ProductProjectionPagedQueryResponse>> {
+  return getApiRoot(client)
+    .productProjections()
+    .search()
+    .get({
+      queryArgs: {
+        limit,
+        offset,
+        filter,
+        markMatchingVariants: true,
+      },
+    })
+    .execute();
+}
