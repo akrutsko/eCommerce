@@ -19,11 +19,11 @@
 }
 
 .asc::after {
-  content: "\25BC";
+  content: "\25B2";
 }
 
 .desc::after {
-  content: "\25B2";
+  content: "\25BC";
 }
 
 .asc,
