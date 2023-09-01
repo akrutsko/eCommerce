@@ -39,6 +39,7 @@ export function getProductProjections(
   offset = 0,
   filter?: string | string[],
   sort?: string,
+  search?: string,
 ): Promise<ClientResponse<ProductProjectionPagedQueryResponse>> {
   return getApiRoot(client)
     .productProjections()
@@ -49,6 +50,7 @@ export function getProductProjections(
         offset,
         filter,
         sort,
+        'text.en-US': search,
         markMatchingVariants: true,
       },
     })

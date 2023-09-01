@@ -67,9 +67,9 @@ export class Catalog extends HandlerLinks {
   }
 
   sort(fieldName: String, method: String): void {
-    const sortingSrting = `${fieldName} ${method}`;
-    this.createCards(this.currentFilters, sortingSrting);
-    this.currentSortingString = sortingSrting;
+    const sortingString = `${fieldName} ${method}`;
+    this.createCards(this.currentFilters, sortingString);
+    this.currentSortingString = sortingString;
   }
 
   async createView(): Promise<void> {
@@ -87,8 +87,9 @@ export class Catalog extends HandlerLinks {
     search.getElement().addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
+        this.search(search.getElement().value);
       }
-    }); // TODO: implement search
+    });
     const submitButton = new ElementButtonCreator({ classes: 'absolute right-0 top-0 focus:outline-none', html: searchIcon });
     form.appendNode(search, submitButton);
     firstBlock.appendNode(catalogNameBlock, form);
@@ -190,12 +191,12 @@ export class Catalog extends HandlerLinks {
     const minmaxElement = new ElementCreator({ tag: 'div', classes: 'flex gap-1' });
     elementFilterPanel.appendNode(minmaxElement);
 
-    this.minPriceFilterView.getElement().step = '0.01';
+    this.minPriceFilterView.getElement().step = '1';
     this.minPriceFilterView.getElement().min = `${min}`;
     this.minPriceFilterView.getElement().max = `${max}`;
     this.minPriceFilterView.getElement().placeholder = '$0.00';
 
-    this.maxPriceFilterView.getElement().step = '0.01';
+    this.maxPriceFilterView.getElement().step = '1';
     this.maxPriceFilterView.getElement().min = `${min}`;
     this.maxPriceFilterView.getElement().max = `${max}`;
     this.maxPriceFilterView.getElement().placeholder = '$0.00';
@@ -429,10 +430,21 @@ export class Catalog extends HandlerLinks {
     this.applyFilters();
   }
 
-  async createCards(filter?: string | string[], sort?: string): Promise<void> {
+  search(word: string): void {
+    this.checkBoxFilterViews.forEach((element) => {
+      const checkBox = element.getElement();
+      checkBox.checked = false;
+    });
+    this.selectedCheckBoxFilters = [];
+    this.minPriceFilterView.getElement().value = '';
+    this.maxPriceFilterView.getElement().value = '';
+    this.createCards([], this.currentSortingString, word);
+  }
+
+  async createCards(filter?: string | string[], sort?: string, search?: string): Promise<void> {
     this.cardsView.getElement().innerHTML = '';
 
-    const productsResponse = await getProductProjections(this.consumer.apiClient, 30, 0, filter, sort).catch(() => {
+    const productsResponse = await getProductProjections(this.consumer.apiClient, 30, 0, filter, sort, search).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!productsResponse) return;
