@@ -111,10 +111,8 @@ export class Catalog extends HandlerLinks {
   changeArraySelectedFilters(filterName: string, isChecked: boolean, value: string): void {
     const foundFilter = this.selectedCheckBoxFilters.find((filter) => filter.filterType === filterName);
     if (isChecked) {
-      if (foundFilter) {
-        if (!foundFilter.values.includes(value)) {
-          foundFilter.values.push(value);
-        }
+      if (foundFilter && !foundFilter.values.includes(value)) {
+        foundFilter.values.push(value);
       } else {
         this.selectedCheckBoxFilters.push({ filterType: filterName, values: [value] });
       }
@@ -217,16 +215,12 @@ export class Catalog extends HandlerLinks {
       if (productType.attributes) {
         const attribute = productType.attributes.find((attr) => attr.name === nameAttribute);
 
-        if (attribute) {
-          if (attribute.type.name === 'set') {
-            if (attribute.type.elementType.name === 'enum') {
-              attribute.type.elementType.values.forEach((gettedAttribute: Attribute) => {
-                if (!uniqueAttributes.some((existingBrand) => existingBrand.key === gettedAttribute.key)) {
-                  uniqueAttributes.push(gettedAttribute);
-                }
-              });
+        if (attribute && attribute.type.name === 'set' && attribute.type.elementType.name === 'enum') {
+          attribute.type.elementType.values.forEach((gettedAttribute: Attribute) => {
+            if (!uniqueAttributes.some((existingBrand) => existingBrand.key === gettedAttribute.key)) {
+              uniqueAttributes.push(gettedAttribute);
             }
-          }
+          });
         }
       }
     });
