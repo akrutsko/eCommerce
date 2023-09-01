@@ -50,6 +50,7 @@ export class FormInputCreator {
 
   setInputValue(value: string): void {
     this.input.value = value;
+    this.error.classList.add('hidden');
   }
 
   getInputValue(): string {

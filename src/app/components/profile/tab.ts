@@ -45,11 +45,13 @@ export abstract class AccordionTab {
     titleContainer.appendNode(title);
     header.appendNode(titleContainer);
 
-    this.contentField.appendNode(this.createContent(), this.editButton);
-
     this.tab.appendNode(header, this.contentField);
 
     header.getElement().addEventListener('click', () => {
+      if (this.contentField.getElement().classList.contains('hidden')) {
+        this.contentField.getElement().innerHTML = '';
+        this.contentField.appendNode(this.createContent(), this.editButton);
+      }
       this.contentField.getElement().classList.toggle('hidden');
     });
   }
@@ -69,7 +71,7 @@ export abstract class AccordionTab {
   }
 
   createSaveCancelButton(): HTMLElement {
-    const buttonsContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 mt-3' });
+    const buttonsContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 mt-4' });
     buttonsContainer.appendNode(this.saveButton, this.cancelButton);
     return buttonsContainer.getElement();
   }

@@ -27,14 +27,31 @@ export class AddressTab extends AccordionTab {
 
   currentAddresses: AddressInputs[];
 
-  defaultSelect: ElementCreator<HTMLElement>;
+  changeSelect: ElementCreator<HTMLElement>;
 
   temporalKey: number;
 
+  countryInputContainer: FormInputCountryCreator;
+
+  cityInputContainer: FormInputCreator;
+
+  streetInputContainer: FormInputCreator;
+
+  postalCodeInputContainer: FormInputCreator;
+
   constructor(consumer: Consumer, svg: string, heading: string, tabType: Addresses) {
     super(consumer, svg, heading);
-    this.defaultSelect = new ElementCreator({ tag: 'select', classes: 'form-input' });
+    this.changeSelect = new ElementCreator({ tag: 'select', classes: 'form-input' });
+    this.countryInputContainer = new FormInputCountryCreator('country');
+    this.cityInputContainer = new FormInputCreator({ placeholder: 'city', validation: validateOnlyLetters });
+    this.streetInputContainer = new FormInputCreator({ placeholder: 'street', validation: validateOnlyLetters });
+    this.postalCodeInputContainer = new FormInputCreator({
+      placeholder: 'postal code',
+      checkInput: this.countryInputContainer.getInput(),
+      validation: validatePostalCode,
+    });
     this.tabType = tabType;
+
     this.temporalKey = 0;
     this.newAddresses = [];
     this.currentAddresses = [];
@@ -42,8 +59,8 @@ export class AddressTab extends AccordionTab {
 
   createContent(): HTMLElement {
     const container = new ElementCreator({ tag: 'div' });
-    const addressesList = this.getAddressesList(this.tabType);
-    const defaultId = this.getDefaultAddressId(this.tabType);
+    const addressesList = this.getAddressesList();
+    const defaultId = this.getDefaultAddressId();
 
     if (addressesList) {
       const defaultObj = addressesList?.find((address) => address.id === defaultId);
@@ -86,58 +103,67 @@ export class AddressTab extends AccordionTab {
     this.temporalKey = 0;
     this.newAddresses = [];
     this.currentAddresses = [];
+    this.changeSelect.getElement().innerHTML = '';
 
     const container = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4' });
-    const addressesList = this.getAddressesList(this.tabType);
-    const defaultId = this.getDefaultAddressId(this.tabType);
+    const addressesList = this.getAddressesList();
+    const defaultId = this.getDefaultAddressId();
+
+    let changeContainer: ElementCreator<HTMLElement> | null = null;
 
     if (addressesList) {
-      const defaultContainer = new ElementCreator({ tag: 'div', classes: 'default flex flex-col gap-4' });
-      const defaultObj = addressesList.find((address) => address.id === defaultId);
-      const defaultAddress = defaultObj
-        ? `${codeCountries[defaultObj.country]} ${defaultObj.city} ${defaultObj.streetName} ${defaultObj.postalCode}`
-        : '';
+      changeContainer = new ElementCreator({ tag: 'div', classes: 'cnange-addresses' });
+      const changeTitle = new ElementCreator({ tag: 'div', text: 'change address', classes: 'opacity-60 h5' }).getElement();
 
-      const defaultTitle = new ElementCreator({ tag: 'div', text: 'default address', classes: 'opacity-60 h5' }).getElement();
-      if (!defaultAddress && addressesList.length) {
-        const option = new ElementOptionCreator({ tag: 'option', value: '', hidden: true });
-        this.defaultSelect.appendNode(option);
-      }
+      const emptyOption = new ElementOptionCreator({ tag: 'option', value: '', hidden: true });
+      this.changeSelect.appendNode(emptyOption);
       addressesList.forEach((address) => {
+        const isDefault = address.id === defaultId;
         const country = codeCountries[address.country];
-        const fullAddress = `${country} ${address.city} ${address.streetName} ${address.postalCode}`;
+        const fullAddress = `${country} ${address.city} ${address.streetName} ${address.postalCode} ${
+          isDefault ? '(✔ default)' : ''
+        }`;
         const option = new ElementOptionCreator({ tag: 'option', value: fullAddress, id: address.id });
-        this.defaultSelect.appendNode(option);
+        this.changeSelect.appendNode(option);
       });
-      defaultContainer.appendNode(defaultTitle, this.defaultSelect);
+      changeContainer.appendNode(changeTitle, this.changeSelect);
 
-      const allContainer = new ElementCreator({ tag: 'div', classes: 'all flex flex-col gap-4' });
-
-      addressesList.forEach((address) => {
-        allContainer?.appendNode(this.createInputsContainer(container.getElement(), address));
-      });
-
-      if (defaultContainer) container.appendNode(defaultContainer);
-      if (allContainer) container.appendNode(allContainer);
+      container.appendNode(changeContainer);
     }
+    let newContainer: ElementCreator<HTMLElement> | null = new ElementCreator({
+      tag: 'div',
+      classes: 'new-addresses flex flex-col gap-4',
+    });
     const addAddress = new ElementCreator({ tag: 'div', classes: 'flex items-center gap-2 cursor-pointer', html: plus });
     const addAddressTitle = new ElementCreator({ tag: 'div', text: 'add new address', classes: 'text-primary-color' });
     addAddress.appendNode(addAddressTitle);
+    newContainer.appendNode(addAddress);
+    container.appendNode(newContainer);
 
     addAddress.getElement().addEventListener('click', () => {
       this.saveButton.disabled = true;
-      let allContainer = container.getElement().querySelector('.all');
-      if (!allContainer) allContainer = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4' }).getElement();
-      allContainer.append(this.createInputsContainer(container.getElement()));
+      if (changeContainer) {
+        container.getElement().removeChild(changeContainer.getElement());
+        changeContainer = null;
+      }
+      if (newContainer) {
+        newContainer.getElement().innerHTML = '';
+        newContainer.appendNode(this.createInputsContainer(container.getElement()));
+      }
     });
-    container.appendNode(addAddress);
+    this.changeSelect.setHandler('change', () => {
+      if (newContainer) {
+        container.getElement().removeChild(newContainer.getElement());
+        newContainer = null;
+      }
+      this.createInputsContainer(container.getElement());
+    });
 
     return container.getElement();
   }
 
   createInputsContainer(container: HTMLElement, address?: Address): HTMLElement {
     this.temporalKey += 1;
-    const array = address ? this.currentAddresses : this.newAddresses;
 
     const inputsContainer = new ElementCreator({
       tag: 'div',
@@ -145,20 +171,13 @@ export class AddressTab extends AccordionTab {
       id: address?.id || this.temporalKey.toString(),
     });
 
-    const countryInputContainer = new FormInputCountryCreator('country');
-    const cityInputContainer = new FormInputCreator({ placeholder: 'city', validation: validateOnlyLetters });
-    const streetInputContainer = new FormInputCreator({ placeholder: 'street', validation: validateOnlyLetters });
-    const postalCodeInputContainer = new FormInputCreator({
-      placeholder: 'postal code',
-      checkInput: countryInputContainer.getInput(),
-      validation: validatePostalCode,
-    });
-
     if (address) {
-      countryInputContainer.setInputValue(codeCountries[address.country]);
-      if (address.city) cityInputContainer.setInputValue(address.city);
-      if (address.streetName) streetInputContainer.setInputValue(address.streetName);
-      if (address.postalCode) postalCodeInputContainer.setInputValue(address.postalCode);
+      this.countryInputContainer.setInputValue(codeCountries[address.country]);
+      if (address.city) this.cityInputContainer.setInputValue(address.city);
+      if (address.streetName) this.streetInputContainer.setInputValue(address.streetName);
+      if (address.postalCode) this.postalCodeInputContainer.setInputValue(address.postalCode);
+    } else {
+      this.resetInputs();
     }
 
     inputsContainer.getElement().addEventListener('input', (e) => {
@@ -169,8 +188,6 @@ export class AddressTab extends AccordionTab {
 
     const deleteButton = new ElementButtonCreator({ html: trash, classes: 'self-end md: self-center' });
     deleteButton.getElement().addEventListener('click', () => {
-      const defaultContainer = container.querySelector('.default');
-      const allContainer = container.querySelector('.all');
       const addressId = inputsContainer.getElement().id;
 
       if (this.currentAddresses.find((addr) => addr.id === addressId)) {
@@ -183,26 +200,20 @@ export class AddressTab extends AccordionTab {
         this.newAddresses = this.newAddresses.filter((addr) => addr.id !== inputsContainer.getElement().id);
       }
 
-      allContainer?.removeChild(inputsContainer.getElement());
+      const parrentContainer = address ? '.change-addresses' : '.new-addresses';
 
-      if (!this.currentAddresses.length && defaultContainer) {
-        container.removeChild(defaultContainer);
-      }
-    });
+      container.querySelector(parrentContainer)?.removeChild(inputsContainer.getElement());
 
-    array.push({
-      id: address?.id || this.temporalKey.toString(),
-      countryInput: countryInputContainer.getInput(),
-      cityInput: cityInputContainer.getInput(),
-      streetInput: streetInputContainer.getInput(),
-      postalCodeInput: postalCodeInputContainer.getInput(),
+      // if (!this.currentAddresses.length && defaultContainer) {
+      //   container.removeChild(defaultContainer);
+      // }
     });
 
     inputsContainer.appendNode(
-      countryInputContainer.getContainer(),
-      cityInputContainer.getContainer(),
-      streetInputContainer.getContainer(),
-      postalCodeInputContainer.getContainer(),
+      this.countryInputContainer.getContainer(),
+      this.cityInputContainer.getContainer(),
+      this.streetInputContainer.getContainer(),
+      this.postalCodeInputContainer.getContainer(),
       deleteButton,
     );
 
@@ -241,9 +252,16 @@ export class AddressTab extends AccordionTab {
     // TODO: implement API
   }
 
-  getAddressesList(tab: Addresses): Address[] | undefined {
+  resetInputs(): void {
+    this.countryInputContainer.setInputValue('');
+    this.cityInputContainer.setInputValue('');
+    this.streetInputContainer.setInputValue('');
+    this.postalCodeInputContainer.setInputValue('');
+  }
+
+  getAddressesList(): Address[] | undefined {
     if (!this.consumer.consumerData) return undefined;
-    if (tab === Addresses.Billing) {
+    if (this.tabType === Addresses.Billing) {
       return this.consumer.consumerData.addresses.filter(
         (addr) => addr.id && this.consumer.consumerData?.billingAddressIds?.includes(addr.id),
       );
@@ -253,8 +271,8 @@ export class AddressTab extends AccordionTab {
     );
   }
 
-  getDefaultAddressId(tab: Addresses): string | undefined {
-    if (tab === Addresses.Billing) return this.consumer.consumerData?.defaultBillingAddressId;
+  getDefaultAddressId(): string | undefined {
+    if (this.tabType === Addresses.Billing) return this.consumer.consumerData?.defaultBillingAddressId;
     return this.consumer.consumerData?.defaultShippingAddressId;
   }
 }
