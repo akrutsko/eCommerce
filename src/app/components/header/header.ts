@@ -94,7 +94,7 @@ export class Header extends HandlerLinks implements Observer {
     tab.appendNode(catalog, submenu);
 
     const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-5' });
-    linksList.appendNode(liHome, liAboutUs, tab);
+    linksList.appendNode(liHome, tab, liAboutUs);
 
     const divCart = new ElementCreator({ tag: 'div', classes: 'relative', html: cartSvg });
     const aCart = new ElementAnchorCreator({ href: '/cart', classes: 'absolute inset-0' });

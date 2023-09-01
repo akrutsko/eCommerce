@@ -51,11 +51,11 @@ export class Catalog extends HandlerLinks {
     });
     this.minPriceFilterView = new ElementInputCreator({
       type: 'number',
-      classes: 'border-1 rounded-lg border-solid border-[#E8E6E8]',
+      classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] min-w-0',
     });
     this.maxPriceFilterView = new ElementInputCreator({
       type: 'number',
-      classes: 'border-1 rounded-lg border-solid border-[#E8E6E8]',
+      classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] min-w-0',
     });
     this.createView();
   }
@@ -92,7 +92,7 @@ export class Catalog extends HandlerLinks {
     const filtersPanel = new ElementCreator({
       tag: 'div',
       classes:
-        'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap filters flex-grow-0 flex-shrink-0 gap-2 bg-bg-color border-1 rounded-lg border-solid border-[#fbedec] p-4',
+        'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap filters grow-0 shrink-0 gap-2 bg-bg-color border-1 rounded-lg border-solid border-[#fbedec] p-4',
     });
     const filtersPanelHeader = new ElementCreator({
       tag: 'h4',
@@ -135,7 +135,7 @@ export class Catalog extends HandlerLinks {
       tag: 'h5',
       text: 'Price',
       classes:
-        'flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)] cursor-pointer',
+        'flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-primary-color cursor-pointer',
     });
     const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDownSVG });
     elementFilterName.appendNode(elementFilterArrow);
@@ -143,7 +143,7 @@ export class Catalog extends HandlerLinks {
     elementAccordion.appendNode(elementFilterName, elementFilterPanel);
     filtersElementCreator.appendNode(elementAccordion);
 
-    const minmaxElement = new ElementCreator({ tag: 'div', classes: 'flex' });
+    const minmaxElement = new ElementCreator({ tag: 'div', classes: 'flex gap-1' });
     elementFilterPanel.appendNode(minmaxElement);
 
     this.minPriceFilterView.getElement().step = '0.01';
@@ -173,7 +173,7 @@ export class Catalog extends HandlerLinks {
       tag: 'h5',
       text: filterName,
       classes:
-        'w-full flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-[var(--main-color)] cursor-pointer',
+        'w-full flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-primary-color cursor-pointer',
     });
     const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDownSVG });
     elementFilterName.appendNode(elementFilterArrow);
@@ -304,8 +304,8 @@ export class Catalog extends HandlerLinks {
       this.applyFilters();
     });
 
-    const btbResetFilters = new ElementButtonCreator({ text: 'reset', classes: 'w-full primary-button' });
-    btsWrapper.appendNode(btbApplyFilters, btbResetFilters);
+    const btbResetFilters = new ElementButtonCreator({ text: 'reset', classes: 'w-full secondary-button' });
+    btsWrapper.appendNode(btbResetFilters, btbApplyFilters);
 
     btbResetFilters.getElement().addEventListener('click', () => {
       this.resetFilters();
