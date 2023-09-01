@@ -64,6 +64,10 @@
     @apply text-sm rounded-full font-normal border-2 border-primary-color transition-colors outline-transparent focus:outline-transparent disabled:pointer-events-none disabled:opacity-50 text-secondary-color bg-transparent hover:bg-red-600 hover:border-red-600 hover:text-white px-4 py-2;
   }
 
+  .filter-button {
+    @apply text-sm rounded-full font-normal border-2 border-tertiary-color transition-colors outline-transparent focus:outline-transparent disabled:pointer-events-none disabled:opacity-50 text-secondary-color bg-transparent hover:bg-red-600 hover:border-red-600 hover:text-white px-4 py-2;
+  }
+
   .form-input {
     @apply max-w-xl w-full rounded-full py-2 px-4 border-gray-300 text-secondary-color border-2 focus:outline-none relative;
   }
@@ -105,7 +109,7 @@
   }
 
   .card {
-    @apply max-w-sm flex flex-col gap-3;
+    @apply max-w-sm flex flex-col gap-1;
   }
 
   .card-image {
@@ -114,5 +118,9 @@
 
   .container {
     @apply px-4 md:px-10 flex items-center justify-between max-w-full;
+  }
+
+  .breadcrumbs {
+    @apply text-base font-medium leading-6 text-left text-[#DB5743];
   }
 }
