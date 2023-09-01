@@ -10,7 +10,16 @@ import {
   getRefreshTokenClient,
 } from '../../utils/api/api-client';
 import { ConsumerClient } from '../../enums/consumer-client';
-import { changeEmail, changePassword, changePersonal, getConsumer } from '../../utils/api/api-consumer';
+import {
+  addAddress,
+  changeAddress,
+  changeEmail,
+  changePassword,
+  changePersonal,
+  getConsumer,
+  setDefaultBillingAddress,
+  setDefaultShippingAddress,
+} from '../../utils/api/api-consumer';
 import { Token } from '../../enums/token';
 
 export class Consumer implements Observable {
@@ -120,5 +129,35 @@ export class Consumer implements Observable {
       this.consumerData = await this.getConsumer();
     }
     this.consumerData = (await changePassword(this.apiClient, this.consumerData.version, currentPassword, newPassword)).body;
+  }
+
+  async addAddress(country: string, city: string, streetName: string, postalCode: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await addAddress(this.apiClient, this.consumerData.version, country, city, streetName, postalCode)).body;
+  }
+
+  async changeAddress(addressId: string, country: string, city: string, streetName: string, postalCode: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (
+      await changeAddress(this.apiClient, this.consumerData.version, addressId, country, city, streetName, postalCode)
+    ).body;
+  }
+
+  async setDefaultShippingAddress(addressId: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await setDefaultShippingAddress(this.apiClient, this.consumerData.version, addressId)).body;
+  }
+
+  async setDefaultBillingAddress(addressId: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await setDefaultBillingAddress(this.apiClient, this.consumerData.version, addressId)).body;
   }
 }

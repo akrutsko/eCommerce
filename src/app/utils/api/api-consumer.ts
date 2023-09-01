@@ -51,3 +51,55 @@ export function changePassword(
 ): Promise<ClientResponse<Customer>> {
   return getApiRoot(client).me().password().post({ body: { version, currentPassword, newPassword } }).execute();
 }
+
+export function addAddress(
+  client: Client,
+  version: number,
+  country: string,
+  city: string,
+  streetName: string,
+  postalCode: string,
+): Promise<ClientResponse<Customer>> {
+  return getApiRoot(client)
+    .me()
+    .post({ body: { version, actions: [{ action: 'addAddress', address: { country, city, streetName, postalCode } }] } })
+    .execute();
+}
+
+export function changeAddress(
+  client: Client,
+  version: number,
+  addressId: string,
+  country: string,
+  city: string,
+  streetName: string,
+  postalCode: string,
+): Promise<ClientResponse<Customer>> {
+  return getApiRoot(client)
+    .me()
+    .post({
+      body: { version, actions: [{ action: 'changeAddress', addressId, address: { country, city, streetName, postalCode } }] },
+    })
+    .execute();
+}
+
+export function removeAddress(client: Client, version: number, addressId: string): Promise<ClientResponse<Customer>> {
+  return getApiRoot(client)
+    .me()
+    .post({ body: { version, actions: [{ action: 'removeAddress', addressId }] } })
+    .execute();
+}
+
+export function setDefaultShippingAddress(client: Client, version: number, addressId: string): Promise<ClientResponse<Customer>> {
+  return getApiRoot(client)
+    .me()
+    .post({ body: { version, actions: [{ action: 'setDefaultShippingAddress', addressId }] } })
+    .execute();
+}
+
+export function setDefaultBillingAddress(client: Client, version: number, addressId: string): Promise<ClientResponse<Customer>> {
+  return getApiRoot(client)
+    .me()
+    .post({ body: { version, actions: [{ action: 'setDefaultBillingAddress', addressId }] } })
+    .execute();
+}
