@@ -332,15 +332,16 @@ export class Catalog extends HandlerLinks {
 
     this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
 
-    const productTypesResponse = await getProductTypes(this.consumer.apiClient);
+    const productTypesResponse = await getProductTypes(this.consumer.apiClient).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+    if (!productTypesResponse) return;
 
-    if (productTypesResponse.statusCode === 200) {
-      const filterArrayBrand = this.getUniqueAttributesByKey(productTypesResponse.body.results, 'brand');
-      this.createCheckBoxFilter('Brand', filterArrayBrand, filtersElementCreator);
+    const filterArrayBrand = this.getUniqueAttributesByKey(productTypesResponse.body.results, 'brand');
+    this.createCheckBoxFilter('Brand', filterArrayBrand, filtersElementCreator);
 
-      const filterArrayColor = this.getUniqueAttributesByKey(productTypesResponse.body.results, 'color');
-      this.createCheckBoxFilter('Color', filterArrayColor, filtersElementCreator);
-    }
+    const filterArrayColor = this.getUniqueAttributesByKey(productTypesResponse.body.results, 'color');
+    this.createCheckBoxFilter('Color', filterArrayColor, filtersElementCreator);
 
     const elementFilterButton = new ElementButtonCreator({ text: 'apply filters', classes: 'w-full primary-button' });
     filtersElementCreator.appendNode(elementFilterButton);
@@ -431,26 +432,17 @@ export class Catalog extends HandlerLinks {
 
   async createCards(filter?: string | string[]): Promise<void> {
     this.cardsElementCreator.getElement().innerHTML = '';
-    try {
-      const productsResponse = await getProductProjections(this.consumer.apiClient, filter);
-      if (productsResponse.statusCode === 200) {
-        this.products = productsResponse.body.results;
-        this.elementCountOfResults.getElement().textContent = `${this.products.length} results`;
-        this.products.forEach((product) => {
-          this.addProduct(product);
-        });
-      } else {
-        new Message('Something went wrong. Try later.', 'error').showMessage();
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message) {
-          new Message(err.message, 'error').showMessage();
-        } else {
-          new Message('Something went wrong. Try later.', 'error').showMessage();
-        }
-      }
-    }
+
+    const productsResponse = await getProductProjections(this.consumer.apiClient, filter).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+    if (!productsResponse) return;
+
+    this.products = productsResponse.body.results;
+    this.elementCountOfResults.getElement().textContent = `${this.products.length} results`;
+    this.products.forEach((product) => {
+      this.addProduct(product);
+    });
   }
 
   addProduct(product: ProductProjection): void {

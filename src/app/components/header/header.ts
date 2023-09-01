@@ -157,33 +157,23 @@ export class Header extends HandlerLinks implements Observer {
   }
 
   async addCategories(submenu: ElementCreator<HTMLElement>): Promise<void> {
-    try {
-      const categoriesResponse = await getCategories(this.consumer.apiClient, ['parent is not defined']);
-      if (categoriesResponse.statusCode === 200) {
-        this.categories = categoriesResponse.body.results;
-        this.categories.forEach((category) => {
-          const liCategory = new ElementCreator({ tag: 'li' });
-          const aCategory = new ElementAnchorCreator({
-            href: `/categories#${category.slug[Store.Language]}`,
-            classes: 'h5 hover:text-primary-color',
-            text: `${category.name[Store.Language]}`,
-          });
-          this.listOfLinks.push(aCategory.getElement());
-          liCategory.appendNode(aCategory);
-          submenu.appendNode(liCategory);
-        });
-      } else {
-        new Message('Something went wrong. Try later.', 'error').showMessage();
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message) {
-          new Message(err.message, 'error').showMessage();
-        } else {
-          new Message('Something went wrong. Try later.', 'error').showMessage();
-        }
-      }
-    }
+    const categoriesResponse = await getCategories(this.consumer.apiClient, ['parent is not defined']).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+    if (!categoriesResponse) return;
+
+    this.categories = categoriesResponse.body.results;
+    this.categories.forEach((category) => {
+      const liCategory = new ElementCreator({ tag: 'li' });
+      const aCategory = new ElementAnchorCreator({
+        href: `/categories#${category.slug[Store.Language]}`,
+        classes: 'h5 hover:text-primary-color',
+        text: `${category.name[Store.Language]}`,
+      });
+      this.listOfLinks.push(aCategory.getElement());
+      liCategory.appendNode(aCategory);
+      submenu.appendNode(liCategory);
+    });
   }
 
   getView(): ElementCreator<HTMLElement> {
