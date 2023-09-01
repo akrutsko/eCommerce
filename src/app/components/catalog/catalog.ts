@@ -186,10 +186,14 @@ export class Catalog extends HandlerLinks {
         type: 'checkbox',
         classes: 'block',
         value: filterElement.key,
-        id: filterElement.key,
+        id: `${filterName}-${filterElement.key}`,
       });
+      elementFilterInput.getElement().setAttribute('filter-name', filterName);
       this.checkBoxFilterViews.push(elementFilterInput);
-      const elementFilterLabel = new ElementLabelCreator({ for: filterElement.key, text: filterElement.label });
+      const elementFilterLabel = new ElementLabelCreator({
+        for: `${filterName}-${filterElement.key}`,
+        text: filterElement.label,
+      });
       elementFilterWrapper.appendNode(elementFilterInput, elementFilterLabel);
       elementFilterPanel.appendNode(elementFilterWrapper);
       elementFilterInput.getElement().addEventListener('change', (event) => {
@@ -344,36 +348,12 @@ export class Catalog extends HandlerLinks {
         if (filter.filterType === 'Category') {
           const resultArray = filter.values.map((element) => `subtree("${element}")`);
           filterArray.push(`categories.id:${resultArray.join(',')}`);
-          const resetPriceElement = new ElementCreator({
-            tag: 'button',
-            text: 'Categories',
-            classes: 'filter-button flex items-center',
-          });
-          const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
-          resetPriceElement.appendNode(elementFilterDelete);
-          // TODO: implement reset filters
         } else if (filter.filterType === 'Color') {
           const resultArray = filter.values.map((element) => `"${element}"`);
           filterArray.push(`variants.attributes.color.key:${resultArray.join(',')}`);
-          const resetPriceElement = new ElementCreator({
-            tag: 'button',
-            text: 'Color',
-            classes: 'filter-button flex items-center',
-          });
-          const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
-          resetPriceElement.appendNode(elementFilterDelete);
-          // TODO: implement reset filters
         } else if (filter.filterType === 'Brand') {
           const resultArray = filter.values.map((element) => `"${element}"`);
           filterArray.push(`variants.attributes.brand.key:${resultArray.join(',')}`);
-          const resetPriceElement = new ElementCreator({
-            tag: 'button',
-            text: 'Brand',
-            classes: 'filter-button flex items-center',
-          });
-          const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
-          resetPriceElement.appendNode(elementFilterDelete);
-          // TODO: implement reset filters
         }
       }
     });
