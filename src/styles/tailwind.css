@@ -65,7 +65,7 @@
   }
 
   .filter-button {
-    @apply text-sm rounded-full font-normal border-2 border-tertiary-color transition-colors outline-transparent focus:outline-transparent disabled:pointer-events-none disabled:opacity-50 text-secondary-color bg-transparent hover:bg-red-600 hover:border-red-600 hover:text-white px-4 py-2;
+    @apply text-sm rounded-full font-normal border-2 border-tertiary-color transition-colors outline-transparent focus:outline-transparent disabled:pointer-events-none disabled:opacity-50 text-secondary-color bg-transparent hover:bg-red-600 hover:border-red-600 hover:text-white px-2 py-1;
   }
 
   .form-input {

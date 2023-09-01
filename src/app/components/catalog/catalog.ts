@@ -1,7 +1,6 @@
 import { Category, ProductProjection, ProductType } from '@commercetools/platform-sdk';
 import './catalog.css';
 import arrowDownSVG from '../../../assets/svg/arrow-down.svg';
-import deleteFilterSVG from '../../../assets/svg/delete-filter.svg';
 import searchIcon from '../../../assets/svg/search.svg';
 
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
@@ -233,6 +232,7 @@ export class Catalog extends HandlerLinks {
         id: `${filterName}-${filterElement.key}`,
       });
       elementFilterInput.getElement().setAttribute('filter-name', filterName);
+      elementFilterInput.getElement().setAttribute('filter-value', filterElement.label);
       this.checkBoxFilterViews.push(elementFilterInput);
       const elementFilterLabel = new ElementLabelCreator({
         for: `${filterName}-${filterElement.key}`,
@@ -353,6 +353,7 @@ export class Catalog extends HandlerLinks {
 
   applyFilters(): void {
     const filterArray: string[] = [];
+    this.selectedFiltersView.getElement().innerHTML = '';
 
     const min = parseFloat(this.minPriceFilterView.getElement().value) * 10 ** Store.FractionDigits;
     const max = parseFloat(this.maxPriceFilterView.getElement().value) * 10 ** Store.FractionDigits;
@@ -377,8 +378,10 @@ export class Catalog extends HandlerLinks {
         text: `$${fromStr}-${toStr}`,
         classes: 'filter-button flex items-center',
       });
-      const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
-      resetPriceElement.appendNode(elementFilterDelete);
+      // TODO add deleting filters
+      // const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
+      // resetPriceElement.appendNode(elementFilterDelete);
+      this.selectedFiltersView.appendNode(resetPriceElement);
     }
 
     this.selectedCheckBoxFilters.forEach((filter) => {
@@ -392,6 +395,21 @@ export class Catalog extends HandlerLinks {
         } else if (filter.filterType === 'Brand') {
           const resultArray = filter.values.map((element) => `"${element}"`);
           filterArray.push(`variants.attributes.brand.key:${resultArray.join(',')}`);
+        }
+      }
+    });
+
+    this.checkBoxFilterViews.forEach((checkbox) => {
+      if (checkbox.getElement().checked) {
+        const textName = checkbox.getElement().getAttribute('filter-name');
+        const textValue = checkbox.getElement().getAttribute('filter-value');
+        if (textName && textValue) {
+          const resetFilterElement = new ElementCreator({
+            tag: 'button',
+            text: `${textName}:${textValue}`,
+            classes: 'filter-button flex items-center',
+          });
+          this.selectedFiltersView.appendNode(resetFilterElement);
         }
       }
     });
