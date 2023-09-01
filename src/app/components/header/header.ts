@@ -11,7 +11,6 @@ import { ElementButtonCreator } from '../../utils/element-creator/element-button
 import { Router } from '../../router/router';
 import { HandlerLinks } from '../../router/handler-links';
 import { getCategories } from '../../utils/api/api-categories';
-import { getCtpClient } from '../../utils/api/api-client';
 import { Message } from '../../utils/message/toastify-message';
 import { Store } from '../../enums/store';
 
@@ -159,7 +158,7 @@ export class Header extends HandlerLinks implements Observer {
 
   async addCategories(submenu: ElementCreator<HTMLElement>): Promise<void> {
     try {
-      const categoriesResponse = await getCategories(getCtpClient(), ['parent is not defined']);
+      const categoriesResponse = await getCategories(this.consumer.apiClient, ['parent is not defined']);
       if (categoriesResponse.statusCode === 200) {
         this.categories = categoriesResponse.body.results;
         this.categories.forEach((category) => {

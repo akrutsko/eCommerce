@@ -107,7 +107,7 @@ export class Main implements Observer {
 
   async showCatalog(): Promise<void> {
     const { Catalog } = await import('../catalog/catalog');
-    this.mainView.append(new Catalog(this.router).getElement());
+    this.mainView.append(new Catalog(this.router, this.consumer).getElement());
   }
 
   async showProfile(): Promise<void> {

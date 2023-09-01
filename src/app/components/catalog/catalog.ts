@@ -7,7 +7,6 @@ import { ElementButtonCreator } from '../../utils/element-creator/element-button
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
 import { getProductProjections } from '../../utils/api/api-product-projections';
-import { getCtpClient } from '../../utils/api/api-client';
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 import { Message } from '../../utils/message/toastify-message';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
@@ -18,6 +17,7 @@ import { getCategories } from '../../utils/api/api-categories';
 import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
 import { getPrice } from '../../utils/price/price';
 import { getProductTypes } from '../../utils/api/api-product';
+import { Consumer } from '../consumer/consumer';
 
 interface FilterInterface {
   id: string;
@@ -39,6 +39,8 @@ interface PriceFilter {
 export class Catalog extends HandlerLinks {
   catalogView: ElementCreator<HTMLElement>;
 
+  consumer: Consumer;
+
   products: ProductProjection[] = [];
 
   selectedFilters: SelectedFilters[] = [];
@@ -53,8 +55,9 @@ export class Catalog extends HandlerLinks {
 
   selectedFilfersBlock: ElementCreator<HTMLElement>;
 
-  constructor(router: Router) {
+  constructor(router: Router, consumer: Consumer) {
     super(router);
+    this.consumer = consumer;
     this.elementCountOfResults = new ElementCreator({ tag: 'div', classes: '', text: '0 results' });
     this.cardsElementCreator = new ElementCreator({
       tag: 'div',
@@ -306,7 +309,7 @@ export class Catalog extends HandlerLinks {
   }
 
   async createFiltersPanel(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
-    const productsResponse = await getProductProjections(getCtpClient()).catch(() => {
+    const productsResponse = await getProductProjections(this.consumer.apiClient).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!productsResponse) return;
@@ -316,7 +319,7 @@ export class Catalog extends HandlerLinks {
       this.createPriceFilter(sortedPrices[0], sortedPrices[sortedPrices.length - 1], filtersElementCreator);
     }
 
-    const categoriesResponse = await getCategories(getCtpClient(), ['parent is not defined']).catch(() => {
+    const categoriesResponse = await getCategories(this.consumer.apiClient, ['parent is not defined']).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!categoriesResponse) return;
@@ -329,7 +332,7 @@ export class Catalog extends HandlerLinks {
 
     this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
 
-    const productTypesResponse = await getProductTypes(getCtpClient());
+    const productTypesResponse = await getProductTypes(this.consumer.apiClient);
 
     if (productTypesResponse.statusCode === 200) {
       const filterArrayBrand = this.getUniqueAttributesByKey(productTypesResponse.body.results, 'brand');
@@ -429,7 +432,7 @@ export class Catalog extends HandlerLinks {
   async createCards(filter?: string | string[]): Promise<void> {
     this.cardsElementCreator.getElement().innerHTML = '';
     try {
-      const productsResponse = await getProductProjections(getCtpClient(), filter);
+      const productsResponse = await getProductProjections(this.consumer.apiClient, filter);
       if (productsResponse.statusCode === 200) {
         this.products = productsResponse.body.results;
         this.elementCountOfResults.getElement().textContent = `${this.products.length} results`;
