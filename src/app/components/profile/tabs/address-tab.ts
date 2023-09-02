@@ -5,7 +5,7 @@ import plus from '../../../../assets/svg/plus.svg';
 
 import { AccordionTab } from '../tab';
 import { ElementCreator } from '../../../utils/element-creator/element-creator';
-import { codeCountries } from '../../../data/country-codes';
+import { codeCountries, countryCodes } from '../../../data/country-codes';
 import { ElementOptionCreator } from '../../../utils/element-creator/element-option-creator';
 import { FormInputCountryCreator } from '../../../utils/element-creator/form-country-input-creator';
 import { FormInputCreator } from '../../../utils/element-creator/form-input-creator';
@@ -16,6 +16,7 @@ import { Consumer } from '../../consumer/consumer';
 import { ElementLabelCreator } from '../../../utils/element-creator/element-label-creator';
 import { ElementInputCreator } from '../../../utils/element-creator/element-input-creator';
 import { ElementSelectCreator } from '../../../utils/element-creator/element-selector-creator';
+import { Message } from '../../../utils/message/toastify-message';
 
 export class AddressTab extends AccordionTab {
   tabType: Addresses;
@@ -237,16 +238,59 @@ export class AddressTab extends AccordionTab {
   }
 
   async saveChanges(): Promise<void> {
-    console.log('addressesList', this.addressesList);
-    console.log('defaultAddressId', this.defaultAddressId);
+    const selectedAddressId = this.changeSelect.getElement().value;
 
-    console.log(this.countryInputContainer.getInputValue());
-    console.log(this.cityInputContainer.getInputValue());
-    console.log(this.streetInputContainer.getInputValue());
-    console.log(this.postalCodeInputContainer.getInputValue());
-    console.log(this.saveCheckbox.checked); // set as default
+    const country = countryCodes[this.countryInputContainer.getInputValue()];
+    const city = this.cityInputContainer.getInputValue();
+    const streetName = this.streetInputContainer.getInputValue();
+    const postalCode = this.postalCodeInputContainer.getInputValue();
+    const isDefault = this.saveCheckbox.checked;
 
-    console.log(this.changeSelect.getElement().value); // set as default
+    try {
+      if (selectedAddressId) {
+        await this.consumer.changeAddress(selectedAddressId, country, city, streetName, postalCode);
+        new Message('Address has been updated.', 'info').showMessage();
+
+        if (isDefault && !this.isBilling) {
+          await this.consumer.setDefaultShippingAddress(selectedAddressId);
+        }
+
+        if (isDefault && this.isBilling) {
+          await this.consumer.setDefaultBillingAddress(selectedAddressId);
+        }
+      } else {
+        await this.consumer.addAddress(country, city, streetName, postalCode);
+        new Message('Address has been added.', 'info').showMessage();
+
+        const addressId = this.consumer.consumerData?.addresses.at(-1)?.id;
+
+        if (this.isBilling && addressId) {
+          if (isDefault) {
+            await this.consumer.setDefaultBillingAddress(addressId);
+          } else {
+            await this.consumer.addBillingAddressId(addressId);
+          }
+        }
+
+        if (!this.isBilling && addressId) {
+          if (isDefault) {
+            await this.consumer.setDefaultShippingAddress(addressId);
+          } else {
+            await this.consumer.addShippingAddressId(addressId);
+          }
+        }
+      }
+
+      this.resetState();
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message) {
+          new Message(err.message, 'error').showMessage();
+        } else {
+          new Message('Something went wrong. Try later.', 'error').showMessage();
+        }
+      }
+    }
   }
 
   setHandlers(): void {

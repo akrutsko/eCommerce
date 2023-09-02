@@ -12,11 +12,15 @@ import {
 import { ConsumerClient } from '../../enums/consumer-client';
 import {
   addAddress,
+  addBillingAddressId,
+  addShippingAddressId,
   changeAddress,
   changeEmail,
   changePassword,
   changePersonal,
   getConsumer,
+  removeDefaultBillingAddress,
+  removeDefaultShippingAddress,
   setDefaultBillingAddress,
   setDefaultShippingAddress,
 } from '../../utils/api/api-consumer';
@@ -147,6 +151,13 @@ export class Consumer implements Observable {
     ).body;
   }
 
+  async addShippingAddressId(addressId: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await addShippingAddressId(this.apiClient, this.consumerData.version, addressId)).body;
+  }
+
   async setDefaultShippingAddress(addressId: string): Promise<void> {
     if (!this.consumerData) {
       this.consumerData = await this.getConsumer();
@@ -154,10 +165,31 @@ export class Consumer implements Observable {
     this.consumerData = (await setDefaultShippingAddress(this.apiClient, this.consumerData.version, addressId)).body;
   }
 
+  async removeDefaultShippingAddress(): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await removeDefaultShippingAddress(this.apiClient, this.consumerData.version)).body;
+  }
+
+  async addBillingAddressId(addressId: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await addBillingAddressId(this.apiClient, this.consumerData.version, addressId)).body;
+  }
+
   async setDefaultBillingAddress(addressId: string): Promise<void> {
     if (!this.consumerData) {
       this.consumerData = await this.getConsumer();
     }
     this.consumerData = (await setDefaultBillingAddress(this.apiClient, this.consumerData.version, addressId)).body;
+  }
+
+  async removeDefaultBillingAddress(): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await removeDefaultBillingAddress(this.apiClient, this.consumerData.version)).body;
   }
 }
