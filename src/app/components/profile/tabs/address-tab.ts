@@ -31,7 +31,7 @@ export class AddressTab extends AccordionTab {
 
   changeSelect: ElementSelectCreator;
 
-  saveCheckbox: HTMLInputElement;
+  makeDefaultCheckbox: HTMLInputElement;
 
   get isBilling(): boolean {
     return this.tabType === Addresses.Billing;
@@ -60,7 +60,7 @@ export class AddressTab extends AccordionTab {
     super(consumer, svg, heading);
     this.tabType = tabType;
     this.changeSelect = new ElementSelectCreator({ classes: 'form-input' });
-    this.saveCheckbox = new ElementInputCreator({ type: 'checkbox', id: 'del-def' }).getElement();
+    this.makeDefaultCheckbox = new ElementInputCreator({ type: 'checkbox', id: 'del-def' }).getElement();
     this.countryInputContainer = new FormInputCountryCreator('country');
     this.cityInputContainer = new FormInputCreator({ placeholder: 'city', validation: validateOnlyLetters });
     this.streetInputContainer = new FormInputCreator({ placeholder: 'street', validation: validateOnlyLetters });
@@ -130,7 +130,7 @@ export class AddressTab extends AccordionTab {
       const fullAddress = `${country} ${address.city} ${address.streetName} ${address.postalCode} ${
         isDefault ? '(✔ default)' : ''
       }`;
-      const option = new ElementOptionCreator({ tag: 'option', text: fullAddress, value: address.id || '', id: address.id });
+      const option = new ElementOptionCreator({ tag: 'option', text: fullAddress, value: address.id || '' });
       this.changeSelect.appendNode(option);
     });
 
@@ -169,7 +169,11 @@ export class AddressTab extends AccordionTab {
     const currentAddress = this.addressesList.find((addr) => addr.id === currentId);
 
     if (currentId === this.defaultAddressId) {
-      this.saveCheckbox.checked = true;
+      this.makeDefaultCheckbox.checked = true;
+      this.makeDefaultCheckbox.disabled = true;
+    } else {
+      this.makeDefaultCheckbox.checked = false;
+      this.makeDefaultCheckbox.disabled = false;
     }
 
     const container = this.createInputsContainer(currentAddress);
@@ -198,12 +202,11 @@ export class AddressTab extends AccordionTab {
     const inputsContainer = new ElementCreator({
       tag: 'div',
       classes: 'flex flex-col justify-between gap-2 md:flex-row md:flex-nowrap md:gap-4',
-      id: address?.id,
     });
 
     const checkboxContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm' });
     const label = new ElementLabelCreator({ text: 'set as default address', for: 'del-def' });
-    checkboxContainer.appendNode(this.saveCheckbox, label);
+    checkboxContainer.appendNode(this.makeDefaultCheckbox, label);
 
     inputsContainer.setHandler('input', (e) => {
       if (e.target instanceof HTMLInputElement) {
@@ -233,8 +236,24 @@ export class AddressTab extends AccordionTab {
     return wrapper.appendNode(inputsContainer, checkboxContainer).getElement();
   }
 
-  deleteAddress(): void {
-    // TODO: delete address API --> display default view
+  async deleteAddress(): Promise<void> {
+    const selectedAddressId = this.changeSelect.getElement().value;
+
+    try {
+      await this.consumer.removeAddress(selectedAddressId);
+      new Message('Address has been removed.', 'info').showMessage();
+
+      this.resetState();
+      console.log(this.consumer.consumerData);
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message) {
+          new Message(err.message, 'error').showMessage();
+        } else {
+          new Message('Something went wrong. Try later.', 'error').showMessage();
+        }
+      }
+    }
   }
 
   async saveChanges(): Promise<void> {
@@ -244,7 +263,7 @@ export class AddressTab extends AccordionTab {
     const city = this.cityInputContainer.getInputValue();
     const streetName = this.streetInputContainer.getInputValue();
     const postalCode = this.postalCodeInputContainer.getInputValue();
-    const isDefault = this.saveCheckbox.checked;
+    const isDefault = this.makeDefaultCheckbox.checked;
 
     try {
       if (selectedAddressId) {
@@ -295,11 +314,12 @@ export class AddressTab extends AccordionTab {
 
   setHandlers(): void {
     this.changeSelect.setHandler('change', () => this.handleSelectChange());
-    this.saveCheckbox.addEventListener('change', () => this.validateSaveButton());
+    this.makeDefaultCheckbox.addEventListener('change', () => this.validateSaveButton());
   }
 
   resetInputs(): void {
-    this.saveCheckbox.checked = false;
+    this.makeDefaultCheckbox.checked = false;
+    this.makeDefaultCheckbox.disabled = false;
     this.changeSelect.getElement().innerHTML = '';
     this.countryInputContainer.setInputValue('');
     this.cityInputContainer.setInputValue('');

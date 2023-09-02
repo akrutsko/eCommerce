@@ -19,6 +19,7 @@ import {
   changePassword,
   changePersonal,
   getConsumer,
+  removeAddress,
   removeDefaultBillingAddress,
   removeDefaultShippingAddress,
   setDefaultBillingAddress,
@@ -149,6 +150,13 @@ export class Consumer implements Observable {
     this.consumerData = (
       await changeAddress(this.apiClient, this.consumerData.version, addressId, country, city, streetName, postalCode)
     ).body;
+  }
+
+  async removeAddress(addressId: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await removeAddress(this.apiClient, this.consumerData.version, addressId)).body;
   }
 
   async addShippingAddressId(addressId: string): Promise<void> {
