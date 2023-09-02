@@ -12,6 +12,8 @@ export class FormInputCreator {
 
   inputContainer: ElementCreator<HTMLElement>;
 
+  checkInput: HTMLInputElement | undefined;
+
   constructor(params: FormInputParams) {
     this.errorClass = 'error hidden left-3 text-xs text-primary-color absolute';
     this.input = new ElementInputCreator({
@@ -20,15 +22,16 @@ export class FormInputCreator {
       classes: 'form-input',
       list: params.list,
     }).getElement();
+    this.checkInput = params.checkInput;
     this.error = new ElementCreator({ tag: 'div', classes: this.errorClass }).getElement();
     this.inputContainer = new ElementCreator({ tag: 'div', classes: `relative w-full ${params.checkInput || ''}` });
     this.inputContainer.appendNode(this.input, this.error);
 
-    this.input.addEventListener('input', () => this.validateInput(params.validation, params.checkInput));
+    this.input.addEventListener('input', () => this.validateInput(params.validation));
   }
 
-  validateInput(callback: (value: string, checkValue?: string) => ValidationResult, checkInput?: HTMLInputElement): void {
-    const { isValid, message } = checkInput ? callback(this.input.value, checkInput.value) : callback(this.input.value);
+  validateInput(callback: (value: string, checkValue?: string) => ValidationResult): void {
+    const { isValid, message } = this.checkInput ? callback(this.input.value, this.checkInput.value) : callback(this.input.value);
 
     this.error.classList.toggle('hidden', isValid);
     this.error.innerHTML = message || '';
