@@ -7,6 +7,5 @@ export class ElementOptionCreator extends ElementCreator<HTMLOptionElement> {
 
     if (params.hidden) this.element.hidden = params.hidden;
     this.element.value = params.value;
-    this.element.text = params.value;
   }
 }

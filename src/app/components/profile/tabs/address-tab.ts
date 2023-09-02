@@ -32,9 +32,28 @@ export class AddressTab extends AccordionTab {
 
   saveCheckbox: HTMLInputElement;
 
-  defaultId: string | undefined;
+  get isBilling(): boolean {
+    return this.tabType === Addresses.Billing;
+  }
 
-  addressesList: Address[] | undefined;
+  get defaultAddressId(): string {
+    if (!this.consumer.consumerData) return '';
+
+    const defaultAddressId = this.isBilling
+      ? this.consumer.consumerData.defaultBillingAddressId
+      : this.consumer.consumerData.defaultShippingAddressId;
+
+    return defaultAddressId || '';
+  }
+
+  get addressesList(): Address[] {
+    if (!this.consumer.consumerData) return [];
+
+    const addressIds = this.isBilling
+      ? this.consumer.consumerData.billingAddressIds
+      : this.consumer.consumerData.shippingAddressIds;
+    return this.consumer.consumerData.addresses.filter((addr) => addr.id && addressIds?.includes(addr.id)) || [];
+  }
 
   constructor(consumer: Consumer, svg: string, heading: string, tabType: Addresses) {
     super(consumer, svg, heading);
@@ -55,64 +74,62 @@ export class AddressTab extends AccordionTab {
 
   createContent(): HTMLElement {
     const container = new ElementCreator({ tag: 'div' });
-    this.getAddressesList();
-    this.getDefaultAddressId();
+    const { addressesList } = this;
 
-    if (this.addressesList) {
-      const defaultObj = this.addressesList?.find((address) => address.id === this.defaultId);
+    if (!addressesList.length) return container.getElement();
 
-      if (defaultObj) {
-        this.addressesList.splice(this.addressesList.indexOf(defaultObj), 1);
-      }
+    const defaultObj = addressesList.find((address) => address.id === this.defaultAddressId);
 
-      const defaultAddress = defaultObj
-        ? `${codeCountries[defaultObj.country]} ${defaultObj.city} ${defaultObj.streetName} ${defaultObj.postalCode}`
-        : '';
+    if (defaultObj) {
+      addressesList.splice(addressesList.indexOf(defaultObj), 1);
+    }
 
-      const addresses = this.addressesList?.map((address) => {
-        const country = codeCountries[address.country];
-        return `${country} ${address.city} ${address.streetName} ${address.postalCode}`;
+    const defaultAddress = defaultObj
+      ? `${codeCountries[defaultObj.country]} ${defaultObj.city} ${defaultObj.streetName} ${defaultObj.postalCode}`
+      : '';
+
+    const addresses = addressesList.map((address) => {
+      const country = codeCountries[address.country];
+      return `${country} ${address.city} ${address.streetName} ${address.postalCode}`;
+    });
+
+    if (defaultAddress) {
+      const defaultContainer = new ElementCreator({ tag: 'div', classes: 'default' });
+      defaultContainer.appendNode(
+        new ElementCreator({ tag: 'div', text: 'default address', classes: 'opacity-60 h5' }),
+        new ElementCreator({ tag: 'div', text: defaultAddress, classes: 'text-xs font-medium' }),
+      );
+      container.appendNode(defaultContainer);
+    }
+
+    if (addresses.length) {
+      const anotherContainer = new ElementCreator({ tag: 'div', classes: 'mt-3' });
+      anotherContainer.appendNode(new ElementCreator({ tag: 'div', text: 'another addresses', classes: 'opacity-60 h5' }));
+      addresses.forEach((address) => {
+        anotherContainer.appendNode(new ElementCreator({ tag: 'div', text: address, classes: 'text-xs font-medium' }));
       });
-
-      if (defaultAddress) {
-        const defaultContainer = new ElementCreator({ tag: 'div', classes: 'default' });
-        defaultContainer.appendNode(
-          new ElementCreator({ tag: 'div', text: 'default address', classes: 'opacity-60 h5' }),
-          new ElementCreator({ tag: 'div', text: defaultAddress, classes: 'text-xs font-medium' }),
-        );
-        container.appendNode(defaultContainer);
-      }
-
-      if (addresses.length) {
-        const anotherContainer = new ElementCreator({ tag: 'div', classes: 'mt-3' });
-        anotherContainer.appendNode(new ElementCreator({ tag: 'div', text: 'another addresses', classes: 'opacity-60 h5' }));
-        addresses.forEach((address) => {
-          anotherContainer.appendNode(new ElementCreator({ tag: 'div', text: address, classes: 'text-xs font-medium' }));
-        });
-        container.appendNode(anotherContainer);
-      }
+      container.appendNode(anotherContainer);
     }
     return container.getElement();
   }
 
-  createChangeAddressContainer(): HTMLElement | null {
-    if (!this.addressesList) {
-      return null;
-    }
-
+  createChangeAddressContainer(): HTMLElement {
     const changeContainer = new ElementCreator({ tag: 'div', classes: 'change-addresses' });
+
+    if (!this.addressesList.length) return changeContainer.getElement();
+
     const changeTitle = new ElementCreator({ tag: 'div', text: 'change address', classes: 'opacity-60 h5' }).getElement();
 
     const emptyOption = new ElementOptionCreator({ tag: 'option', value: '', hidden: true });
     this.changeSelect.appendNode(emptyOption);
 
     this.addressesList.forEach((address) => {
-      const isDefault = address.id === this.defaultId;
+      const isDefault = address.id === this.defaultAddressId;
       const country = codeCountries[address.country];
       const fullAddress = `${country} ${address.city} ${address.streetName} ${address.postalCode} ${
         isDefault ? '(✔ default)' : ''
       }`;
-      const option = new ElementOptionCreator({ tag: 'option', value: fullAddress, id: address.id });
+      const option = new ElementOptionCreator({ tag: 'option', text: fullAddress, value: address.id || '', id: address.id });
       this.changeSelect.appendNode(option);
     });
 
@@ -147,12 +164,10 @@ export class AddressTab extends AccordionTab {
   }
 
   handleSelectChange(): void {
-    const select = this.changeSelect.getElement();
-    const selectValue = select.value;
-    const currentId = select.querySelector(`option[value="${selectValue}"]`)?.id;
-    const currentAddress = this.addressesList?.find((addr) => addr.id === currentId);
+    const currentId = this.changeSelect.getElement().value;
+    const currentAddress = this.addressesList.find((addr) => addr.id === currentId);
 
-    if (currentId === this.defaultId) {
+    if (currentId === this.defaultAddressId) {
       this.saveCheckbox.checked = true;
     }
 
@@ -167,13 +182,9 @@ export class AddressTab extends AccordionTab {
 
   createEdit(): HTMLElement {
     this.resetInputs();
-    this.getAddressesList();
-    this.getDefaultAddressId();
 
     const container = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4' });
-
-    const changeContainer = this.createChangeAddressContainer();
-    if (changeContainer) container.appendNode(changeContainer);
+    container.appendNode(this.createChangeAddressContainer());
 
     const newContainer = this.createNewAddressContainer();
     container.appendNode(newContainer);
@@ -213,7 +224,7 @@ export class AddressTab extends AccordionTab {
       if (address.postalCode) this.postalCodeInputContainer.setInputValue(address.postalCode);
 
       const deleteButton = new ElementButtonCreator({ html: trash, classes: 'self-end md: self-center' });
-      deleteButton.setHandler('click', () => this.handleDeleteAddresInputs(wrapper.getElement(), address));
+      deleteButton.setHandler('click', () => this.deleteAddress());
 
       inputsContainer.appendNode(deleteButton);
     }
@@ -221,47 +232,21 @@ export class AddressTab extends AccordionTab {
     return wrapper.appendNode(inputsContainer, checkboxContainer).getElement();
   }
 
-  handleDeleteAddresInputs(wrapper: HTMLElement, address: Address): void {
-    // eslint-disable-next-line no-restricted-globals, no-alert
-    const userConfirm = confirm('Are you sure that you want to delete this address?');
-    if (userConfirm) wrapper.remove();
-
-    const option = this.changeSelect.getElement().querySelector(`option#${address.id}`);
-    option?.remove();
-
-    this.validateSaveButton();
+  deleteAddress(): void {
+    // TODO: delete address API --> display default view
   }
 
-  // setActions(): void {
-  //   this.newAddresses.forEach((addr) => {
-  //     const action: CustomerAddAddressAction = {
-  //       action: 'addAddress',
-  //       address: {
-  //         country: countryCodes[addr.countryInput.value],
-  //         city: addr.cityInput.value,
-  //         streetName: addr.streetInput.value,
-  //         postalCode: addr.postalCodeInput.value,
-  //       },
-  //     };
-  //     this.actions.push(action);
-  //   });
-  //   this.currentAddresses.forEach((addr) => {
-  //     const action: CustomerChangeAddressAction = {
-  //       action: 'changeAddress',
-  //       addressId: addr.id,
-  //       address: {
-  //         country: countryCodes[addr.countryInput.value],
-  //         city: addr.cityInput.value,
-  //         streetName: addr.streetInput.value,
-  //         postalCode: addr.postalCodeInput.value,
-  //       },
-  //     };
-  //     this.actions.push(action);
-  //   });
-  // }
-
   async saveChanges(): Promise<void> {
-    // TODO: implement API
+    console.log('addressesList', this.addressesList);
+    console.log('defaultAddressId', this.defaultAddressId);
+
+    console.log(this.countryInputContainer.getInputValue());
+    console.log(this.cityInputContainer.getInputValue());
+    console.log(this.streetInputContainer.getInputValue());
+    console.log(this.postalCodeInputContainer.getInputValue());
+    console.log(this.saveCheckbox.checked); // set as default
+
+    console.log(this.changeSelect.getElement().value); // set as default
   }
 
   setHandlers(): void {
@@ -276,22 +261,5 @@ export class AddressTab extends AccordionTab {
     this.cityInputContainer.setInputValue('');
     this.streetInputContainer.setInputValue('');
     this.postalCodeInputContainer.setInputValue('');
-  }
-
-  getAddressesList(): void {
-    const data = this.consumer.consumerData;
-    if (!data) return;
-
-    const isBilling = this.tabType === Addresses.Billing;
-    const addressIds = isBilling ? data.billingAddressIds : data.shippingAddressIds;
-    this.addressesList = data.addresses.filter((addr) => addr.id && addressIds?.includes(addr.id));
-  }
-
-  getDefaultAddressId(): void {
-    const data = this.consumer.consumerData;
-    if (!data) return;
-
-    const isBilling = this.tabType === Addresses.Billing;
-    this.defaultId = isBilling ? data.defaultBillingAddressId : data.defaultShippingAddressId;
   }
 }
