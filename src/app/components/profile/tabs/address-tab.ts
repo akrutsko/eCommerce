@@ -250,7 +250,6 @@ export class AddressTab extends AccordionTab {
       new Message('Address has been removed.', 'info').showMessage();
 
       this.resetState();
-      console.log(this.consumer.consumerData);
     } catch (err) {
       if (err instanceof Error) {
         if (err.message) {
