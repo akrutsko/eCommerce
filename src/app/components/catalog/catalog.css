@@ -17,3 +17,19 @@
 .arrow-active {
   transform: scaleY(-1);
 }
+
+.asc::after {
+  content: "\25B2";
+}
+
+.desc::after {
+  content: "\25BC";
+}
+
+.asc,
+.desc {
+  border-color: transparent;
+  background-color: #db4c43;
+  background-color: var(--main-color);
+  color: rgba(255, 255, 255, var(--tw-text-opacity));
+}
