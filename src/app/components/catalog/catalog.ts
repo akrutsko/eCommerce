@@ -47,7 +47,7 @@ export class Catalog extends HandlerLinks {
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.cardsView = new ElementCreator({
       tag: 'div',
-      classes: 'w-full md:w-2/4 lg:w-6/8 flex flex-wrap gap-3 justify-around grow',
+      classes: 'w-full md:w-2/4 lg:w-6/8 flex justify-between flex-wrap gap-4 grow catalog',
     });
     this.minPriceFilterView = new ElementInputCreator({
       type: 'number',
@@ -63,7 +63,7 @@ export class Catalog extends HandlerLinks {
   async createView(): Promise<void> {
     const firstBlock = new ElementCreator({
       tag: 'div',
-      classes: 'w-full items-top justify-between flex gap-6 flex-wrap flex-col md:flex-row',
+      classes: 'w-full items-top justify-between items-center flex gap-6 flex-wrap flex-col md:flex-row',
     });
     const catalogNameBlock = new ElementCreator({ tag: 'div', classes: 'order-2 md:order-1' });
     const breadcrumbsBlock = new ElementCreator({ tag: 'div', text: 'Catalog>', classes: 'breadcrumbs' });
@@ -388,13 +388,14 @@ export class Catalog extends HandlerLinks {
     }
     const card = new ElementCreator({
       tag: 'div',
-      classes: 'relative card w-60 h-88 hover:scale-105 hover:cursor-pointer hover:border',
+      classes:
+        'relative card bg-white w-full h-auto mx-auto rounded-lg transition-transform drop-shadow-md hover:scale-105 hover:drop-shadow-xl',
     });
     this.cardsView.appendNode(card);
 
     const productImageBlock = new ElementCreator({
       tag: 'div',
-      classes: 'w-60 h-60 border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-bg-color',
+      classes: 'w-full h-auto border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-bg-color',
     });
     let url = '';
     let { masterVariant } = product;
@@ -424,6 +425,8 @@ export class Catalog extends HandlerLinks {
     const image = new ElementImageCreator({ alt: productName, src: url, classes: 'w-full h-full object-cover' });
     productImageBlock.appendNode(image);
 
+    const infoBlock = new ElementCreator({ tag: 'div', classes: 'p-3 h-full flex flex-wrap gap-1' });
+
     const productNameBlock = new ElementCreator({ tag: 'h4', text: `${productName}`, classes: 'text-[#393E4D]' });
 
     const productDescriptionBlock = new ElementCreator({
@@ -433,17 +436,17 @@ export class Catalog extends HandlerLinks {
         'font-open-sans text-xs font-normal leading-4 tracking-normal h-8 overflow-hidden whitespace-normal overflow-ellipsis',
     });
 
-    const productPricesBlock = new ElementCreator({ tag: 'div', classes: 'flex gap-2' });
+    const productPricesBlock = new ElementCreator({ tag: 'div', classes: 'flex gap-2 items-center' });
 
     const productPriceBlock = new ElementCreator({
       tag: 'div',
       text: `${price}`,
-      classes: 'font-sans text-xl font-semibold leading-6 tracking-wider text-[#DB5743]',
+      classes: 'font-sans text-xl font-semibold leading-6 tracking-wider text-[#DB5743] self-end',
     });
     const productPriceWithOutDiscountBlock = new ElementCreator({
       tag: 'div',
       text: `${priceWithOutDiscount}`,
-      classes: 'line-through font-sans text-xl font-semibold leading-6 tracking-wider text-[#f9b8b3]',
+      classes: 'subtitle line-through',
     });
 
     productPricesBlock.appendNode(productPriceBlock);
@@ -453,7 +456,9 @@ export class Catalog extends HandlerLinks {
 
     const aCard = new ElementAnchorCreator({ href: `/product/${product.slug[Store.Language]}`, classes: 'absolute inset-0' });
     this.listOfLinks.push(aCard.getElement());
-    card.appendNode(productImageBlock, productNameBlock, productDescriptionBlock, productPricesBlock, aCard);
+
+    infoBlock.appendNode(productNameBlock, productDescriptionBlock, productPricesBlock);
+    card.appendNode(productImageBlock, infoBlock, aCard);
   }
 
   getView(): ElementCreator<HTMLElement> {
