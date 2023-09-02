@@ -9,7 +9,12 @@ import { codeCountries, countryCodes } from '../../../data/country-codes';
 import { ElementOptionCreator } from '../../../utils/element-creator/element-option-creator';
 import { FormInputCountryCreator } from '../../../utils/element-creator/form-country-input-creator';
 import { FormInputCreator } from '../../../utils/element-creator/form-input-creator';
-import { validateOnlyLetters, validatePostalCode } from '../../../utils/validation/input-validation';
+import {
+  isValueExist,
+  validateCountry,
+  validateOnlyLetters,
+  validatePostalCode,
+} from '../../../utils/validation/input-validation';
 import { ElementButtonCreator } from '../../../utils/element-creator/element-button-creator';
 import { Addresses } from '../../../enums/addresses';
 import { Consumer } from '../../consumer/consumer';
@@ -174,7 +179,7 @@ export class AddressTab extends AccordionTab {
 
     const container = this.createInputsContainer(currentAddress);
 
-    const existingContainer = document.querySelector('.new-addresses');
+    const existingContainer = this.getElement().querySelector('.new-addresses');
     if (existingContainer) {
       existingContainer.innerHTML = '';
       existingContainer.appendChild(container);
@@ -207,6 +212,7 @@ export class AddressTab extends AccordionTab {
 
     inputsContainer.setHandler('input', (e) => {
       if (e.target instanceof HTMLInputElement) {
+        this.validateAddressesInputs();
         this.validateSaveButton();
       }
     });
@@ -231,6 +237,13 @@ export class AddressTab extends AccordionTab {
     }
 
     return wrapper.appendNode(inputsContainer, checkboxContainer).getElement();
+  }
+
+  validateAddressesInputs(): void {
+    this.countryInputContainer.validateInput(validateCountry);
+    this.postalCodeInputContainer.validateInput(validatePostalCode);
+    this.cityInputContainer.validateInput(validateOnlyLetters);
+    this.streetInputContainer.validateInput(isValueExist);
   }
 
   deleteAddress(): void {
