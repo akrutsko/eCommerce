@@ -54,7 +54,7 @@ export class Header extends HandlerLinks implements Observer {
   }
 
   createView(): void {
-    const burger = new ElementCreator({ tag: 'div', classes: 'burger space-y-2 z-10 block md:hidden cursor-pointer' });
+    const burger = new ElementCreator({ tag: 'div', classes: 'burger space-y-2 z-40 block md:hidden cursor-pointer' });
     const spanBurger1 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     const spanBurger2 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     const spanBurger3 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });

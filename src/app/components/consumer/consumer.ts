@@ -10,7 +10,21 @@ import {
   getRefreshTokenClient,
 } from '../../utils/api/api-client';
 import { ConsumerClient } from '../../enums/consumer-client';
-import { getConsumer } from '../../utils/api/api-consumer';
+import {
+  addAddress,
+  addBillingAddressId,
+  addShippingAddressId,
+  changeAddress,
+  changeEmail,
+  changePassword,
+  changePersonal,
+  getConsumer,
+  removeAddress,
+  removeDefaultBillingAddress,
+  removeDefaultShippingAddress,
+  setDefaultBillingAddress,
+  setDefaultShippingAddress,
+} from '../../utils/api/api-consumer';
 import { Token } from '../../enums/token';
 
 export class Consumer implements Observable {
@@ -20,7 +34,7 @@ export class Consumer implements Observable {
 
   status: ConsumerClient;
 
-  consumer: Customer | null = null;
+  consumerData: Customer | null = null;
 
   get isConsumer(): boolean {
     return this.status === ConsumerClient.Consumer;
@@ -71,15 +85,21 @@ export class Consumer implements Observable {
     }
 
     if (response) {
-      this.consumer = response.body;
+      this.consumerData = response.body;
       this.status = ConsumerClient.Consumer;
     }
     this.notify();
   }
 
+  async getConsumer(): Promise<Customer> {
+    const customer = await getConsumer(this.apiClient);
+    return customer.body;
+  }
+
   async logIn(username: string, password: string): Promise<void> {
+    clearTokenStore();
     this.apiClient = getPasswordClient(username, password);
-    this.consumer = (await getConsumer(this.apiClient)).body;
+    this.consumerData = await this.getConsumer();
     localStorage.setItem(Token.Access, getToken());
     localStorage.setItem(Token.Refresh, getRefreshToken());
     this.status = ConsumerClient.Consumer;
@@ -89,9 +109,95 @@ export class Consumer implements Observable {
   logOut(): void {
     localStorage.clear();
     this.status = ConsumerClient.CommerceTools;
-    this.consumer = null;
+    this.consumerData = null;
     clearTokenStore();
     this.apiClient = getCtpClient();
     this.notify();
+  }
+
+  async changeEmail(email: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await changeEmail(this.apiClient, this.consumerData.version, email)).body;
+  }
+
+  async changePersonal(firstName: string, lastName: string, dateOfBirth: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await changePersonal(this.apiClient, this.consumerData.version, firstName, lastName, dateOfBirth)).body;
+  }
+
+  async changePassword(currentPassword: string, newPassword: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await changePassword(this.apiClient, this.consumerData.version, currentPassword, newPassword)).body;
+  }
+
+  async addAddress(country: string, city: string, streetName: string, postalCode: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await addAddress(this.apiClient, this.consumerData.version, country, city, streetName, postalCode)).body;
+  }
+
+  async changeAddress(addressId: string, country: string, city: string, streetName: string, postalCode: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (
+      await changeAddress(this.apiClient, this.consumerData.version, addressId, country, city, streetName, postalCode)
+    ).body;
+  }
+
+  async removeAddress(addressId: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await removeAddress(this.apiClient, this.consumerData.version, addressId)).body;
+  }
+
+  async addShippingAddressId(addressId: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await addShippingAddressId(this.apiClient, this.consumerData.version, addressId)).body;
+  }
+
+  async setDefaultShippingAddress(addressId: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await setDefaultShippingAddress(this.apiClient, this.consumerData.version, addressId)).body;
+  }
+
+  async removeDefaultShippingAddress(): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await removeDefaultShippingAddress(this.apiClient, this.consumerData.version)).body;
+  }
+
+  async addBillingAddressId(addressId: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await addBillingAddressId(this.apiClient, this.consumerData.version, addressId)).body;
+  }
+
+  async setDefaultBillingAddress(addressId: string): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await setDefaultBillingAddress(this.apiClient, this.consumerData.version, addressId)).body;
+  }
+
+  async removeDefaultBillingAddress(): Promise<void> {
+    if (!this.consumerData) {
+      this.consumerData = await this.getConsumer();
+    }
+    this.consumerData = (await removeDefaultBillingAddress(this.apiClient, this.consumerData.version)).body;
   }
 }
