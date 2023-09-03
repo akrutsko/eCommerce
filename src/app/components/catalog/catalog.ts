@@ -12,7 +12,7 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
 import { Store } from '../../enums/store';
-import { getCategories } from '../../utils/api/api-categories';
+import { getCategoriesWithoutParent } from '../../utils/api/api-categories';
 import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
 import { getPrice } from '../../utils/price/price';
 import { getProductProjections, getProductTypes } from '../../utils/api/api-product';
@@ -304,7 +304,7 @@ export class Catalog extends HandlerLinks {
     });
     if (!productsResponse) return;
 
-    const categoriesResponse = await getCategories(this.consumer.apiClient, ['parent is not defined']).catch(() => {
+    const categoriesResponse = await getCategoriesWithoutParent(this.consumer.apiClient).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!categoriesResponse) return;

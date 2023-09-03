@@ -6,22 +6,31 @@ import { Store } from '../../enums/store';
 
 export function getCategories(
   client: Client,
-  where?: string[],
-  expand?: string[],
+
+): Promise<ClientResponse<CategoryPagedQueryResponse>> {
+  return getApiRoot(client)
+    .categories()
+    .get()
+    .execute();
+}
+
+export function getCategoriesWithoutParent(
+  client: Client,
+
 ): Promise<ClientResponse<CategoryPagedQueryResponse>> {
   return getApiRoot(client)
     .categories()
     .get({
       queryArgs: {
-        where,
-        expand,
+        where: ['parent is not defined'],
+
       },
     })
     .execute();
 }
 
-export async function getTreeOfCategoris(client: Client, where?: string[], expand?: string[]): Promise<Category[]> {
-  const categoriesResponse = await getCategories(client, where, expand);
+export async function getTreeOfCategoris(client: Client): Promise<Category[]> {
+  const categoriesResponse = await getCategories(client);
   if (!categoriesResponse) return [];
   const categoriesFromApi = categoriesResponse.body.results;
   const categories: Category[] = [];
@@ -51,4 +60,22 @@ export async function getTreeOfCategoris(client: Client, where?: string[], expan
     }
   });
   return categories;
+}
+
+export function getCategoryById(id: string, categories: Category[]): Category | undefined {
+  for (let i = 0; i < categories.length; i += 1) {
+    const category = categories[i];
+    if (category.id === id) {
+      return category;
+    }
+
+    if (category.children) {
+      const result = getCategoryById(id, category.children);
+      if (result) {
+        return result;
+      }
+    }
+  }
+
+  return undefined;
 }
