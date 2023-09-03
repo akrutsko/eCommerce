@@ -57,7 +57,7 @@ export class Catalog extends HandlerLinks {
   constructor(router: Router, consumer: Consumer, subCategory?: string) {
     super(router);
     this.consumer = consumer;
-    this.breadcrumbsBlock = new ElementCreator({ tag: 'div', classes: 'flex breadcrumbs' });
+    this.breadcrumbsBlock = new ElementCreator({ tag: 'div', classes: 'flex' });
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex' });
@@ -105,18 +105,16 @@ export class Catalog extends HandlerLinks {
       this.currentSearch = search.getElement().value;
       this.search(this.currentSearch);
     });
-    search.getElement().addEventListener('input', () => {
-      if (search.getElement().value === '') {
-        this.currentSearch = '';
-        this.search(this.currentSearch);
-      }
+    search.getElement().addEventListener('search', () => {
+      this.currentSearch = '';
+      this.search(this.currentSearch);
     });
     form.appendNode(search, submitButton);
     firstBlock.appendNode(catalogNameBlock, form);
 
     const secondBlock = new ElementCreator({ tag: 'div', classes: 'm-1 w-full items-top justify-between flex gap-1' });
     this.categoryTree = await getTreeOfCategories(this.consumer.apiClient);
-    const catalogBlock = new ElementAnchorCreator({ href: '/catalog', text: 'Catalog' });
+    const catalogBlock = new ElementAnchorCreator({ href: '/catalog', text: 'Catalog', classes: 'breadcrumbs' });
     this.breadcrumbsBlock.appendNode(catalogBlock);
     if (subCategory) {
       const cat = getCategoryBySlug(subCategory, this.categoryTree);
@@ -185,12 +183,14 @@ export class Catalog extends HandlerLinks {
   }
 
   createBreadCrumb(cat: CategoryTree | undefined): void {
+    const crumb = new ElementCreator({ tag: 'span', text: ' >> ' }).getElement();
     if (cat?.parent) {
-      const categoryBlock = new ElementAnchorCreator({ href: `/categories/${cat.parent.slug}`, text: `>${cat.parent.name}` });
-      this.breadcrumbsBlock.appendNode(categoryBlock);
+      const categoryBlock = new ElementAnchorCreator({ href: `/categories/${cat.parent.slug}`, text: `${cat.parent.name}`, classes: 'breadcrumbs' });
+      this.breadcrumbsBlock.appendNode(crumb, categoryBlock);
     }
-    const categoryBlock = new ElementAnchorCreator({ href: `/categories/${cat?.slug}`, text: `>${cat?.name}` });
-    this.breadcrumbsBlock.appendNode(categoryBlock);
+    const secondCrumb = new ElementCreator({ tag: 'span', text: ' >> ' }).getElement();
+    const categoryBlock = new ElementAnchorCreator({ href: `/categories/${cat?.slug}`, text: `${cat?.name}`, classes: 'breadcrumbs' });
+    this.breadcrumbsBlock.appendNode(secondCrumb, categoryBlock);
   }
 
   changeArraySelectedFilters(filterName: string, isChecked: boolean, value: string): void {
