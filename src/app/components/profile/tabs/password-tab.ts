@@ -12,8 +12,8 @@ export class PasswordTab extends AccordionTab {
 
   constructor(consumer: Consumer, svg: string, heading: string) {
     super(consumer, svg, heading);
-    this.currentInputContainer = new FormInputPasswordCreator('current password', validatePassword);
-    this.newInputContainer = new FormInputPasswordCreator('new password', validatePassword);
+    this.currentInputContainer = new FormInputPasswordCreator('current password', validatePassword, 'max-w-xl');
+    this.newInputContainer = new FormInputPasswordCreator('new password', validatePassword, 'max-w-xl');
   }
 
   createContent(): HTMLElement {

@@ -246,6 +246,8 @@ export class AddressTab extends AccordionTab {
       this.resetInputs();
     }
 
+    this.validateAddressesInputs();
+
     return wrapper.appendNode(inputsContainer, detailsContainer).getElement();
   }
 

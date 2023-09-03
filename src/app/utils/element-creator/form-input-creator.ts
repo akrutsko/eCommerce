@@ -24,7 +24,7 @@ export class FormInputCreator {
     }).getElement();
     this.checkInput = params.checkInput;
     this.error = new ElementCreator({ tag: 'div', classes: this.errorClass }).getElement();
-    this.inputContainer = new ElementCreator({ tag: 'div', classes: `relative w-full ${params.checkInput || ''}` });
+    this.inputContainer = new ElementCreator({ tag: 'div', classes: `relative w-full ${params.containerClasses || ''}` });
     this.inputContainer.appendNode(this.input, this.error);
 
     this.input.addEventListener('input', () => this.validateInput(params.validation));
