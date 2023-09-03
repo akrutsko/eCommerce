@@ -120,7 +120,8 @@ export class AddressTab extends AccordionTab {
   }
 
   createChangeAddressContainer(): HTMLElement {
-    const changeContainer = new ElementCreator({ tag: 'div', classes: 'change-addresses' });
+    const changeContainer = new ElementCreator({ tag: 'div', classes: 'change-addresses flex flex-col gap-4' });
+    const selectContainer = new ElementCreator({ tag: 'div' });
 
     if (!this.addressesList.length) return changeContainer.getElement();
 
@@ -139,12 +140,13 @@ export class AddressTab extends AccordionTab {
       this.changeSelect.appendNode(option);
     });
 
-    changeContainer.appendNode(changeTitle, this.changeSelect);
+    selectContainer.appendNode(changeTitle, this.changeSelect);
+    changeContainer.appendNode(selectContainer);
     return changeContainer.getElement();
   }
 
   createNewAddressContainer(): HTMLElement {
-    const newContainer = new ElementCreator({ tag: 'div', classes: 'new-addresses flex flex-col gap-4' });
+    const newContainer = new ElementCreator({ tag: 'div', classes: 'new-addresses flex flex-col' });
     const addAddress = new ElementCreator({ tag: 'div', classes: 'flex items-center gap-2 cursor-pointer', html: plus });
     const addAddressTitle = new ElementCreator({ tag: 'div', text: 'add new address', classes: 'text-primary-color' });
 
@@ -159,18 +161,23 @@ export class AddressTab extends AccordionTab {
   handleAddAddress(): void {
     this.saveButton.disabled = true;
 
-    const changeContainer = document.querySelector('.change-addresses');
+    const changeContainer = this.getElement().querySelector('.change-addresses');
     if (changeContainer) changeContainer.remove();
 
-    const newContainer = document.querySelector('.new-addresses');
+    const newContainer = this.getElement().querySelector('.new-addresses');
+    const newTitle = new ElementCreator({ tag: 'h5', classes: 'h5 opacity-60', text: 'new address' }).getElement();
+
     if (newContainer) {
       newContainer.innerHTML = '';
-      newContainer.append(this.createInputsContainer());
+      newContainer.append(newTitle, this.createInputsContainer());
     }
   }
 
   handleSelectChange(): void {
     const currentId = this.changeSelect.getElement().value;
+    console.log('currentId', currentId);
+    console.log('this.addressesList', this.addressesList);
+
     const currentAddress = this.addressesList.find((addr) => addr.id === currentId);
 
     if (currentId === this.defaultAddressId) {
@@ -182,11 +189,10 @@ export class AddressTab extends AccordionTab {
     }
 
     const container = this.createInputsContainer(currentAddress);
+    const existingContainer = this.getElement().querySelector('.change-addresses');
 
-    const existingContainer = this.getElement().querySelector('.new-addresses');
     if (existingContainer) {
-      existingContainer.innerHTML = '';
-      existingContainer.appendChild(container);
+      existingContainer.append(container);
     }
   }
 
@@ -237,6 +243,8 @@ export class AddressTab extends AccordionTab {
       deleteButton.setHandler('click', () => this.deleteAddress());
 
       inputsContainer.appendNode(deleteButton);
+    } else {
+      this.resetInputs();
     }
 
     return wrapper.appendNode(inputsContainer, checkboxContainer).getElement();
