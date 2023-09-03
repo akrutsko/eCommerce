@@ -93,7 +93,7 @@ export class Header extends HandlerLinks implements Observer {
     this.listOfLinks.push(catalog.getElement());
     tab.appendNode(catalog, submenu);
 
-    const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-5' });
+    const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-3 lg:gap-5' });
     linksList.appendNode(liHome, tab, liAboutUs);
 
     const divCart = new ElementCreator({ tag: 'div', classes: 'relative cart-button', html: cartSvg });

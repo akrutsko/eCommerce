@@ -48,12 +48,12 @@ export class Catalog extends HandlerLinks {
   constructor(router: Router, consumer: Consumer) {
     super(router);
     this.consumer = consumer;
-    this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
+    this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top gap-2' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
-    this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex' });
+    this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex gap-2 flex-wrap md:max-w-[55%]' });
     this.cardsView = new ElementCreator({
       tag: 'div',
-      classes: 'w-full md:w-2/4 lg:w-6/8 flex justify-between flex-wrap gap-4 grow catalog',
+      classes: 'w-full gap-4 catalog',
     });
     this.minPriceFilterView = new ElementInputCreator({
       type: 'number',
@@ -75,14 +75,14 @@ export class Catalog extends HandlerLinks {
   async createView(): Promise<void> {
     const firstBlock = new ElementCreator({
       tag: 'div',
-      classes: 'w-full items-top justify-between items-center flex gap-6 flex-wrap flex-col md:flex-row',
+      classes: 'w-full justify-center flex-col sm:justify-between sm:flex-row items-center flex gap-6 flex-wrap',
     });
-    const catalogNameBlock = new ElementCreator({ tag: 'div', classes: 'order-2 md:order-1' });
+    const catalogNameBlock = new ElementCreator({ tag: 'div', classes: 'flex flex-col items-center sm:items-start' });
     const breadcrumbsBlock = new ElementCreator({ tag: 'div', text: 'Catalog>', classes: 'breadcrumbs' });
     const catalogName = new ElementCreator({ tag: 'h2', text: 'Catalog', classes: 'h2' });
     catalogNameBlock.appendNode(catalogName, breadcrumbsBlock);
 
-    const form = new ElementCreator({ tag: 'form', classes: 'search-form order-1 md:order-2' });
+    const form = new ElementCreator({ tag: 'form', classes: 'search-form max-w-full sm:max-w-xs' });
     const search = new ElementInputCreator({ type: 'search', name: 'search', placeholder: 'search' });
     search.getElement().addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
@@ -94,7 +94,10 @@ export class Catalog extends HandlerLinks {
     form.appendNode(search, submitButton);
     firstBlock.appendNode(catalogNameBlock, form);
 
-    const secondBlock = new ElementCreator({ tag: 'div', classes: 'm-1 w-full items-top justify-between flex gap-1' });
+    const secondBlock = new ElementCreator({
+      tag: 'div',
+      classes: 'm-1 w-full items-top justify-between flex flex-col md:flex-row gap-1',
+    });
 
     await this.createCards();
 
@@ -131,20 +134,19 @@ export class Catalog extends HandlerLinks {
       this.sort('price', sortingMethod);
     });
 
-    const resultSortingView = new ElementCreator({ tag: 'div', classes: 'flex gap-1 items-center' });
+    const resultSortingView = new ElementCreator({ tag: 'div', classes: 'flex gap-1 items-center self-end' });
     resultSortingView.appendNode(this.countOfResultsView, sortByNameElement, sortByPriceElement);
     secondBlock.appendNode(this.selectedFiltersView, resultSortingView);
 
-    const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full justify-between flex gap-3 flex-wrap' });
+    const thirdBlock = new ElementCreator({ tag: 'div', classes: 'content gap-4' });
     const filtersPanel = new ElementCreator({
       tag: 'div',
-      classes:
-        'w-full md:w-1/4 lg:w-1/8 flex flex-col flex-wrap filters grow-0 shrink-0 gap-2 bg-bg-color border-1 rounded-lg border-solid border-[#fbedec] p-4',
+      classes: 'w-full h-fit filters gap-2 bg-bg-color border-1 rounded-lg border-solid border-[#fbedec] p-4',
     });
     const filtersPanelHeader = new ElementCreator({
       tag: 'h4',
       text: 'Set filters',
-      classes: 'f-full ext-center font-ubuntu text-base font-medium leading-5 tracking-normal',
+      classes: 'h4',
     });
     filtersPanel.appendNode(filtersPanelHeader);
 
@@ -335,7 +337,7 @@ export class Catalog extends HandlerLinks {
       this.createCheckBoxFilter(filter.label, filterArrayBrand, filtersElementCreator);
     });
 
-    const btsWrapper = new ElementCreator({ tag: 'div', classes: 'flex gap-1 justify-between' });
+    const btsWrapper = new ElementCreator({ tag: 'div', classes: 'flex gap-4 sm:gap-2 justify-between mt-2' });
     filtersElementCreator.appendNode(btsWrapper);
 
     const btbApplyFilters = new ElementButtonCreator({ text: 'apply', classes: 'w-full primary-button' });
@@ -499,11 +501,11 @@ export class Catalog extends HandlerLinks {
         price = priceWithOutDiscount;
       }
     }
-
     const image = new ElementImageCreator({ alt: productName, src: url, classes: 'w-full h-full object-cover' });
     productImageBlock.appendNode(image);
 
-    const infoBlock = new ElementCreator({ tag: 'div', classes: 'p-3 h-full flex flex-wrap gap-1' });
+    const infoBlock = new ElementCreator({ tag: 'div', classes: 'p-3 h-full flex flex-col justify-between gap-1' });
+    const nameDescriptionBlock = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-1' });
 
     const productNameBlock = new ElementCreator({ tag: 'h4', text: `${productName}`, classes: 'text-[#393E4D]' });
 
@@ -535,7 +537,8 @@ export class Catalog extends HandlerLinks {
     const aCard = new ElementAnchorCreator({ href: `/product/${product.slug[Store.Language]}`, classes: 'absolute inset-0' });
     this.listOfLinks.push(aCard.getElement());
 
-    infoBlock.appendNode(productNameBlock, productDescriptionBlock, productPricesBlock);
+    nameDescriptionBlock.appendNode(productNameBlock, productDescriptionBlock);
+    infoBlock.appendNode(nameDescriptionBlock, productPricesBlock);
     card.appendNode(productImageBlock, infoBlock, aCard);
   }
 
