@@ -175,9 +175,6 @@ export class AddressTab extends AccordionTab {
 
   handleSelectChange(): void {
     const currentId = this.changeSelect.getElement().value;
-    console.log('currentId', currentId);
-    console.log('this.addressesList', this.addressesList);
-
     const currentAddress = this.addressesList.find((addr) => addr.id === currentId);
 
     if (currentId === this.defaultAddressId) {
@@ -219,6 +216,9 @@ export class AddressTab extends AccordionTab {
     const label = new ElementLabelCreator({ text: 'set as default address', for: 'del-def' });
     checkboxContainer.appendNode(this.makeDefaultCheckbox, label);
 
+    const detailsContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between' });
+    detailsContainer.appendNode(checkboxContainer);
+
     inputsContainer.setHandler('input', (e) => {
       if (e.target instanceof HTMLInputElement) {
         this.validateAddressesInputs();
@@ -241,13 +241,12 @@ export class AddressTab extends AccordionTab {
 
       const deleteButton = new ElementButtonCreator({ html: trash, classes: 'self-end md: self-center' });
       deleteButton.setHandler('click', () => this.deleteAddress());
-
-      inputsContainer.appendNode(deleteButton);
+      detailsContainer.appendNode(deleteButton);
     } else {
       this.resetInputs();
     }
 
-    return wrapper.appendNode(inputsContainer, checkboxContainer).getElement();
+    return wrapper.appendNode(inputsContainer, detailsContainer).getElement();
   }
 
   async deleteAddress(): Promise<void> {
