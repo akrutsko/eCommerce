@@ -163,7 +163,7 @@ export class Header extends HandlerLinks implements Observer {
 
     this.categories = categories;
     this.categories.forEach((category) => {
-      const liCategory = new ElementCreator({ tag: 'li', classes: 'group tab' });
+      const liCategory = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
       const aCategory = new ElementAnchorCreator({
         href: `/categories/${category.slug}`,
         classes: 'h5 hover:text-primary-color',
@@ -175,7 +175,7 @@ export class Header extends HandlerLinks implements Observer {
 
       const submenuContent = new ElementCreator({
         tag: 'ul',
-        classes: 'submenu relative md:absolute hidden bg-white px-2 py-1 w-max',
+        classes: 'submenu relative hidden bg-white px-2 py-1 w-max',
       });
       liCategory.appendNode(submenuContent);
       category.children?.forEach((child) => {
