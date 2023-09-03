@@ -34,6 +34,8 @@ export class Catalog extends HandlerLinks {
 
   selectedFiltersView: ElementCreator<HTMLElement>;
 
+  breadcrumbsBlock: ElementCreator<HTMLElement>;
+
   consumer: Consumer;
 
   categories: Category[] = [];
@@ -51,6 +53,7 @@ export class Catalog extends HandlerLinks {
   constructor(router: Router, consumer: Consumer, subCategory?: string) {
     super(router);
     this.consumer = consumer;
+    this.breadcrumbsBlock = new ElementCreator({ tag: 'div', classes: 'flex breadcrumbs' });
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex' });
@@ -81,9 +84,8 @@ export class Catalog extends HandlerLinks {
       classes: 'w-full items-top justify-between flex gap-6 flex-wrap flex-col md:flex-row',
     });
     const catalogNameBlock = new ElementCreator({ tag: 'div', classes: 'order-2 md:order-1' });
-    const breadcrumbsBlock = new ElementCreator({ tag: 'div', classes: 'flex breadcrumbs' });
     const catalogName = new ElementCreator({ tag: 'h2', text: 'Catalog', classes: 'h2' });
-    catalogNameBlock.appendNode(catalogName, breadcrumbsBlock);
+    catalogNameBlock.appendNode(catalogName, this.breadcrumbsBlock);
 
     const form = new ElementCreator({ tag: 'form', classes: 'search-form order-1 md:order-2' });
     const search = new ElementInputCreator({ type: 'search', name: 'search', placeholder: 'search' });
@@ -100,18 +102,18 @@ export class Catalog extends HandlerLinks {
     const secondBlock = new ElementCreator({ tag: 'div', classes: 'm-1 w-full items-top justify-between flex gap-1' });
     const filterArray = [];
     this.categoryTree = await getTreeOfCategoris(this.consumer.apiClient);
-    const catalogBlock = new ElementCreator({ tag: 'div', text: 'Catalog>' });
-    breadcrumbsBlock.appendNode(catalogBlock);
+    const catalogBlock = new ElementCreator({ tag: 'div', text: 'Catalog' });
+    this.breadcrumbsBlock.appendNode(catalogBlock);
     if (subCategory) {
       const cat = getCategoryBySlug(subCategory, this.categoryTree);
       const catId = cat?.id;
       filterArray.push(`categories.id:subtree("${catId}")`);
       if (cat?.parent) {
-        const categoryBlock = new ElementCreator({ tag: 'div', text: `${cat.parent.name}>` });
-        breadcrumbsBlock.appendNode(categoryBlock);
+        const categoryBlock = new ElementCreator({ tag: 'div', text: `>${cat.parent.name}` });
+        this.breadcrumbsBlock.appendNode(categoryBlock);
       }
-      const categoryBlock = new ElementCreator({ tag: 'div', text: `${cat?.name}>` });
-      breadcrumbsBlock.appendNode(categoryBlock);
+      const categoryBlock = new ElementCreator({ tag: 'div', text: `>${cat?.name}` });
+      this.breadcrumbsBlock.appendNode(categoryBlock);
     }
 
     await this.createCards(filterArray);
