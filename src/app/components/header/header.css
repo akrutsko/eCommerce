@@ -31,3 +31,24 @@
 .submenu.active {
   display: block;
 }
+
+.profile-button .active circle,
+.profile-button:hover circle {
+  fill: #db5743;
+}
+.profile-button .active path,
+.profile-button:hover path {
+  fill: #fff;
+}
+.cart-button .active circle,
+.cart-button:hover circle {
+  fill: #db5743;
+}
+.cart-button .active path,
+.cart-button:hover path {
+  fill: #fff;
+}
+
+circle {
+  transition: fill 0.5s ease;
+}
