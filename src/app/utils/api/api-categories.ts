@@ -1,8 +1,6 @@
 import { Client } from '@commercetools/sdk-client-v2';
 import { CategoryPagedQueryResponse, ClientResponse } from '@commercetools/platform-sdk';
 import { getApiRoot } from './api-client';
-
-import { Message } from '../message/toastify-message';
 import { Category } from '../../interfaces/category';
 import { Store } from '../../enums/store';
 
@@ -23,9 +21,7 @@ export function getCategories(
 }
 
 export async function getTreeOfCategoris(client: Client, where?: string[], expand?: string[]): Promise<Category[]> {
-  const categoriesResponse = await getCategories(client, where, expand).catch(() => {
-    new Message('Something went wrong. Try later.', 'error').showMessage();
-  });
+  const categoriesResponse = await getCategories(client, where, expand);
   if (!categoriesResponse) return [];
   const categoriesFromApi = categoriesResponse.body.results;
   const categories: Category[] = [];
