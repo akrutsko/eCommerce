@@ -185,11 +185,19 @@ export class Catalog extends HandlerLinks {
   createBreadCrumb(cat: CategoryTree | undefined): void {
     const crumb = new ElementCreator({ tag: 'span', text: ' >> ' }).getElement();
     if (cat?.parent) {
-      const categoryBlock = new ElementAnchorCreator({ href: `/categories/${cat.parent.slug}`, text: `${cat.parent.name}`, classes: 'breadcrumbs' });
+      const categoryBlock = new ElementAnchorCreator({
+        href: `/categories/${cat.parent.slug}`,
+        text: `${cat.parent.name}`,
+        classes: 'breadcrumbs',
+      });
       this.breadcrumbsBlock.appendNode(crumb, categoryBlock);
     }
     const secondCrumb = new ElementCreator({ tag: 'span', text: ' >> ' }).getElement();
-    const categoryBlock = new ElementAnchorCreator({ href: `/categories/${cat?.slug}`, text: `${cat?.name}`, classes: 'breadcrumbs' });
+    const categoryBlock = new ElementAnchorCreator({
+      href: `/categories/${cat?.slug}`,
+      text: `${cat?.name}`,
+      classes: 'breadcrumbs',
+    });
     this.breadcrumbsBlock.appendNode(secondCrumb, categoryBlock);
   }
 
