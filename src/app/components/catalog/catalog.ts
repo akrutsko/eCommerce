@@ -12,7 +12,7 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
 import { Store } from '../../enums/store';
-import { getCategoriesWithoutParent, getCategoryBySlug, getTreeOfCategories } from '../../utils/api/api-categories';
+import { getCategoryBySlug, getTreeOfCategories } from '../../utils/api/api-categories';
 import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
 import { getPrice } from '../../utils/price/price';
 import { getProductProjections, getProductTypes } from '../../utils/api/api-product';
@@ -50,10 +50,14 @@ export class Catalog extends HandlerLinks {
 
   currentFilters: string | string[] = [];
 
+  currentCategoryFilter: string | undefined;
+
+  currentSearch = '';
+
   constructor(router: Router, consumer: Consumer, subCategory?: string) {
     super(router);
     this.consumer = consumer;
-    this.breadcrumbsBlock = new ElementCreator({ tag: 'div', classes: 'flex breadcrumbs' });
+    this.breadcrumbsBlock = new ElementCreator({ tag: 'div', classes: 'flex' });
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex' });
@@ -74,7 +78,7 @@ export class Catalog extends HandlerLinks {
 
   sort(fieldName: String, method: String): void {
     const sortingString = `${fieldName} ${method}`;
-    this.createCards(this.currentFilters, sortingString);
+    this.createCards(this.currentFilters, sortingString, this.currentSearch);
     this.currentSortingString = sortingString;
   }
 
@@ -92,31 +96,34 @@ export class Catalog extends HandlerLinks {
     search.getElement().addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        this.search(search.getElement().value);
+        this.currentSearch = search.getElement().value;
+        this.search(this.currentSearch);
       }
     });
     const submitButton = new ElementButtonCreator({ classes: 'absolute right-0 top-0 focus:outline-none', html: searchIcon });
+    submitButton.getElement().addEventListener('click', () => {
+      this.currentSearch = search.getElement().value;
+      this.search(this.currentSearch);
+    });
+    search.getElement().addEventListener('search', () => {
+      this.currentSearch = '';
+      this.search(this.currentSearch);
+    });
     form.appendNode(search, submitButton);
     firstBlock.appendNode(catalogNameBlock, form);
 
     const secondBlock = new ElementCreator({ tag: 'div', classes: 'm-1 w-full items-top justify-between flex gap-1' });
-    const filterArray = [];
     this.categoryTree = await getTreeOfCategories(this.consumer.apiClient);
-    const catalogBlock = new ElementAnchorCreator({ href: '/catalog', text: 'Catalog' });
+    const catalogBlock = new ElementAnchorCreator({ href: '/catalog', text: 'Catalog', classes: 'breadcrumbs' });
     this.breadcrumbsBlock.appendNode(catalogBlock);
     if (subCategory) {
       const cat = getCategoryBySlug(subCategory, this.categoryTree);
       const catId = cat?.id;
-      filterArray.push(`categories.id:subtree("${catId}")`);
-      if (cat?.parent) {
-        const categoryBlock = new ElementAnchorCreator({ href: `/categories/${cat.parent.slug}`, text: `>${cat.parent.name}` });
-        this.breadcrumbsBlock.appendNode(categoryBlock);
-      }
-      const categoryBlock = new ElementAnchorCreator({ href: `/categoryes/${cat?.slug}`, text: `>${cat?.name}` });
-      this.breadcrumbsBlock.appendNode(categoryBlock);
+      this.currentCategoryFilter = `categories.id:subtree("${catId}")`;
+      this.createBreadCrumb(cat);
     }
 
-    await this.createCards(filterArray);
+    await this.createCards();
 
     const sortByNameElement = new ElementButtonCreator({ classes: 'sorting-button  rounded-l-full', text: 'Sort by name' });
     const sortByPriceElement = new ElementButtonCreator({ classes: 'sorting-button  rounded-r-full', text: 'Sort by price' });
@@ -173,6 +180,25 @@ export class Catalog extends HandlerLinks {
     thirdBlock.appendNode(filtersPanel, this.cardsView);
 
     this.catalogView.appendNode(firstBlock, secondBlock, thirdBlock);
+  }
+
+  createBreadCrumb(cat: CategoryTree | undefined): void {
+    const crumb = new ElementCreator({ tag: 'span', text: ' >> ' }).getElement();
+    if (cat?.parent) {
+      const categoryBlock = new ElementAnchorCreator({
+        href: `/categories/${cat.parent.slug}`,
+        text: `${cat.parent.name}`,
+        classes: 'breadcrumbs',
+      });
+      this.breadcrumbsBlock.appendNode(crumb, categoryBlock);
+    }
+    const secondCrumb = new ElementCreator({ tag: 'span', text: ' >> ' }).getElement();
+    const categoryBlock = new ElementAnchorCreator({
+      href: `/categories/${cat?.slug}`,
+      text: `${cat?.name}`,
+      classes: 'breadcrumbs',
+    });
+    this.breadcrumbsBlock.appendNode(secondCrumb, categoryBlock);
   }
 
   changeArraySelectedFilters(filterName: string, isChecked: boolean, value: string): void {
@@ -324,17 +350,6 @@ export class Catalog extends HandlerLinks {
     });
     if (!productsResponse) return;
 
-    const categoriesResponse = await getCategoriesWithoutParent(this.consumer.apiClient).catch(() => {
-      new Message('Something went wrong. Try later.', 'error').showMessage();
-    });
-    if (!categoriesResponse) return;
-    this.categories = categoriesResponse.body.results;
-    const filterArray: Attribute[] = [];
-    this.categories.forEach((category) => {
-      filterArray.push({ key: category.id, label: category.name[Store.Language] });
-    });
-    this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
-
     const sortedPrices = this.getSortedPrices(productsResponse.body.results);
     if (sortedPrices.length) {
       this.createPriceFilter(sortedPrices[0], sortedPrices[sortedPrices.length - 1], filtersElementCreator);
@@ -435,8 +450,11 @@ export class Catalog extends HandlerLinks {
       }
     });
 
-    this.createCards(filterArray, this.currentSortingString);
     this.currentFilters = filterArray;
+    if (this.currentCategoryFilter) {
+      filterArray.push(this.currentCategoryFilter);
+    }
+    this.createCards(filterArray, this.currentSortingString);
   }
 
   resetFilters(): void {
@@ -463,8 +481,19 @@ export class Catalog extends HandlerLinks {
 
   async createCards(filter?: string | string[], sort?: string, search?: string): Promise<void> {
     this.cardsView.getElement().innerHTML = '';
-
-    const productsResponse = await getProductProjections(this.consumer.apiClient, 30, 0, filter, sort, search).catch(() => {
+    let curFilter = filter;
+    if (this.currentCategoryFilter) {
+      if (curFilter instanceof Array) {
+        curFilter.push(this.currentCategoryFilter);
+      } else if (filter) {
+        curFilter = [];
+        curFilter.push(filter.toString());
+        curFilter.push(this.currentCategoryFilter);
+      } else {
+        curFilter = this.currentCategoryFilter;
+      }
+    }
+    const productsResponse = await getProductProjections(this.consumer.apiClient, 30, 0, curFilter, sort, search).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!productsResponse) return;
