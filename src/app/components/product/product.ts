@@ -46,7 +46,6 @@ export class Product extends HandlerLinks {
     if (!productResponse) return;
 
     this.productData = productResponse.body;
-    console.log(this.productData);
 
     const name = this.productData.name[Store.Language];
     const description = this.productData.description?.[Store.Language] || '';
@@ -55,9 +54,6 @@ export class Product extends HandlerLinks {
     const firmPrice = embeddedPrice?.value;
     const discountedPrice = embeddedPrice?.discounted?.value;
     const { attributes } = this.productData.masterVariant;
-
-    console.log(firmPrice);
-    console.log(discountedPrice);
 
     const breadcrumbWrapper = await this.createBreadcrumbs(this.productData.categories[0].id);
 
