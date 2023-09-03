@@ -19,7 +19,7 @@ export function getCategoriesWithoutParent(client: Client): Promise<ClientRespon
     .execute();
 }
 
-export async function getTreeOfCategoris(client: Client): Promise<CategoryTree[]> {
+export async function getTreeOfCategories(client: Client): Promise<CategoryTree[]> {
   const categoriesResponse = await getCategories(client);
   if (!categoriesResponse) return [];
   const categoriesFromApi = categoriesResponse.body.results;

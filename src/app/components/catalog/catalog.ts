@@ -12,7 +12,7 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
 import { Store } from '../../enums/store';
-import { getCategoriesWithoutParent, getCategoryBySlug, getTreeOfCategoris } from '../../utils/api/api-categories';
+import { getCategoriesWithoutParent, getCategoryBySlug, getTreeOfCategories } from '../../utils/api/api-categories';
 import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
 import { getPrice } from '../../utils/price/price';
 import { getProductProjections, getProductTypes } from '../../utils/api/api-product';
@@ -101,18 +101,18 @@ export class Catalog extends HandlerLinks {
 
     const secondBlock = new ElementCreator({ tag: 'div', classes: 'm-1 w-full items-top justify-between flex gap-1' });
     const filterArray = [];
-    this.categoryTree = await getTreeOfCategoris(this.consumer.apiClient);
-    const catalogBlock = new ElementCreator({ tag: 'div', text: 'Catalog' });
+    this.categoryTree = await getTreeOfCategories(this.consumer.apiClient);
+    const catalogBlock = new ElementAnchorCreator({ href: '/catalog', text: 'Catalog' });
     this.breadcrumbsBlock.appendNode(catalogBlock);
     if (subCategory) {
       const cat = getCategoryBySlug(subCategory, this.categoryTree);
       const catId = cat?.id;
       filterArray.push(`categories.id:subtree("${catId}")`);
       if (cat?.parent) {
-        const categoryBlock = new ElementCreator({ tag: 'div', text: `>${cat.parent.name}` });
+        const categoryBlock = new ElementAnchorCreator({ href: `/categories/${cat.parent.slug}`, text: `>${cat.parent.name}` });
         this.breadcrumbsBlock.appendNode(categoryBlock);
       }
-      const categoryBlock = new ElementCreator({ tag: 'div', text: `>${cat?.name}` });
+      const categoryBlock = new ElementAnchorCreator({ href: `/categoryes/${cat?.slug}`, text: `>${cat?.name}` });
       this.breadcrumbsBlock.appendNode(categoryBlock);
     }
 

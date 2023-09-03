@@ -9,7 +9,7 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { Router } from '../../router/router';
 import { HandlerLinks } from '../../router/handler-links';
-import { getTreeOfCategoris } from '../../utils/api/api-categories';
+import { getTreeOfCategories } from '../../utils/api/api-categories';
 import { Message } from '../../utils/message/toastify-message';
 import { CategoryTree } from '../../interfaces/category';
 
@@ -156,7 +156,7 @@ export class Header extends HandlerLinks implements Observer {
   }
 
   async addCategories(submenu: ElementCreator<HTMLElement>): Promise<void> {
-    const categories = await getTreeOfCategoris(this.consumer.apiClient).catch(() => {
+    const categories = await getTreeOfCategories(this.consumer.apiClient).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!categories) return;
