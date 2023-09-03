@@ -68,7 +68,7 @@ export class Login extends HandlerLinks {
     const passwordInputContainer = new ElementCreator({ tag: 'div', classes: 'password relative' });
     passwordInputContainer.appendNode(this.passwordInput, this.showButton, this.passwordError);
 
-    const loginForm = new ElementCreator({ tag: 'form', classes: 'flex flex-col gap-3 sm:gap-4 md:gap-5' });
+    const loginForm = new ElementCreator({ tag: 'form', classes: 'flex flex-col gap-4 md:gap-5' });
     loginForm.appendNode(emailInputContainer, passwordInputContainer, this.submitButton);
 
     const question = new ElementCreator({ tag: 'div', text: 'Not a member yet? ' });
