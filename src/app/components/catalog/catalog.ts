@@ -52,6 +52,8 @@ export class Catalog extends HandlerLinks {
 
   currentCategoryFilter: string | undefined;
 
+  currentSearch = '';
+
   constructor(router: Router, consumer: Consumer, subCategory?: string) {
     super(router);
     this.consumer = consumer;
@@ -76,7 +78,7 @@ export class Catalog extends HandlerLinks {
 
   sort(fieldName: String, method: String): void {
     const sortingString = `${fieldName} ${method}`;
-    this.createCards(this.currentFilters, sortingString);
+    this.createCards(this.currentFilters, sortingString, this.currentSearch);
     this.currentSortingString = sortingString;
   }
 
@@ -94,10 +96,21 @@ export class Catalog extends HandlerLinks {
     search.getElement().addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
-        this.search(search.getElement().value);
+        this.currentSearch = search.getElement().value;
+        this.search(this.currentSearch);
       }
     });
     const submitButton = new ElementButtonCreator({ classes: 'absolute right-0 top-0 focus:outline-none', html: searchIcon });
+    submitButton.getElement().addEventListener('click', () => {
+      this.currentSearch = search.getElement().value;
+      this.search(this.currentSearch);
+    });
+    search.getElement().addEventListener('input', () => {
+      if (search.getElement().value === '') {
+        this.currentSearch = '';
+        this.search(this.currentSearch);
+      }
+    });
     form.appendNode(search, submitButton);
     firstBlock.appendNode(catalogNameBlock, form);
 
@@ -329,17 +342,6 @@ export class Catalog extends HandlerLinks {
     });
     if (!productsResponse) return;
 
-    // const categoriesResponse = await getCategoriesWithoutParent(this.consumer.apiClient).catch(() => {
-    //   new Message('Something went wrong. Try later.', 'error').showMessage();
-    // });
-    // if (!categoriesResponse) return;
-    // this.categories = categoriesResponse.body.results;
-    // const filterArray: Attribute[] = [];
-    // this.categories.forEach((category) => {
-    //   filterArray.push({ key: category.id, label: category.name[Store.Language] });
-    // });
-    // this.createCheckBoxFilter('Category', filterArray, filtersElementCreator);
-
     const sortedPrices = this.getSortedPrices(productsResponse.body.results);
     if (sortedPrices.length) {
       this.createPriceFilter(sortedPrices[0], sortedPrices[sortedPrices.length - 1], filtersElementCreator);
@@ -440,8 +442,11 @@ export class Catalog extends HandlerLinks {
       }
     });
 
-    this.createCards(filterArray, this.currentSortingString);
     this.currentFilters = filterArray;
+    if (this.currentCategoryFilter) {
+      filterArray.push(this.currentCategoryFilter);
+    }
+    this.createCards(filterArray, this.currentSortingString);
   }
 
   resetFilters(): void {
