@@ -1,7 +1,6 @@
 import { Category, ProductProjection, ProductType } from '@commercetools/platform-sdk';
 import './catalog.css';
 import arrowDownSVG from '../../../assets/svg/arrow-down.svg';
-import deleteFilterSVG from '../../../assets/svg/delete-filter.svg';
 import searchIcon from '../../../assets/svg/search.svg';
 
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
@@ -32,6 +31,8 @@ export class Catalog extends HandlerLinks {
 
   maxPriceFilterView: ElementCreator<HTMLInputElement>;
 
+  selectedFiltersView: ElementCreator<HTMLElement>;
+
   consumer: Consumer;
 
   categories: Category[] = [];
@@ -40,11 +41,16 @@ export class Catalog extends HandlerLinks {
 
   selectedCheckBoxFilters: SelectedFilters[] = [];
 
+  currentSortingString: string | undefined;
+
+  currentFilters: string | string[] = [];
+
   constructor(router: Router, consumer: Consumer) {
     super(router);
     this.consumer = consumer;
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
+    this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex' });
     this.cardsView = new ElementCreator({
       tag: 'div',
       classes: 'w-full md:w-2/4 lg:w-6/8 flex justify-between flex-wrap gap-4 grow catalog',
@@ -58,6 +64,12 @@ export class Catalog extends HandlerLinks {
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] min-w-0',
     });
     this.createView();
+  }
+
+  sort(fieldName: String, method: String): void {
+    const sortingString = `${fieldName} ${method}`;
+    this.createCards(this.currentFilters, sortingString);
+    this.currentSortingString = sortingString;
   }
 
   async createView(): Promise<void> {
@@ -75,18 +87,53 @@ export class Catalog extends HandlerLinks {
     search.getElement().addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         e.preventDefault();
+        this.search(search.getElement().value);
       }
-    }); // TODO: implement search
+    });
     const submitButton = new ElementButtonCreator({ classes: 'absolute right-0 top-0 focus:outline-none', html: searchIcon });
     form.appendNode(search, submitButton);
     firstBlock.appendNode(catalogNameBlock, form);
 
-    const secondBlock = new ElementCreator({ tag: 'div', classes: 'w-full items-top justify-between flex gap-1' });
+    const secondBlock = new ElementCreator({ tag: 'div', classes: 'm-1 w-full items-top justify-between flex gap-1' });
 
     await this.createCards();
 
-    const sortByNameElement = new ElementCreator({ tag: 'div', classes: 'filter-button', text: 'Sort by name' });
-    secondBlock.appendNode(sortByNameElement, this.countOfResultsView);
+    const sortByNameElement = new ElementButtonCreator({ classes: 'sorting-button  rounded-l-full', text: 'Sort by name' });
+    const sortByPriceElement = new ElementButtonCreator({ classes: 'sorting-button  rounded-r-full', text: 'Sort by price' });
+
+    sortByNameElement.getElement().addEventListener('click', () => {
+      let sortingMethod = 'asc';
+      if (sortByNameElement.getElement().classList.contains('asc')) {
+        sortingMethod = 'desc';
+        sortByNameElement.removeClass('asc');
+        sortByNameElement.addClass('desc');
+      } else {
+        sortByNameElement.removeClass('desc');
+        sortByNameElement.addClass('asc');
+      }
+      sortByPriceElement.removeClass('asc');
+      sortByPriceElement.removeClass('desc');
+      this.sort(`name.${Store.Language}`, sortingMethod);
+    });
+
+    sortByPriceElement.getElement().addEventListener('click', () => {
+      let sortingMethod = 'asc';
+      if (sortByPriceElement.getElement().classList.contains('asc')) {
+        sortingMethod = 'desc';
+        sortByPriceElement.removeClass('asc');
+        sortByPriceElement.addClass('desc');
+      } else {
+        sortByPriceElement.removeClass('desc');
+        sortByPriceElement.addClass('asc');
+      }
+      sortByNameElement.removeClass('asc');
+      sortByNameElement.removeClass('desc');
+      this.sort('price', sortingMethod);
+    });
+
+    const resultSortingView = new ElementCreator({ tag: 'div', classes: 'flex gap-1 items-center' });
+    resultSortingView.appendNode(this.countOfResultsView, sortByNameElement, sortByPriceElement);
+    secondBlock.appendNode(this.selectedFiltersView, resultSortingView);
 
     const thirdBlock = new ElementCreator({ tag: 'div', classes: 'w-full justify-between flex gap-3 flex-wrap' });
     const filtersPanel = new ElementCreator({
@@ -144,12 +191,12 @@ export class Catalog extends HandlerLinks {
     const minmaxElement = new ElementCreator({ tag: 'div', classes: 'flex gap-1' });
     elementFilterPanel.appendNode(minmaxElement);
 
-    this.minPriceFilterView.getElement().step = '0.01';
+    this.minPriceFilterView.getElement().step = '1';
     this.minPriceFilterView.getElement().min = `${min}`;
     this.minPriceFilterView.getElement().max = `${max}`;
     this.minPriceFilterView.getElement().placeholder = '$0.00';
 
-    this.maxPriceFilterView.getElement().step = '0.01';
+    this.maxPriceFilterView.getElement().step = '1';
     this.maxPriceFilterView.getElement().min = `${min}`;
     this.maxPriceFilterView.getElement().max = `${max}`;
     this.maxPriceFilterView.getElement().placeholder = '$0.00';
@@ -186,6 +233,7 @@ export class Catalog extends HandlerLinks {
         id: `${filterName}-${filterElement.key}`,
       });
       elementFilterInput.getElement().setAttribute('filter-name', filterName);
+      elementFilterInput.getElement().setAttribute('filter-value', filterElement.label);
       this.checkBoxFilterViews.push(elementFilterInput);
       const elementFilterLabel = new ElementLabelCreator({
         for: `${filterName}-${filterElement.key}`,
@@ -306,6 +354,7 @@ export class Catalog extends HandlerLinks {
 
   applyFilters(): void {
     const filterArray: string[] = [];
+    this.selectedFiltersView.getElement().innerHTML = '';
 
     const min = parseFloat(this.minPriceFilterView.getElement().value) * 10 ** Store.FractionDigits;
     const max = parseFloat(this.maxPriceFilterView.getElement().value) * 10 ** Store.FractionDigits;
@@ -330,8 +379,10 @@ export class Catalog extends HandlerLinks {
         text: `$${fromStr}-${toStr}`,
         classes: 'filter-button flex items-center',
       });
-      const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
-      resetPriceElement.appendNode(elementFilterDelete);
+      // TODO add deleting filters
+      // const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
+      // resetPriceElement.appendNode(elementFilterDelete);
+      this.selectedFiltersView.appendNode(resetPriceElement);
     }
 
     this.selectedCheckBoxFilters.forEach((filter) => {
@@ -349,7 +400,23 @@ export class Catalog extends HandlerLinks {
       }
     });
 
-    this.createCards(filterArray);
+    this.checkBoxFilterViews.forEach((checkbox) => {
+      if (checkbox.getElement().checked) {
+        const textName = checkbox.getElement().getAttribute('filter-name');
+        const textValue = checkbox.getElement().getAttribute('filter-value');
+        if (textName && textValue) {
+          const resetFilterElement = new ElementCreator({
+            tag: 'button',
+            text: `${textName}:${textValue}`,
+            classes: 'filter-button flex items-center',
+          });
+          this.selectedFiltersView.appendNode(resetFilterElement);
+        }
+      }
+    });
+
+    this.createCards(filterArray, this.currentSortingString);
+    this.currentFilters = filterArray;
   }
 
   resetFilters(): void {
@@ -363,10 +430,21 @@ export class Catalog extends HandlerLinks {
     this.applyFilters();
   }
 
-  async createCards(filter?: string | string[]): Promise<void> {
+  search(word: string): void {
+    this.checkBoxFilterViews.forEach((element) => {
+      const checkBox = element.getElement();
+      checkBox.checked = false;
+    });
+    this.selectedCheckBoxFilters = [];
+    this.minPriceFilterView.getElement().value = '';
+    this.maxPriceFilterView.getElement().value = '';
+    this.createCards([], this.currentSortingString, word);
+  }
+
+  async createCards(filter?: string | string[], sort?: string, search?: string): Promise<void> {
     this.cardsView.getElement().innerHTML = '';
 
-    const productsResponse = await getProductProjections(this.consumer.apiClient, 30, 0, filter).catch(() => {
+    const productsResponse = await getProductProjections(this.consumer.apiClient, 30, 0, filter, sort, search).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!productsResponse) return;
