@@ -173,7 +173,10 @@ export class Header extends HandlerLinks implements Observer {
       liCategory.appendNode(aCategory);
       submenu.appendNode(liCategory);
 
-      const submenuContent = new ElementCreator({ tag: 'ul', classes: 'submenu relative md:absolute hidden bg-white px-2 py-1 w-max' });
+      const submenuContent = new ElementCreator({
+        tag: 'ul',
+        classes: 'submenu relative md:absolute hidden bg-white px-2 py-1 w-max',
+      });
       liCategory.appendNode(submenuContent);
       category.children?.forEach((child) => {
         const liCategoryContent = new ElementCreator({ tag: 'li' });

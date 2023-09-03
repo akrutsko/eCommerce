@@ -22,11 +22,7 @@ export function getCategories(
     .execute();
 }
 
-export async function getTreeOfCategoris(
-  client: Client,
-  where?: string[],
-  expand?: string[],
-): Promise<Category[]> {
+export async function getTreeOfCategoris(client: Client, where?: string[], expand?: string[]): Promise<Category[]> {
   const categoriesResponse = await getCategories(client, where, expand).catch(() => {
     new Message('Something went wrong. Try later.', 'error').showMessage();
   });
