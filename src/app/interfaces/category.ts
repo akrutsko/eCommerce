@@ -1,7 +1,7 @@
-export interface Category {
+export interface CategoryTree {
   id: string;
   name: string;
   slug: string;
-  children?: Category[];
-  parent?: Category;
+  children?: CategoryTree[];
+  parent?: CategoryTree;
 }

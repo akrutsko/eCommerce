@@ -12,11 +12,12 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
 import { Store } from '../../enums/store';
-import { getCategoriesWithoutParent } from '../../utils/api/api-categories';
+import { getCategoriesWithoutParent, getCategoryBySlug, getTreeOfCategoris } from '../../utils/api/api-categories';
 import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
 import { getPrice } from '../../utils/price/price';
 import { getProductProjections, getProductTypes } from '../../utils/api/api-product';
 import { Consumer } from '../consumer/consumer';
+import { CategoryTree } from '../../interfaces/category';
 
 export class Catalog extends HandlerLinks {
   catalogView: ElementCreator<HTMLElement>;
@@ -37,6 +38,8 @@ export class Catalog extends HandlerLinks {
 
   categories: Category[] = [];
 
+  categoryTree: CategoryTree[] = [];
+
   products: ProductProjection[] = [];
 
   selectedCheckBoxFilters: SelectedFilters[] = [];
@@ -45,7 +48,7 @@ export class Catalog extends HandlerLinks {
 
   currentFilters: string | string[] = [];
 
-  constructor(router: Router, consumer: Consumer) {
+  constructor(router: Router, consumer: Consumer, subCategory?: string) {
     super(router);
     this.consumer = consumer;
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
@@ -63,7 +66,7 @@ export class Catalog extends HandlerLinks {
       type: 'number',
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] min-w-0',
     });
-    this.createView();
+    this.createView(subCategory);
   }
 
   sort(fieldName: String, method: String): void {
@@ -72,13 +75,13 @@ export class Catalog extends HandlerLinks {
     this.currentSortingString = sortingString;
   }
 
-  async createView(): Promise<void> {
+  async createView(subCategory?: string): Promise<void> {
     const firstBlock = new ElementCreator({
       tag: 'div',
       classes: 'w-full items-top justify-between flex gap-6 flex-wrap flex-col md:flex-row',
     });
     const catalogNameBlock = new ElementCreator({ tag: 'div', classes: 'order-2 md:order-1' });
-    const breadcrumbsBlock = new ElementCreator({ tag: 'div', text: 'Catalog>', classes: 'breadcrumbs' });
+    const breadcrumbsBlock = new ElementCreator({ tag: 'div', classes: 'flex breadcrumbs' });
     const catalogName = new ElementCreator({ tag: 'h2', text: 'Catalog', classes: 'h2' });
     catalogNameBlock.appendNode(catalogName, breadcrumbsBlock);
 
@@ -95,8 +98,23 @@ export class Catalog extends HandlerLinks {
     firstBlock.appendNode(catalogNameBlock, form);
 
     const secondBlock = new ElementCreator({ tag: 'div', classes: 'm-1 w-full items-top justify-between flex gap-1' });
+    const filterArray = [];
+    this.categoryTree = await getTreeOfCategoris(this.consumer.apiClient);
+    const catalogBlock = new ElementCreator({ tag: 'div', text: 'Catalog>' });
+    breadcrumbsBlock.appendNode(catalogBlock);
+    if (subCategory) {
+      const cat = getCategoryBySlug(subCategory, this.categoryTree);
+      const catId = cat?.id;
+      filterArray.push(`categories.id:subtree("${catId}")`);
+      if (cat?.parent) {
+        const categoryBlock = new ElementCreator({ tag: 'div', text: `${cat.parent.name}>` });
+        breadcrumbsBlock.appendNode(categoryBlock);
+      }
+      const categoryBlock = new ElementCreator({ tag: 'div', text: `${cat?.name}>` });
+      breadcrumbsBlock.appendNode(categoryBlock);
+    }
 
-    await this.createCards();
+    await this.createCards(filterArray);
 
     const sortByNameElement = new ElementButtonCreator({ classes: 'sorting-button  rounded-l-full', text: 'Sort by name' });
     const sortByPriceElement = new ElementButtonCreator({ classes: 'sorting-button  rounded-r-full', text: 'Sort by price' });

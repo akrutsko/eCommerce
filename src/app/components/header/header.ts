@@ -11,10 +11,10 @@ import { Router } from '../../router/router';
 import { HandlerLinks } from '../../router/handler-links';
 import { getTreeOfCategoris } from '../../utils/api/api-categories';
 import { Message } from '../../utils/message/toastify-message';
-import { Category } from '../../interfaces/category';
+import { CategoryTree } from '../../interfaces/category';
 
 export class Header extends HandlerLinks implements Observer {
-  categories: Category[] = [];
+  categories: CategoryTree[] = [];
 
   consumer: Consumer;
 
@@ -216,7 +216,7 @@ export class Header extends HandlerLinks implements Observer {
     }
   }
 
-  getCategories(): Category[] {
+  getCategories(): CategoryTree[] {
     return this.categories;
   }
 }
