@@ -132,13 +132,8 @@ export class Main implements Observer {
 
   async showCategories(subCategory?: string): Promise<void> {
     if (subCategory) {
-      const { Category } = await import('../category/category');
-      const categories = new Category(subCategory);
-      if (categories.validateCategory()) {
-        this.mainView.append(categories.getElement());
-      } else {
-        this.show404();
-      }
+      const { Catalog } = await import('../catalog/catalog');
+      this.mainView.append(new Catalog(this.router, this.consumer, subCategory).getElement());
     } else {
       const { Categories } = await import('../category/categories');
       this.mainView.append(new Categories().getElement());
