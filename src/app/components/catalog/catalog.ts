@@ -12,11 +12,12 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
 import { Store } from '../../enums/store';
-import { getCategories } from '../../utils/api/api-categories';
+import { getCategoriesWithoutParent, getCategoryBySlug, getTreeOfCategories } from '../../utils/api/api-categories';
 import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
 import { getPrice } from '../../utils/price/price';
 import { getProductProjections, getProductTypes } from '../../utils/api/api-product';
 import { Consumer } from '../consumer/consumer';
+import { CategoryTree } from '../../interfaces/category';
 
 export class Catalog extends HandlerLinks {
   catalogView: ElementCreator<HTMLElement>;
@@ -33,9 +34,13 @@ export class Catalog extends HandlerLinks {
 
   selectedFiltersView: ElementCreator<HTMLElement>;
 
+  breadcrumbsBlock: ElementCreator<HTMLElement>;
+
   consumer: Consumer;
 
   categories: Category[] = [];
+
+  categoryTree: CategoryTree[] = [];
 
   products: ProductProjection[] = [];
 
@@ -45,9 +50,10 @@ export class Catalog extends HandlerLinks {
 
   currentFilters: string | string[] = [];
 
-  constructor(router: Router, consumer: Consumer) {
+  constructor(router: Router, consumer: Consumer, subCategory?: string) {
     super(router);
     this.consumer = consumer;
+    this.breadcrumbsBlock = new ElementCreator({ tag: 'div', classes: 'flex breadcrumbs' });
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex' });
@@ -63,7 +69,7 @@ export class Catalog extends HandlerLinks {
       type: 'number',
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] min-w-0',
     });
-    this.createView();
+    this.createView(subCategory);
   }
 
   sort(fieldName: String, method: String): void {
@@ -72,15 +78,14 @@ export class Catalog extends HandlerLinks {
     this.currentSortingString = sortingString;
   }
 
-  async createView(): Promise<void> {
+  async createView(subCategory?: string): Promise<void> {
     const firstBlock = new ElementCreator({
       tag: 'div',
       classes: 'w-full items-top justify-between flex gap-6 flex-wrap flex-col md:flex-row',
     });
     const catalogNameBlock = new ElementCreator({ tag: 'div', classes: 'order-2 md:order-1' });
-    const breadcrumbsBlock = new ElementCreator({ tag: 'div', text: 'Catalog>', classes: 'breadcrumbs' });
     const catalogName = new ElementCreator({ tag: 'h2', text: 'Catalog', classes: 'h2' });
-    catalogNameBlock.appendNode(catalogName, breadcrumbsBlock);
+    catalogNameBlock.appendNode(catalogName, this.breadcrumbsBlock);
 
     const form = new ElementCreator({ tag: 'form', classes: 'search-form order-1 md:order-2' });
     const search = new ElementInputCreator({ type: 'search', name: 'search', placeholder: 'search' });
@@ -95,8 +100,23 @@ export class Catalog extends HandlerLinks {
     firstBlock.appendNode(catalogNameBlock, form);
 
     const secondBlock = new ElementCreator({ tag: 'div', classes: 'm-1 w-full items-top justify-between flex gap-1' });
+    const filterArray = [];
+    this.categoryTree = await getTreeOfCategories(this.consumer.apiClient);
+    const catalogBlock = new ElementAnchorCreator({ href: '/catalog', text: 'Catalog' });
+    this.breadcrumbsBlock.appendNode(catalogBlock);
+    if (subCategory) {
+      const cat = getCategoryBySlug(subCategory, this.categoryTree);
+      const catId = cat?.id;
+      filterArray.push(`categories.id:subtree("${catId}")`);
+      if (cat?.parent) {
+        const categoryBlock = new ElementAnchorCreator({ href: `/categories/${cat.parent.slug}`, text: `>${cat.parent.name}` });
+        this.breadcrumbsBlock.appendNode(categoryBlock);
+      }
+      const categoryBlock = new ElementAnchorCreator({ href: `/categoryes/${cat?.slug}`, text: `>${cat?.name}` });
+      this.breadcrumbsBlock.appendNode(categoryBlock);
+    }
 
-    await this.createCards();
+    await this.createCards(filterArray);
 
     const sortByNameElement = new ElementButtonCreator({ classes: 'sorting-button  rounded-l-full', text: 'Sort by name' });
     const sortByPriceElement = new ElementButtonCreator({ classes: 'sorting-button  rounded-r-full', text: 'Sort by price' });
@@ -304,7 +324,7 @@ export class Catalog extends HandlerLinks {
     });
     if (!productsResponse) return;
 
-    const categoriesResponse = await getCategories(this.consumer.apiClient, ['parent is not defined']).catch(() => {
+    const categoriesResponse = await getCategoriesWithoutParent(this.consumer.apiClient).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!categoriesResponse) return;
