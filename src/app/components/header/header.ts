@@ -1,5 +1,4 @@
 import './header.css';
-import { Category } from '@commercetools/platform-sdk';
 import logotype from '../../../assets/svg/logo-header.svg';
 import cartSvg from '../../../assets/svg/cart.svg';
 import customerSvg from '../../../assets/svg/customer.svg';
@@ -10,9 +9,9 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { Router } from '../../router/router';
 import { HandlerLinks } from '../../router/handler-links';
-import { getCategories } from '../../utils/api/api-categories';
+import { getTreeOfCategoris } from '../../utils/api/api-categories';
 import { Message } from '../../utils/message/toastify-message';
-import { Store } from '../../enums/store';
+import { Category } from '../../interfaces/category';
 
 export class Header extends HandlerLinks implements Observer {
   categories: Category[] = [];
@@ -157,22 +156,42 @@ export class Header extends HandlerLinks implements Observer {
   }
 
   async addCategories(submenu: ElementCreator<HTMLElement>): Promise<void> {
-    const categoriesResponse = await getCategories(this.consumer.apiClient, ['parent is not defined']).catch(() => {
+    const categories = await getTreeOfCategoris(this.consumer.apiClient).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
-    if (!categoriesResponse) return;
+    if (!categories) return;
 
-    this.categories = categoriesResponse.body.results;
+    this.categories = categories;
     this.categories.forEach((category) => {
-      const liCategory = new ElementCreator({ tag: 'li' });
+      const liCategory = new ElementCreator({ tag: 'li', classes: 'group tab' });
       const aCategory = new ElementAnchorCreator({
-        href: `/categories#${category.slug[Store.Language]}`,
+        href: `/categories/${category.slug}`,
         classes: 'h5 hover:text-primary-color',
-        text: `${category.name[Store.Language]}`,
+        text: `${category.name}`,
       });
       this.listOfLinks.push(aCategory.getElement());
       liCategory.appendNode(aCategory);
       submenu.appendNode(liCategory);
+
+      const submenuContent = new ElementCreator({ tag: 'ul', classes: 'submenu relative md:absolute hidden bg-white px-2 py-1 w-max' });
+      liCategory.appendNode(submenuContent);
+      category.children?.forEach((child) => {
+        const liCategoryContent = new ElementCreator({ tag: 'li' });
+        const aCategoryContent = new ElementAnchorCreator({
+          href: `/categories/${child.slug}`,
+          classes: 'h5 hover:text-primary-color',
+          text: `${child.name}`,
+        });
+        this.listOfLinks.push(aCategoryContent.getElement());
+        liCategoryContent.appendNode(aCategoryContent);
+        submenuContent.appendNode(liCategoryContent);
+      });
+      liCategory.getElement().addEventListener('mouseenter', () => {
+        submenuContent.addClass('active');
+      });
+      liCategory.getElement().addEventListener('mouseleave', () => {
+        submenuContent.removeClass('active');
+      });
     });
   }
 
