@@ -65,7 +65,7 @@ export class AddressTab extends AccordionTab {
     super(consumer, svg, heading);
     this.tabType = tabType;
     this.changeSelect = new ElementSelectCreator({ classes: 'form-input' });
-    this.makeDefaultCheckbox = new ElementInputCreator({ type: 'checkbox', id: 'del-def' }).getElement();
+    this.makeDefaultCheckbox = new ElementInputCreator({ type: 'checkbox', id: `del-def-${tabType}` }).getElement();
     this.countryInputContainer = new FormInputCountryCreator('country');
     this.cityInputContainer = new FormInputCreator({ placeholder: 'city', validation: validateOnlyLetters });
     this.streetInputContainer = new FormInputCreator({ placeholder: 'street', validation: validateOnlyLetters });
@@ -213,7 +213,7 @@ export class AddressTab extends AccordionTab {
     });
 
     const checkboxContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm' });
-    const label = new ElementLabelCreator({ text: 'set as default address', for: 'del-def' });
+    const label = new ElementLabelCreator({ text: 'set as default address', for: `del-def-${this.tabType}` });
     checkboxContainer.appendNode(this.makeDefaultCheckbox, label);
 
     const detailsContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between' });

@@ -36,14 +36,15 @@ export abstract class AccordionTab {
   createView(svg: string, heading: string): void {
     const header = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-row-reverse cursor-pointer justify-between items-center',
-      html: arrow,
+      classes: 'flex cursor-pointer justify-between items-center',
     });
 
     const titleContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-4 items-center', html: svg });
     const title = new ElementCreator({ tag: 'h4', classes: 'h4', text: heading });
     titleContainer.appendNode(title);
-    header.appendNode(titleContainer);
+
+    const arrowSvg = new ElementCreator({ tag: 'div', classes: 'arrow transition-transform duration-500', html: arrow });
+    header.appendNode(titleContainer, arrowSvg);
 
     this.tab.appendNode(header, this.contentField);
 
@@ -52,11 +53,14 @@ export abstract class AccordionTab {
 
   handleHeaderClick(): void {
     const content = this.contentField.getElement();
+    const arrowSvg = this.tab.getElement().querySelector('.arrow');
     if (content.classList.contains('hidden')) {
       content.innerHTML = '';
+      arrowSvg?.classList.add('origin-center', 'rotate-180');
       content.classList.remove('hidden');
       this.contentField.appendNode(this.createContent(), this.editButton);
     } else {
+      arrowSvg?.classList.remove('origin-center', 'rotate-180');
       content.classList.add('hidden');
     }
   }
