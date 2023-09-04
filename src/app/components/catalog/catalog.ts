@@ -9,7 +9,6 @@ import { ElementInputCreator } from '../../utils/element-creator/element-input-c
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 import { Message } from '../../utils/message/toastify-message';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
-import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
 import { Store } from '../../enums/store';
 import { getCategoryBySlug, getTreeOfCategories } from '../../utils/api/api-categories';
@@ -19,7 +18,11 @@ import { getProductProjections, getProductTypes } from '../../utils/api/api-prod
 import { Consumer } from '../consumer/consumer';
 import { CategoryTree } from '../../interfaces/category';
 
-export class Catalog extends HandlerLinks {
+export class Catalog {
+  router: Router;
+
+  consumer: Consumer;
+
   catalogView: ElementCreator<HTMLElement>;
 
   countOfResultsView: ElementCreator<HTMLElement>;
@@ -35,8 +38,6 @@ export class Catalog extends HandlerLinks {
   selectedFiltersView: ElementCreator<HTMLElement>;
 
   breadcrumbsBlock: ElementCreator<HTMLElement>;
-
-  consumer: Consumer;
 
   categories: Category[] = [];
 
@@ -55,7 +56,7 @@ export class Catalog extends HandlerLinks {
   currentSearch = '';
 
   constructor(router: Router, consumer: Consumer, subCategory?: string) {
-    super(router);
+    this.router = router;
     this.consumer = consumer;
     this.breadcrumbsBlock = new ElementCreator({ tag: 'div', classes: 'flex gap-1' });
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top gap-2' });
@@ -581,7 +582,6 @@ export class Catalog extends HandlerLinks {
     }
 
     const aCard = new ElementAnchorCreator({ href: `/product/${product.slug[Store.Language]}`, classes: 'absolute inset-0' });
-    this.listOfLinks.push(aCard.getElement());
 
     nameDescriptionBlock.appendNode(productNameBlock, productDescriptionBlock);
     infoBlock.appendNode(nameDescriptionBlock, productPricesBlock);

@@ -8,13 +8,12 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { Router } from '../../router/router';
-import { HandlerLinks } from '../../router/handler-links';
 import { getTreeOfCategories } from '../../utils/api/api-categories';
 import { Message } from '../../utils/message/toastify-message';
 import { CategoryTree } from '../../interfaces/category';
 
-export class Header extends HandlerLinks implements Observer {
-  categories: CategoryTree[] = [];
+export class Header implements Observer {
+  router: Router;
 
   consumer: Consumer;
 
@@ -30,8 +29,12 @@ export class Header extends HandlerLinks implements Observer {
 
   signoutButton: HTMLButtonElement;
 
+  listOfLinks: HTMLAnchorElement[] = [];
+
+  categories: CategoryTree[] = [];
+
   constructor(router: Router, consumer: Consumer) {
-    super(router);
+    this.router = router;
     this.consumer = consumer;
     this.headerView = new ElementCreator({ tag: 'header', classes: 'container' });
     this.loginBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-3 hidden md:gap-6' }).getElement();
@@ -50,10 +53,9 @@ export class Header extends HandlerLinks implements Observer {
       .getElement();
 
     this.createView();
-    this.handleLinks();
   }
 
-  createView(): void {
+  async createView(): Promise<void> {
     const burger = new ElementCreator({ tag: 'div', classes: 'burger space-y-2 z-40 block md:hidden cursor-pointer' });
     const spanBurger1 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     const spanBurger2 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
@@ -80,11 +82,7 @@ export class Header extends HandlerLinks implements Observer {
     this.listOfLinks.push(aAboutUs.getElement());
     liAboutUs.appendNode(aAboutUs);
 
-    const submenu = new ElementCreator({
-      tag: 'ul',
-      classes: 'submenu relative md:absolute hidden bg-primary-color rounded-lg text-white p-2 pt-1 w-max',
-    });
-    this.addCategories(submenu);
+    const submenu = new ElementCreator({ tag: 'ul', classes: 'submenu relative md:absolute hidden bg-white px-2 py-1 w-max' });
 
     const tab = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
     const catalog = new ElementAnchorCreator({
@@ -114,6 +112,8 @@ export class Header extends HandlerLinks implements Observer {
     allBtns.appendNode(divCart, this.loginBtns, this.logoutBtns);
     mobileMenu.appendNode(linksList, allBtns);
     this.headerView.appendNode(nav);
+
+    await this.addCategories(submenu);
 
     const closeBurger = (): void => {
       mobileMenu.removeClass('active');
@@ -179,7 +179,6 @@ export class Header extends HandlerLinks implements Observer {
       this.listOfLinks.push(aCategory.getElement());
       liCategory.appendNode(aCategory);
       submenu.appendNode(liCategory);
-
       const submenuContent = new ElementCreator({
         tag: 'ul',
         classes: 'submenu relative hidden rounded-lg bg-white/25 px-2 py-1 w-max',

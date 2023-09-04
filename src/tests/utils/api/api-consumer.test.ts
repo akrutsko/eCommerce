@@ -1,7 +1,7 @@
 import 'jest-fetch-mock';
 import { BaseAddress, CustomerDraft } from '@commercetools/platform-sdk';
-import { getCtpClient, getPasswordClient } from '../app/utils/api/api-client';
-import { createConsumer, deleteConsumer, getConsumer } from '../app/utils/api/api-consumer';
+import { getCtpClient, getPasswordClient } from '../../../app/utils/api/api-client';
+import { createConsumer, deleteConsumer, getConsumer } from '../../../app/utils/api/api-consumer';
 
 describe('Tests for consumer API', () => {
   test('create a consumer', async () => {
