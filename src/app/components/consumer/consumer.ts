@@ -20,8 +20,6 @@ import {
   changePersonal,
   getConsumer,
   removeAddress,
-  removeDefaultBillingAddress,
-  removeDefaultShippingAddress,
   setDefaultBillingAddress,
   setDefaultShippingAddress,
 } from '../../utils/api/api-consumer';
@@ -173,13 +171,6 @@ export class Consumer implements Observable {
     this.consumerData = (await setDefaultShippingAddress(this.apiClient, this.consumerData.version, addressId)).body;
   }
 
-  async removeDefaultShippingAddress(): Promise<void> {
-    if (!this.consumerData) {
-      this.consumerData = await this.getConsumer();
-    }
-    this.consumerData = (await removeDefaultShippingAddress(this.apiClient, this.consumerData.version)).body;
-  }
-
   async addBillingAddressId(addressId: string): Promise<void> {
     if (!this.consumerData) {
       this.consumerData = await this.getConsumer();
@@ -192,12 +183,5 @@ export class Consumer implements Observable {
       this.consumerData = await this.getConsumer();
     }
     this.consumerData = (await setDefaultBillingAddress(this.apiClient, this.consumerData.version, addressId)).body;
-  }
-
-  async removeDefaultBillingAddress(): Promise<void> {
-    if (!this.consumerData) {
-      this.consumerData = await this.getConsumer();
-    }
-    this.consumerData = (await removeDefaultBillingAddress(this.apiClient, this.consumerData.version)).body;
   }
 }

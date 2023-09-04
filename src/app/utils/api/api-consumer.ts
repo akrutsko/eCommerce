@@ -104,13 +104,6 @@ export function setDefaultShippingAddress(client: Client, version: number, addre
     .execute();
 }
 
-export function removeDefaultShippingAddress(client: Client, version: number): Promise<ClientResponse<Customer>> {
-  return getApiRoot(client)
-    .me()
-    .post({ body: { version, actions: [{ action: 'setCustomField', name: 'defaultShippingAddressId', value: undefined }] } })
-    .execute();
-}
-
 export function addBillingAddressId(client: Client, version: number, addressId: string): Promise<ClientResponse<Customer>> {
   return getApiRoot(client)
     .me()
@@ -122,12 +115,5 @@ export function setDefaultBillingAddress(client: Client, version: number, addres
   return getApiRoot(client)
     .me()
     .post({ body: { version, actions: [{ action: 'setDefaultBillingAddress', addressId }] } })
-    .execute();
-}
-
-export function removeDefaultBillingAddress(client: Client, version: number): Promise<ClientResponse<Customer>> {
-  return getApiRoot(client)
-    .me()
-    .post({ body: { version, actions: [{ action: 'setCustomField', name: 'defaultBillingAddressId', value: undefined }] } })
     .execute();
 }
