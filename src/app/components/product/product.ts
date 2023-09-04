@@ -60,7 +60,7 @@ export class Product {
 
     const imageWrapper = new ElementCreator({
       tag: 'div',
-      classes: 'max-w-sm w-72 aspect-square bg-white rounded-xl cursor-zoom-in',
+      classes: 'max-w-sm min-w-0 w-72 aspect-square bg-white rounded-xl overflow-hidden cursor-zoom-in md:min-w-[16rem] ',
     });
     this.productImage = new ElementImageCreator({ src: mainImgUrl, alt: name, classes: 'h-full object-cover' }).getElement();
     this.productImage.addEventListener('click', () => {
@@ -77,16 +77,17 @@ export class Product {
 
     const productWrapper = new ElementCreator({ tag: 'div', classes: 'self-start grow' });
     const productName = new ElementCreator({ tag: 'h3', text: name });
-    const productDescription = new ElementCreator({ tag: 'p', text: description, classes: 'mb-5' });
+    const productDescription = new ElementCreator({ tag: 'p', text: description, classes: 'mb-5 text-sm' });
     productWrapper.appendNode(productName, productDescription);
 
     if (attributes) {
       attributes.forEach((attribute) => {
-        const brandWrapper = new ElementCreator({ tag: 'div', classes: 'mb-1' });
-        const brand = new ElementCreator({ tag: 'span', text: `${attribute.name}: `, classes: 'capitalize' });
-        const label = new ElementCreator({ tag: 'span', text: attribute.value[0].label, classes: 'self-start grow' });
-        brandWrapper.appendNode(brand, label);
-        productWrapper.appendNode(brandWrapper);
+        const label = new ElementCreator({
+          tag: 'span',
+          text: attribute.value[0].label,
+          classes: 'mb-1 mr-1 inline-block filter-button ',
+        });
+        productWrapper.appendNode(label);
       });
     }
 
@@ -107,6 +108,7 @@ export class Product {
         text: getPrice(firmPrice),
       }),
     );
+    productWrapper.appendNode(priceWrapper);
     if (!discountedPrice) return;
     priceWrapper.appendNode(new ElementCreator({ tag: 'div', classes: 'price', text: getPrice(discountedPrice) }));
     productWrapper.appendNode(priceWrapper);
@@ -120,7 +122,10 @@ export class Product {
     const swiperContainer = new ElementCreator({ tag: 'div', classes: 'swiper w-[212px] md:w-16 h-16 md:h-[212px]' });
     const swiperWrapper = new ElementCreator({ tag: 'div', classes: 'swiper-wrapper' });
     images.forEach((image) => {
-      const imgWrapper = new ElementCreator({ tag: 'div', classes: 'swiper-slide bg-white rounded-md cursor-pointer' });
+      const imgWrapper = new ElementCreator({
+        tag: 'div',
+        classes: 'swiper-slide bg-white rounded-md cursor-pointer overflow-hidden',
+      });
       const sliderImage = new ElementImageCreator({ src: image, alt: '', classes: 'h-full object-cover' });
       imgWrapper.appendNode(sliderImage);
       swiperWrapper.appendNode(imgWrapper);
@@ -140,7 +145,7 @@ export class Product {
       centerInsufficientSlides: true,
       spaceBetween: 10,
       direction: window.innerWidth < 768 ? 'horizontal' : 'vertical',
-      loop: true,
+      loop: images.length >= 6,
       navigation: { prevEl: '.swiper-button-prev-product', nextEl: '.swiper-button-next-product' },
       pagination: { el: '.swiper-pagination', clickable: true },
     });
@@ -169,7 +174,7 @@ export class Product {
 
     if (parentCategory) {
       breadcrumbWrapper.appendNode(
-        new ElementCreator({ tag: 'span', text: ' >> ' }),
+        new ElementCreator({ tag: 'span', text: ' » ', classes: 'text-primary-color opacity-60' }),
         new ElementAnchorCreator({
           href: `/categories/${parentCategory.slug}`,
           text: parentCategory.name,
@@ -179,7 +184,7 @@ export class Product {
     }
     if (category) {
       breadcrumbWrapper.appendNode(
-        new ElementCreator({ tag: 'span', text: ' >> ' }),
+        new ElementCreator({ tag: 'span', text: ' » ', classes: 'text-primary-color opacity-60' }),
         new ElementAnchorCreator({ href: `/categories/${category.slug}`, text: category.name, classes: 'breadcrumbs' }),
       );
     }

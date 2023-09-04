@@ -121,7 +121,7 @@
   }
 
   .breadcrumbs {
-    @apply text-base font-medium leading-6 text-left text-[#DB5743];
+    @apply text-xs font-medium leading-6 text-left text-[#DB5743] md:text-base;
   }
 
   .sorting-button {
