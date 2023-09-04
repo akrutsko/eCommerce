@@ -57,13 +57,13 @@ export class Catalog extends HandlerLinks {
   constructor(router: Router, consumer: Consumer, subCategory?: string) {
     super(router);
     this.consumer = consumer;
-    this.breadcrumbsBlock = new ElementCreator({ tag: 'div', classes: 'flex' });
+    this.breadcrumbsBlock = new ElementCreator({ tag: 'div', classes: 'flex gap-1' });
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top gap-2' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex gap-2 flex-wrap md:max-w-[55%]' });
     this.cardsView = new ElementCreator({
       tag: 'div',
-      classes: 'w-full gap-4 catalog',
+      classes: 'w-full gap-4 products',
     });
     this.minPriceFilterView = new ElementInputCreator({
       type: 'number',
@@ -87,7 +87,7 @@ export class Catalog extends HandlerLinks {
       tag: 'div',
       classes: 'w-full justify-center flex-col sm:justify-between sm:flex-row items-center flex gap-6 flex-wrap',
     });
-    const catalogNameBlock = new ElementCreator({ tag: 'div', classes: 'flex flex-col items-center sm:items-start' });
+    const catalogNameBlock = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-1 items-center sm:items-start' });
     const catalogName = new ElementCreator({ tag: 'h2', text: 'Catalog', classes: 'h2' });
     catalogNameBlock.appendNode(catalogName, this.breadcrumbsBlock);
 
@@ -117,7 +117,7 @@ export class Catalog extends HandlerLinks {
       classes: 'm-1 w-full items-top justify-between flex flex-col md:flex-row gap-1',
     });
     this.categoryTree = await getTreeOfCategories(this.consumer.apiClient);
-    const catalogBlock = new ElementAnchorCreator({ href: '/catalog', text: 'Catalog', classes: 'breadcrumbs' });
+    const catalogBlock = new ElementAnchorCreator({ href: '/catalog', text: 'All products', classes: 'breadcrumbs' });
     this.breadcrumbsBlock.appendNode(catalogBlock);
     if (subCategory) {
       const cat = getCategoryBySlug(subCategory, this.categoryTree);
@@ -165,7 +165,7 @@ export class Catalog extends HandlerLinks {
     resultSortingView.appendNode(this.countOfResultsView, sortByNameElement, sortByPriceElement);
     secondBlock.appendNode(this.selectedFiltersView, resultSortingView);
 
-    const thirdBlock = new ElementCreator({ tag: 'div', classes: 'content gap-4' });
+    const thirdBlock = new ElementCreator({ tag: 'div', classes: 'catalog gap-4' });
     const filtersPanel = new ElementCreator({
       tag: 'div',
       classes: 'w-full h-fit filters gap-2 bg-bg-color border-1 rounded-lg border-solid border-[#fbedec] p-4',
@@ -185,7 +185,7 @@ export class Catalog extends HandlerLinks {
   }
 
   createBreadCrumb(cat: CategoryTree | undefined): void {
-    const crumb = new ElementCreator({ tag: 'span', text: ' >> ' }).getElement();
+    const crumb = new ElementCreator({ tag: 'span', text: ' » ', classes: 'text-primary-color opacity-60' }).getElement();
     if (cat?.parent) {
       const categoryBlock = new ElementAnchorCreator({
         href: `/categories/${cat.parent.slug}`,
@@ -194,7 +194,7 @@ export class Catalog extends HandlerLinks {
       });
       this.breadcrumbsBlock.appendNode(crumb, categoryBlock);
     }
-    const secondCrumb = new ElementCreator({ tag: 'span', text: ' >> ' }).getElement();
+    const secondCrumb = new ElementCreator({ tag: 'span', text: ' » ', classes: 'text-primary-color opacity-60' }).getElement();
     const categoryBlock = new ElementAnchorCreator({
       href: `/categories/${cat?.slug}`,
       text: `${cat?.name}`,
@@ -515,7 +515,7 @@ export class Catalog extends HandlerLinks {
     const card = new ElementCreator({
       tag: 'div',
       classes:
-        'relative card bg-white w-full h-auto mx-auto rounded-lg transition-transform drop-shadow-md hover:scale-105 hover:drop-shadow-xl',
+        'relative max-w-full sm:max-w-sm card bg-white w-full h-auto mx-auto rounded-lg transition-all shadow-md hover:scale-[1.02] hover:shadow-xl',
     });
     this.cardsView.appendNode(card);
 
@@ -553,7 +553,7 @@ export class Catalog extends HandlerLinks {
     const infoBlock = new ElementCreator({ tag: 'div', classes: 'p-3 h-full flex flex-col justify-between gap-1' });
     const nameDescriptionBlock = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-1' });
 
-    const productNameBlock = new ElementCreator({ tag: 'h4', text: `${productName}`, classes: 'text-[#393E4D]' });
+    const productNameBlock = new ElementCreator({ tag: 'h4', text: `${productName}`, classes: 'product-name font-medium' });
 
     const productDescriptionBlock = new ElementCreator({
       tag: 'div',
