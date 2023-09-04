@@ -209,7 +209,7 @@ export class AddressTab extends AccordionTab {
     const wrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4' });
     const inputsContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-col justify-between gap-2 md:flex-row md:flex-nowrap md:gap-4',
+      classes: 'flex flex-col justify-between gap-4 md:flex-row md:flex-nowrap',
     });
 
     const checkboxContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm' });

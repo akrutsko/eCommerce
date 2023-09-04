@@ -82,7 +82,10 @@ export class Header implements Observer {
     this.listOfLinks.push(aAboutUs.getElement());
     liAboutUs.appendNode(aAboutUs);
 
-    const submenu = new ElementCreator({ tag: 'ul', classes: 'submenu relative md:absolute hidden bg-white px-2 py-1 w-max' });
+    const submenu = new ElementCreator({
+      tag: 'ul',
+      classes: 'submenu relative md:absolute hidden bg-primary-color text-white rounded-xl p-2 pt-1 w-max',
+    });
 
     const tab = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
     const catalog = new ElementAnchorCreator({

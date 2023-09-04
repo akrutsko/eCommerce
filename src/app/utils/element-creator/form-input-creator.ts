@@ -44,7 +44,7 @@ export class FormInputCreator {
     } else {
       label = new ElementCreator({
         tag: 'label',
-        classes: 'h5 label opacity-60 font-medium',
+        classes: 'h5 label opacity-60 font-medium block',
         text: labelValue,
       }).getElement();
       this.inputContainer.getElement().prepend(label);

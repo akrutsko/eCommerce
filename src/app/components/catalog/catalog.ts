@@ -86,7 +86,7 @@ export class Catalog {
   async createView(subCategory?: string): Promise<void> {
     const firstBlock = new ElementCreator({
       tag: 'div',
-      classes: 'w-full justify-center flex-col sm:justify-between sm:flex-row items-center flex gap-6 flex-wrap',
+      classes: 'w-full justify-center flex-col gap-4 sm:justify-between sm:flex-row items-center flex md:gap-6 flex-wrap',
     });
     const catalogNameBlock = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-1 items-center sm:items-start' });
     const catalogName = new ElementCreator({ tag: 'h2', text: 'Catalog', classes: 'h2' });
