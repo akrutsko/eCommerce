@@ -108,6 +108,7 @@ export class Product {
         text: getPrice(firmPrice),
       }),
     );
+    productWrapper.appendNode(priceWrapper);
     if (!discountedPrice) return;
     priceWrapper.appendNode(new ElementCreator({ tag: 'div', classes: 'price', text: getPrice(discountedPrice) }));
     productWrapper.appendNode(priceWrapper);
