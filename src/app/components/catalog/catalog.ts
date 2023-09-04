@@ -422,7 +422,8 @@ export class Catalog {
     if (this.currentCategoryFilter) {
       filterArray.push(this.currentCategoryFilter);
     }
-    this.createCards(filterArray, this.currentSortingString);
+
+    this.createCards(filterArray, this.currentSortingString, this.currentSearch);
   }
 
   resetFilters(): void {

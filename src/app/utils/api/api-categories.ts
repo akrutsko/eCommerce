@@ -8,17 +8,6 @@ export function getCategories(client: Client): Promise<ClientResponse<CategoryPa
   return getApiRoot(client).categories().get().execute();
 }
 
-export function getCategoriesWithoutParent(client: Client): Promise<ClientResponse<CategoryPagedQueryResponse>> {
-  return getApiRoot(client)
-    .categories()
-    .get({
-      queryArgs: {
-        where: ['parent is not defined'],
-      },
-    })
-    .execute();
-}
-
 export async function getTreeOfCategories(client: Client): Promise<CategoryTree[]> {
   const categoriesResponse = await getCategories(client);
   if (!categoriesResponse) return [];
