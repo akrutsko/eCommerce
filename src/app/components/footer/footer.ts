@@ -56,7 +56,9 @@ export class Footer {
 
     const productsWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const productsHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Products' });
+
     const categoriesLink = new ElementAnchorCreator({ href: '/categories', classes: 'text-[10px]', text: 'All products' });
+
     const sellersLink = new ElementAnchorCreator({ href: '/goods', classes: 'text-[10px]', text: 'Goods' });
     productsWrapper.appendNode(productsHeading, categoriesLink, sellersLink);
 
