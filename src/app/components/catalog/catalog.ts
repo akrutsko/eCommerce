@@ -114,7 +114,7 @@ export class Catalog extends HandlerLinks {
 
     const secondBlock = new ElementCreator({
       tag: 'div',
-      classes: 'm-1 w-full items-top justify-between flex flex-col md:flex-row gap-1',
+      classes: 'w-full items-top justify-between flex flex-col md:flex-row gap-1',
     });
     this.categoryTree = await getTreeOfCategories(this.consumer.apiClient);
     const catalogBlock = new ElementAnchorCreator({ href: '/catalog', text: 'All products', classes: 'breadcrumbs' });

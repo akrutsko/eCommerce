@@ -59,7 +59,7 @@ export class Product extends HandlerLinks {
 
     const imageWrapper = new ElementCreator({
       tag: 'div',
-      classes: 'max-w-sm w-72 aspect-square bg-white rounded-xl cursor-zoom-in',
+      classes: 'max-w-sm min-w-0 w-72 aspect-square bg-white rounded-xl cursor-zoom-in md:min-w-[16rem] ',
     });
     this.productImage = new ElementImageCreator({ src: mainImgUrl, alt: name, classes: 'h-full object-cover' }).getElement();
     this.productImage.addEventListener('click', () => {
@@ -76,7 +76,7 @@ export class Product extends HandlerLinks {
 
     const productWrapper = new ElementCreator({ tag: 'div', classes: 'self-start grow' });
     const productName = new ElementCreator({ tag: 'h3', text: name });
-    const productDescription = new ElementCreator({ tag: 'p', text: description, classes: 'mb-5' });
+    const productDescription = new ElementCreator({ tag: 'p', text: description, classes: 'mb-5 text-sm' });
     productWrapper.appendNode(productName, productDescription);
 
     if (attributes) {
@@ -140,7 +140,7 @@ export class Product extends HandlerLinks {
       centerInsufficientSlides: true,
       spaceBetween: 10,
       direction: window.innerWidth < 768 ? 'horizontal' : 'vertical',
-      loop: images.length > 6,
+      loop: images.length >= 6,
       navigation: { prevEl: '.swiper-button-prev-product', nextEl: '.swiper-button-next-product' },
       pagination: { el: '.swiper-pagination', clickable: true },
     });
