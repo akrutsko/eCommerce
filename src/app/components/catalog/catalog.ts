@@ -68,11 +68,11 @@ export class Catalog {
     });
     this.minPriceFilterView = new ElementInputCreator({
       type: 'number',
-      classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] min-w-0',
+      classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] w-0 grow max-w-[90px]',
     });
     this.maxPriceFilterView = new ElementInputCreator({
       type: 'number',
-      classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] min-w-0',
+      classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] w-0 grow max-w-[90px]',
     });
     this.createView(subCategory);
   }
