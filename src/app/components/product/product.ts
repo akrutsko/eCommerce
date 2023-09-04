@@ -122,7 +122,10 @@ export class Product {
     const swiperContainer = new ElementCreator({ tag: 'div', classes: 'swiper w-[212px] md:w-16 h-16 md:h-[212px]' });
     const swiperWrapper = new ElementCreator({ tag: 'div', classes: 'swiper-wrapper' });
     images.forEach((image) => {
-      const imgWrapper = new ElementCreator({ tag: 'div', classes: 'swiper-slide bg-white rounded-md cursor-pointer' });
+      const imgWrapper = new ElementCreator({
+        tag: 'div',
+        classes: 'swiper-slide bg-white rounded-md cursor-pointer overflow-hidden',
+      });
       const sliderImage = new ElementImageCreator({ src: image, alt: '', classes: 'h-full object-cover' });
       imgWrapper.appendNode(sliderImage);
       swiperWrapper.appendNode(imgWrapper);
