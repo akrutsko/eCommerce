@@ -441,7 +441,7 @@ export class Catalog extends HandlerLinks {
         if (textName && textValue) {
           const resetFilterElement = new ElementCreator({
             tag: 'button',
-            text: `${textName}:${textValue}`,
+            text: `${textValue}`,
             classes: 'filter-button flex items-center',
           });
           this.selectedFiltersView.appendNode(resetFilterElement);

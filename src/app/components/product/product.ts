@@ -81,11 +81,12 @@ export class Product extends HandlerLinks {
 
     if (attributes) {
       attributes.forEach((attribute) => {
-        const brandWrapper = new ElementCreator({ tag: 'div', classes: 'mb-1' });
-        const brand = new ElementCreator({ tag: 'span', text: `${attribute.name}: `, classes: 'capitalize' });
-        const label = new ElementCreator({ tag: 'span', text: attribute.value[0].label, classes: 'self-start grow' });
-        brandWrapper.appendNode(brand, label);
-        productWrapper.appendNode(brandWrapper);
+        const label = new ElementCreator({
+          tag: 'span',
+          text: attribute.value[0].label,
+          classes: 'mb-1 mr-1 inline-block filter-button ',
+        });
+        productWrapper.appendNode(label);
       });
     }
 
@@ -139,7 +140,7 @@ export class Product extends HandlerLinks {
       centerInsufficientSlides: true,
       spaceBetween: 10,
       direction: window.innerWidth < 768 ? 'horizontal' : 'vertical',
-      loop: true,
+      loop: images.length > 6,
       navigation: { prevEl: '.swiper-button-prev-product', nextEl: '.swiper-button-next-product' },
       pagination: { el: '.swiper-pagination', clickable: true },
     });
@@ -168,7 +169,7 @@ export class Product extends HandlerLinks {
 
     if (parentCategory) {
       breadcrumbWrapper.appendNode(
-        new ElementCreator({ tag: 'span', text: ' >> ' }),
+        new ElementCreator({ tag: 'span', text: ' » ', classes: 'text-primary-color opacity-60' }),
         new ElementAnchorCreator({
           href: `/categories/${parentCategory.slug}`,
           text: parentCategory.name,
@@ -178,7 +179,7 @@ export class Product extends HandlerLinks {
     }
     if (category) {
       breadcrumbWrapper.appendNode(
-        new ElementCreator({ tag: 'span', text: ' >> ' }),
+        new ElementCreator({ tag: 'span', text: ' » ', classes: 'text-primary-color opacity-60' }),
         new ElementAnchorCreator({ href: `/categories/${category.slug}`, text: category.name, classes: 'breadcrumbs' }),
       );
     }
