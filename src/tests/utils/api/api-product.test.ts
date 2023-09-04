@@ -1,6 +1,6 @@
 import 'jest-fetch-mock';
-import { getCtpClient } from '../app/utils/api/api-client';
-import { getProduct, getProductIdBySlug, getProductProjection } from '../app/utils/api/api-product';
+import { getCtpClient } from '../../../app/utils/api/api-client';
+import { getProduct, getProductIdBySlug, getProductProjection } from '../../../app/utils/api/api-product';
 
 describe('Tests for product API', () => {
   test('Get a product', async () => {

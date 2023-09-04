@@ -9,7 +9,7 @@ module.exports = {
     '\\.(svg|png)$': './src/tests/jest.transformer.js',
   },
   collectCoverage: true,
-  collectCoverageFrom: ['src/**/*.ts'],
+  collectCoverageFrom: ['src/app/**/*.ts'],
   coverageDirectory: 'coverage',
   coverageThreshold: {
     global: {
@@ -20,5 +20,5 @@ module.exports = {
   },
   setupFilesAfterEnv: ['./src/tests/jest.setup.js'],
   silent: true,
-  modulePathIgnorePatterns: ['./src/app/types', './src/app/interfaces'],
+  modulePathIgnorePatterns: ['./src/app/enums', './src/app/types', './src/app/interfaces'],
 };

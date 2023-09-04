@@ -9,10 +9,11 @@ import { ValidationResult } from '../../types/validation-result-type';
 import { validateEmail, validatePassword } from '../../utils/validation/input-validation';
 import { Consumer } from '../consumer/consumer';
 import { Router } from '../../router/router';
-import { HandlerLinks } from '../../router/handler-links';
 import { Message } from '../../utils/message/toastify-message';
 
-export class Login extends HandlerLinks {
+export class Login {
+  router: Router;
+
   consumer: Consumer;
 
   loginView: ElementCreator<HTMLElement>;
@@ -28,7 +29,7 @@ export class Login extends HandlerLinks {
   submitButton: HTMLButtonElement;
 
   constructor(router: Router, consumer: Consumer) {
-    super(router);
+    this.router = router;
     this.consumer = consumer;
 
     this.loginView = new ElementCreator({ tag: 'div', classes: 'login-form max-w-xl w-full form flex flex-col gap-4 md:gap-6' });
@@ -48,7 +49,6 @@ export class Login extends HandlerLinks {
     this.createView();
     this.handleButtons();
     this.handleInputs();
-    this.handleLinks();
   }
 
   createView(): void {
@@ -73,7 +73,6 @@ export class Login extends HandlerLinks {
 
     const question = new ElementCreator({ tag: 'div', text: 'Not a member yet? ' });
     const signInAnchor = new ElementAnchorCreator({ href: '/signup', classes: 'link', text: 'Sign up' });
-    this.listOfLinks.push(signInAnchor.getElement());
     question.appendNode(signInAnchor);
 
     this.loginView.appendNode(titleContainer, loginForm, question);

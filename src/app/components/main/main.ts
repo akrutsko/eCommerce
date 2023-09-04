@@ -71,12 +71,8 @@ export class Main implements Observer {
           this.showSignup();
         }
         break;
-      case 'categories': // TODO: refactor when sub-categories are available
-        if (pathRoutes.length) {
-          this.showCategories(pathRoutes[0]);
-        } else {
-          this.showCategories();
-        }
+      case 'categories':
+        this.showCategories(pathRoutes[0]);
         break;
       case 'product':
         this.showProduct(pathRoutes[0]);
@@ -130,14 +126,9 @@ export class Main implements Observer {
     this.mainView.append(new Login(this.router, this.consumer).getElement());
   }
 
-  async showCategories(subCategory?: string): Promise<void> {
-    if (subCategory) {
-      const { Catalog } = await import('../catalog/catalog');
-      this.mainView.append(new Catalog(this.router, this.consumer, subCategory).getElement());
-    } else {
-      const { Categories } = await import('../category/categories');
-      this.mainView.append(new Categories().getElement());
-    }
+  async showCategories(category: string): Promise<void> {
+    const { Catalog } = await import('../catalog/catalog');
+    this.mainView.append(new Catalog(this.router, this.consumer, category).getElement());
   }
 
   async showProduct(slug: string): Promise<void> {
