@@ -60,7 +60,7 @@ export class Header extends HandlerLinks implements Observer {
     const spanBurger3 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     burger.appendNode(spanBurger1, spanBurger2, spanBurger3);
 
-    const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between py-5 gap-8' });
+    const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between mt-5 gap-8' });
     const logo = new ElementAnchorCreator({ href: '/', html: logotype });
     this.listOfLinks.push(logo.getElement());
     const mobileMenu = new ElementCreator({
@@ -80,7 +80,10 @@ export class Header extends HandlerLinks implements Observer {
     this.listOfLinks.push(aAboutUs.getElement());
     liAboutUs.appendNode(aAboutUs);
 
-    const submenu = new ElementCreator({ tag: 'ul', classes: 'submenu relative md:absolute hidden bg-white px-2 py-1 w-max' });
+    const submenu = new ElementCreator({
+      tag: 'ul',
+      classes: 'submenu relative md:absolute hidden bg-primary-color rounded-lg text-white p-2 pt-1 w-max',
+    });
     this.addCategories(submenu);
 
     const tab = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
@@ -119,12 +122,6 @@ export class Header extends HandlerLinks implements Observer {
       document.body.classList.remove('active');
     };
 
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 768 && burger.getElement().classList.contains('active')) {
-        closeBurger();
-      }
-    });
-
     this.listOfLinks.forEach((link) => {
       link.addEventListener('click', () => closeBurger());
     });
@@ -135,11 +132,12 @@ export class Header extends HandlerLinks implements Observer {
       bg.toggleClass('active');
       document.body.classList.toggle('active');
     });
+
     tab.getElement().addEventListener('mouseenter', () => {
-      submenu.addClass('active');
+      if (window.innerWidth > 768) submenu.addClass('active');
     });
     tab.getElement().addEventListener('mouseleave', () => {
-      submenu.removeClass('active');
+      if (window.innerWidth > 768) submenu.removeClass('active');
     });
 
     this.loginButton.addEventListener('click', () => {
@@ -152,6 +150,15 @@ export class Header extends HandlerLinks implements Observer {
       window.history.pushState({}, '', '/signup');
       this.router.handleLocation();
       closeBurger();
+    });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768 && burger.getElement().classList.contains('active')) {
+        closeBurger();
+      }
+      if (window.innerWidth > 768 && submenu.getElement().classList.contains('active')) {
+        submenu.removeClass('active');
+      }
     });
   }
 
@@ -166,7 +173,7 @@ export class Header extends HandlerLinks implements Observer {
       const liCategory = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
       const aCategory = new ElementAnchorCreator({
         href: `/categories/${category.slug}`,
-        classes: 'h5 hover:text-primary-color',
+        classes: 'h5 hover:opacity-80',
         text: `${category.name}`,
       });
       this.listOfLinks.push(aCategory.getElement());
@@ -175,14 +182,14 @@ export class Header extends HandlerLinks implements Observer {
 
       const submenuContent = new ElementCreator({
         tag: 'ul',
-        classes: 'submenu relative hidden bg-white px-2 py-1 w-max',
+        classes: 'submenu relative hidden rounded-lg bg-white/25 px-2 py-1 w-max',
       });
       liCategory.appendNode(submenuContent);
       category.children?.forEach((child) => {
         const liCategoryContent = new ElementCreator({ tag: 'li' });
         const aCategoryContent = new ElementAnchorCreator({
           href: `/categories/${child.slug}`,
-          classes: 'h5 hover:text-primary-color',
+          classes: 'h5 hover:opacity-80',
           text: `${child.name}`,
         });
         this.listOfLinks.push(aCategoryContent.getElement());

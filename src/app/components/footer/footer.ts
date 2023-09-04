@@ -1,10 +1,7 @@
 import logotype from '../../../assets/svg/logo.svg';
-import searchIcon from '../../../assets/svg/search.svg';
 
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
-import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
-import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
 import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
 
@@ -67,18 +64,8 @@ export class Footer extends HandlerLinks {
     this.listOfLinks.push(sellersLink.getElement());
     productsWrapper.appendNode(productsHeading, categoriesLink, sellersLink);
 
-    const form = new ElementCreator({ tag: 'form', classes: 'search-form' });
-    const input = new ElementInputCreator({ type: 'search', name: 'search', placeholder: 'search' });
-    input.getElement().addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-      }
-    }); // TODO: implement search
-    const submitButton = new ElementButtonCreator({ classes: 'absolute right-0 top-0 focus:outline-none', html: searchIcon });
-    form.appendNode(input, submitButton);
-
     nav.appendNode(companyWrapper, socialWrapper, productsWrapper);
-    this.footerView.appendNode(logo, nav, form);
+    this.footerView.appendNode(logo, nav);
   }
 
   getView(): ElementCreator<HTMLElement> {
