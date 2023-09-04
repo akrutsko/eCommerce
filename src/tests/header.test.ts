@@ -6,10 +6,11 @@ import { Router } from '../app/router/router';
 const consumer = new Consumer();
 
 describe('Header component', () => {
-  test('Header is added to the DOM', () => {
+  test('Header is added to the DOM', async () => {
     const router = new Router();
     const header = new Header(router, consumer);
     document.body.append(header.getElement());
+    await header.createView();
 
     expect(document.querySelector('header')).toBeInTheDocument();
   });

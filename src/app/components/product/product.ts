@@ -7,7 +7,6 @@ import Swiper from 'swiper';
 import { Navigation, Pagination } from 'swiper/modules';
 import { ProductProjection } from '@commercetools/platform-sdk';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
-import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 import { Consumer } from '../consumer/consumer';
@@ -19,7 +18,9 @@ import { ProductModal } from '../modal/product-modal';
 import { getCategoryById, getTreeOfCategories } from '../../utils/api/api-categories';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 
-export class Product extends HandlerLinks {
+export class Product {
+  router: Router;
+
   consumer: Consumer;
 
   productId: string;
@@ -31,7 +32,7 @@ export class Product extends HandlerLinks {
   productData: ProductProjection | undefined;
 
   constructor(router: Router, consumer: Consumer, id: string) {
-    super(router);
+    this.router = router;
     this.consumer = consumer;
     this.productId = id;
 

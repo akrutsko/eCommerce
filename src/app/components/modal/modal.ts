@@ -6,7 +6,7 @@ export class Modal {
   modalView: ElementCreator<HTMLDialogElement>;
 
   constructor() {
-    this.modalView = new ElementDialogCreator({ tag: 'dialog', classes: 'fixed select-none' });
+    this.modalView = new ElementDialogCreator({ classes: 'fixed select-none' });
 
     this.createView();
   }

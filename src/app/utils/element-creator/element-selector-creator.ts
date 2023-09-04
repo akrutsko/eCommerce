@@ -4,5 +4,9 @@ import { ElementCreator } from './element-creator';
 export class ElementSelectCreator extends ElementCreator<HTMLSelectElement> {
   constructor(params: ElementSelectParams) {
     super({ ...params, tag: 'select' });
+
+    if (params.disabled) {
+      this.element.disabled = params.disabled;
+    }
   }
 }
