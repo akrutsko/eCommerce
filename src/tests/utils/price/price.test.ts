@@ -1,5 +1,5 @@
 import { CentPrecisionMoney, HighPrecisionMoney } from '@commercetools/platform-sdk';
-import { getPrice } from '../../app/utils/price/price';
+import { getPrice } from '../../../app/utils/price/price';
 
 describe('Money formatting tests', () => {
   test('CentPrecisionMoney formatting test', () => {

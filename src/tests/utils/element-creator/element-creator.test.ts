@@ -1,11 +1,11 @@
-import { ElementAnchorCreator } from '../app/utils/element-creator/element-anchor-creator';
-import { ElementButtonCreator } from '../app/utils/element-creator/element-button-creator';
-import { ElementCreator } from '../app/utils/element-creator/element-creator';
-import { ElementDialogCreator } from '../app/utils/element-creator/element-dialog-creator';
-import { ElementImageCreator } from '../app/utils/element-creator/element-image-creator';
-import { ElementInputCreator } from '../app/utils/element-creator/element-input-creator';
-import { ElementOptionCreator } from '../app/utils/element-creator/element-option-creator';
-import { ElementSelectCreator } from '../app/utils/element-creator/element-selector-creator';
+import { ElementAnchorCreator } from '../../../app/utils/element-creator/element-anchor-creator';
+import { ElementButtonCreator } from '../../../app/utils/element-creator/element-button-creator';
+import { ElementCreator } from '../../../app/utils/element-creator/element-creator';
+import { ElementDialogCreator } from '../../../app/utils/element-creator/element-dialog-creator';
+import { ElementImageCreator } from '../../../app/utils/element-creator/element-image-creator';
+import { ElementInputCreator } from '../../../app/utils/element-creator/element-input-creator';
+import { ElementOptionCreator } from '../../../app/utils/element-creator/element-option-creator';
+import { ElementSelectCreator } from '../../../app/utils/element-creator/element-selector-creator';
 
 describe('Test constuctors of ElementCreator', () => {
   test('Should create a div element with specified text, classes and id', () => {

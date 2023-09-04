@@ -6,7 +6,7 @@ import {
   validateOnlyLetters,
   validatePassword,
   validatePostalCode,
-} from '../app/utils/validation/input-validation';
+} from '../../../app/utils/validation/input-validation';
 
 describe('Input validation tests', () => {
   test('value exists', () => {
