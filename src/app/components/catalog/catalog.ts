@@ -220,7 +220,7 @@ export class Catalog {
     }
   }
 
-  createPriceFilter(min: number, max: number, filtersElementCreator: ElementCreator<HTMLElement>): void {
+  createPriceFilter(filtersElementCreator: ElementCreator<HTMLElement>): void {
     const elementAccordion = new ElementCreator({
       tag: 'div',
       classes: 'w-full',
@@ -241,13 +241,9 @@ export class Catalog {
     elementFilterPanel.appendNode(minmaxElement);
 
     this.minPriceFilterView.getElement().step = '1';
-    this.minPriceFilterView.getElement().min = `${min}`;
-    this.minPriceFilterView.getElement().max = `${max}`;
     this.minPriceFilterView.getElement().placeholder = '$0.00';
 
     this.maxPriceFilterView.getElement().step = '1';
-    this.maxPriceFilterView.getElement().min = `${min}`;
-    this.maxPriceFilterView.getElement().max = `${max}`;
     this.maxPriceFilterView.getElement().placeholder = '$0.00';
 
     minmaxElement.appendNode(this.minPriceFilterView, this.maxPriceFilterView);
@@ -322,41 +318,13 @@ export class Catalog {
     return uniqueAttributes;
   }
 
-  getSortedPrices(products: ProductProjection[]): number[] {
-    const allPrices: number[] = [];
-
-    products.forEach((product) => {
-      product.variants.push(product.masterVariant);
-      product.variants.forEach((variant) => {
-        if (variant.prices) {
-          const prices = variant.prices.filter((price) => price.value.currencyCode === Store.Currency);
-
-          prices.forEach((price) => {
-            if (price.discounted) {
-              allPrices.push(price.discounted.value.centAmount / 10 ** price.discounted.value.fractionDigits);
-            } else {
-              allPrices.push(price.value.centAmount / 10 ** price.value.fractionDigits);
-            }
-          });
-        }
-      });
-    });
-
-    allPrices.sort((a, b) => a - b);
-
-    return allPrices;
-  }
-
   async createFiltersView(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
     const productsResponse = await getProductProjections(this.consumer.apiClient).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!productsResponse) return;
 
-    const sortedPrices = this.getSortedPrices(productsResponse.body.results);
-    if (sortedPrices.length) {
-      this.createPriceFilter(sortedPrices[0], sortedPrices[sortedPrices.length - 1], filtersElementCreator);
-    }
+    this.createPriceFilter(filtersElementCreator);
 
     const productTypesResponse = await getProductTypes(this.consumer.apiClient).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
@@ -454,7 +422,8 @@ export class Catalog {
     if (this.currentCategoryFilter) {
       filterArray.push(this.currentCategoryFilter);
     }
-    this.createCards(filterArray, this.currentSortingString);
+
+    this.createCards(filterArray, this.currentSortingString, this.currentSearch);
   }
 
   resetFilters(): void {
@@ -493,7 +462,7 @@ export class Catalog {
         curFilter = this.currentCategoryFilter;
       }
     }
-    const productsResponse = await getProductProjections(this.consumer.apiClient, 30, 0, curFilter, sort, search).catch(() => {
+    const productsResponse = await getProductProjections(this.consumer.apiClient, 50, 0, curFilter, sort, search).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!productsResponse) return;
