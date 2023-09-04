@@ -60,7 +60,7 @@ export class Product {
 
     const imageWrapper = new ElementCreator({
       tag: 'div',
-      classes: 'max-w-sm min-w-0 w-72 aspect-square bg-white rounded-xl cursor-zoom-in md:min-w-[16rem] ',
+      classes: 'max-w-sm min-w-0 w-72 aspect-square bg-white rounded-xl overflow-hidden cursor-zoom-in md:min-w-[16rem] ',
     });
     this.productImage = new ElementImageCreator({ src: mainImgUrl, alt: name, classes: 'h-full object-cover' }).getElement();
     this.productImage.addEventListener('click', () => {
