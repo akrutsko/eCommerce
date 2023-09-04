@@ -16,6 +16,8 @@ import { Message } from '../../utils/message/toastify-message';
 import { Store } from '../../enums/store';
 import { getPrice } from '../../utils/price/price';
 import { ProductModal } from '../modal/product-modal';
+import { getCategoryById, getTreeOfCategories } from '../../utils/api/api-categories';
+import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 
 export class Product extends HandlerLinks {
   consumer: Consumer;
@@ -51,8 +53,9 @@ export class Product extends HandlerLinks {
     const embeddedPrice = this.productData.masterVariant.prices?.filter((price) => price.country === Store.Country)[0];
     const firmPrice = embeddedPrice?.value;
     const discountedPrice = embeddedPrice?.discounted?.value;
+    const { attributes } = this.productData.masterVariant;
 
-    const breadcrumbWrapper = new ElementCreator({ tag: 'div', classes: 'mb-2.5' }); // TODO: generate breadcrumb
+    const breadcrumbWrapper = await this.createBreadcrumbs(this.productData.categories[0].id);
 
     const imageWrapper = new ElementCreator({
       tag: 'div',
@@ -76,6 +79,16 @@ export class Product extends HandlerLinks {
     const productDescription = new ElementCreator({ tag: 'p', text: description, classes: 'mb-5' });
     productWrapper.appendNode(productName, productDescription);
 
+    if (attributes) {
+      attributes.forEach((attribute) => {
+        const brandWrapper = new ElementCreator({ tag: 'div', classes: 'mb-1' });
+        const brand = new ElementCreator({ tag: 'span', text: `${attribute.name}: `, classes: 'capitalize' });
+        const label = new ElementCreator({ tag: 'span', text: attribute.value[0].label, classes: 'self-start grow' });
+        brandWrapper.appendNode(brand, label);
+        productWrapper.appendNode(brandWrapper);
+      });
+    }
+
     const swiper = new ElementCreator({ tag: 'div', classes: 'shrink-0 flex md:flex-col md:order-first select-none relative' });
     const wrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col items-center gap-2.5 md:flex-row md:gap-14' });
     wrapper.appendNode(imageWrapper, swiper, productWrapper);
@@ -85,7 +98,8 @@ export class Product extends HandlerLinks {
     this.initSwiper(swiper.getElement());
 
     if (!firmPrice) return;
-    productWrapper.appendNode(
+    const priceWrapper = new ElementCreator({ tag: 'div', classes: 'mt-5' });
+    priceWrapper.appendNode(
       new ElementCreator({
         tag: 'div',
         classes: discountedPrice ? 'subtitle line-through' : 'price',
@@ -93,7 +107,8 @@ export class Product extends HandlerLinks {
       }),
     );
     if (!discountedPrice) return;
-    productWrapper.appendNode(new ElementCreator({ tag: 'div', classes: 'price', text: getPrice(discountedPrice) }));
+    priceWrapper.appendNode(new ElementCreator({ tag: 'div', classes: 'price', text: getPrice(discountedPrice) }));
+    productWrapper.appendNode(priceWrapper);
   }
 
   initSwiper(wrapper: HTMLElement): void {
@@ -137,6 +152,38 @@ export class Product extends HandlerLinks {
     swiper.on('resize', () => {
       swiper.changeDirection(window.innerWidth < 768 ? 'horizontal' : 'vertical');
     });
+  }
+
+  async createBreadcrumbs(categoryId: string): Promise<HTMLElement> {
+    const breadcrumbWrapper = new ElementCreator({ tag: 'div', classes: 'mb-4' });
+
+    const catalog = new ElementAnchorCreator({ href: '/catalog', text: 'Catalog', classes: 'breadcrumbs' });
+    breadcrumbWrapper.appendNode(catalog);
+
+    const categoriesTree = await getTreeOfCategories(this.consumer.apiClient).catch(() => {});
+    if (!categoriesTree) return breadcrumbWrapper.getElement();
+
+    const category = getCategoryById(categoryId, categoriesTree);
+    const parentCategory = category?.parent;
+
+    if (parentCategory) {
+      breadcrumbWrapper.appendNode(
+        new ElementCreator({ tag: 'span', text: ' >> ' }),
+        new ElementAnchorCreator({
+          href: `/categories/${parentCategory.slug}`,
+          text: parentCategory.name,
+          classes: 'breadcrumbs',
+        }),
+      );
+    }
+    if (category) {
+      breadcrumbWrapper.appendNode(
+        new ElementCreator({ tag: 'span', text: ' >> ' }),
+        new ElementAnchorCreator({ href: `/categories/${category.slug}`, text: category.name, classes: 'breadcrumbs' }),
+      );
+    }
+
+    return breadcrumbWrapper.getElement();
   }
 
   getView(): ElementCreator<HTMLElement> {

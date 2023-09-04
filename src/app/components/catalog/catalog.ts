@@ -416,9 +416,6 @@ export class Catalog extends HandlerLinks {
         text: `$${fromStr}-${toStr}`,
         classes: 'filter-button flex items-center',
       });
-      // TODO add deleting filters
-      // const elementFilterDelete = new ElementCreator({ tag: 'div', classes: 'relative', html: deleteFilterSVG });
-      // resetPriceElement.appendNode(elementFilterDelete);
       this.selectedFiltersView.appendNode(resetPriceElement);
     }
 
