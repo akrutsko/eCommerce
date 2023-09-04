@@ -13,18 +13,26 @@
   transform: scaleY(-1);
 }
 
-.content {
+.product-name {
+  text-wrap: balance;
+}
+
+.breadcrumbs {
+  opacity: 0.8;
+}
+
+.catalog {
   display: grid;
   grid-template-columns: 250px 1fr;
 }
 
 @media (max-width: 767px) {
-  .content {
+  .catalog {
     grid-template-columns: 1fr;
   }
 }
 
-.catalog {
+.products {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   align-self: start;

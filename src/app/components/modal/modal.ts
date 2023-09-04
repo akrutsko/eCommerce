@@ -1,3 +1,5 @@
+import cross from '../../../assets/svg/cross.svg';
+
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementDialogCreator } from '../../utils/element-creator/element-dialog-creator';
@@ -15,7 +17,7 @@ export class Modal {
     const closeButton = new ElementButtonCreator({
       tag: 'button',
       classes: 'absolute z-10 top-5 right-5 scale-150 cursor-pointer outline-none text-primary-color',
-      text: '✖',
+      html: cross,
     });
     closeButton.setHandler('click', () => {
       this.getElement().close();
