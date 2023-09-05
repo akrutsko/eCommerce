@@ -46,7 +46,7 @@ export class ElementCreator<T extends HTMLElement> {
   }
 
   // eslint-disable-next-line @typescript-eslint/array-type
-  public appendNode(...nodes: Array<HTMLElement | ElementCreator<T>>): this {
+  public appendNode(...nodes: Array<HTMLElement | ElementCreator<HTMLElement>>): this {
     nodes.forEach((node) => {
       if (node instanceof HTMLElement) {
         this.element.append(node);

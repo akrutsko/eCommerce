@@ -20,7 +20,10 @@ export class Message {
         y: 170,
       },
       gravity: 'bottom',
-      backgroundColor: this.getBackgroundColor(),
+      style: {
+        background: this.getBackgroundColor(),
+        cursor: 'auto',
+      },
     }).showToast();
   }
 

@@ -1,25 +1,22 @@
 import logotype from '../../../assets/svg/logo.svg';
-import searchIcon from '../../../assets/svg/search.svg';
 
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
-import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
-import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
-import { HandlerLinks } from '../../router/handler-links';
 import { Router } from '../../router/router';
 
-export class Footer extends HandlerLinks {
+export class Footer {
+  router: Router;
+
   footerView: ElementCreator<HTMLElement>;
 
   constructor(router: Router) {
-    super(router);
+    this.router = router;
     this.footerView = new ElementCreator({
       tag: 'footer',
       classes:
         'container flex flex-col-reverse items-center justify-center bg-secondary-color py-10 gap-4 sm:gap-10 sm:flex-row sm:justify-between',
     });
     this.createView();
-    this.handleLinks();
   }
 
   createView(): void {
@@ -40,9 +37,7 @@ export class Footer extends HandlerLinks {
     const companyWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const companyHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Company' });
     const aboutLink = new ElementAnchorCreator({ href: '/aboutus', classes: 'text-[10px]', text: 'About us' });
-    this.listOfLinks.push(aboutLink.getElement());
     const contactLink = new ElementAnchorCreator({ href: '/contact', classes: 'text-[10px]', text: 'Contact' });
-    this.listOfLinks.push(contactLink.getElement());
     companyWrapper.appendNode(companyHeading, aboutLink, contactLink);
 
     const socialWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
@@ -61,24 +56,14 @@ export class Footer extends HandlerLinks {
 
     const productsWrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col' });
     const productsHeading = new ElementCreator({ tag: 'h5', classes: 'h5', text: 'Products' });
-    const categoriesLink = new ElementAnchorCreator({ href: '/categories', classes: 'text-[10px]', text: 'Categories' });
-    this.listOfLinks.push(categoriesLink.getElement());
+
+    const categoriesLink = new ElementAnchorCreator({ href: '/categories', classes: 'text-[10px]', text: 'All products' });
+
     const sellersLink = new ElementAnchorCreator({ href: '/goods', classes: 'text-[10px]', text: 'Goods' });
-    this.listOfLinks.push(sellersLink.getElement());
     productsWrapper.appendNode(productsHeading, categoriesLink, sellersLink);
 
-    const form = new ElementCreator({ tag: 'form', classes: 'search-form' });
-    const input = new ElementInputCreator({ type: 'search', name: 'search', placeholder: 'search' });
-    input.getElement().addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-      }
-    }); // TODO: implement search
-    const submitButton = new ElementButtonCreator({ classes: 'absolute right-0 top-0 focus:outline-none', html: searchIcon });
-    form.appendNode(input, submitButton);
-
     nav.appendNode(companyWrapper, socialWrapper, productsWrapper);
-    this.footerView.appendNode(logo, nav, form);
+    this.footerView.appendNode(logo, nav);
   }
 
   getView(): ElementCreator<HTMLElement> {

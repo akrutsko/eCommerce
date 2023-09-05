@@ -7,6 +7,7 @@ import {
   ClientBuilder,
   HttpMiddlewareOptions,
   PasswordAuthMiddlewareOptions,
+  RefreshAuthMiddlewareOptions,
   TokenCache,
   TokenStore,
 } from '@commercetools/sdk-client-v2';
@@ -62,6 +63,19 @@ export function getTokenClient(token: string): Client {
   return new ClientBuilder().withHttpMiddleware(httpOptions).withExistingTokenFlow(authorization, { force: true }).build();
 }
 
+export function getRefreshTokenClient(refreshToken: string): Client {
+  const refreshOptions: RefreshAuthMiddlewareOptions = {
+    host: authHost,
+    projectKey,
+    credentials: { clientId, clientSecret },
+    refreshToken,
+    tokenCache,
+    fetch,
+  };
+
+  return new ClientBuilder().withHttpMiddleware(httpOptions).withRefreshTokenFlow(refreshOptions).build();
+}
+
 export function getPasswordClient(username: string, password: string): Client {
   const pwdOptions: PasswordAuthMiddlewareOptions = {
     host: authHost,
@@ -77,6 +91,10 @@ export function getPasswordClient(username: string, password: string): Client {
 
 export function getToken(): string {
   return tokenStore?.token || '';
+}
+
+export function getRefreshToken(): string {
+  return tokenStore?.refreshToken || '';
 }
 
 export function getApiRoot(client: Client): ByProjectKeyRequestBuilder {

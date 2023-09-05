@@ -8,9 +8,13 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { Router } from '../../router/router';
-import { HandlerLinks } from '../../router/handler-links';
+import { getTreeOfCategories } from '../../utils/api/api-categories';
+import { Message } from '../../utils/message/toastify-message';
+import { CategoryTree } from '../../interfaces/category';
 
-export class Header extends HandlerLinks implements Observer {
+export class Header implements Observer {
+  router: Router;
+
   consumer: Consumer;
 
   headerView: ElementCreator<HTMLElement>;
@@ -25,12 +29,19 @@ export class Header extends HandlerLinks implements Observer {
 
   signoutButton: HTMLButtonElement;
 
+  listOfLinks: HTMLAnchorElement[] = [];
+
+  categories: CategoryTree[] = [];
+
   constructor(router: Router, consumer: Consumer) {
-    super(router);
+    this.router = router;
     this.consumer = consumer;
     this.headerView = new ElementCreator({ tag: 'header', classes: 'container' });
-    this.loginBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-6' }).getElement();
-    this.logoutBtns = new ElementCreator({ tag: 'div', classes: 'items-center justify-between flex gap-6 hidden' }).getElement();
+    this.loginBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-3 hidden md:gap-6' }).getElement();
+    this.logoutBtns = new ElementCreator({
+      tag: 'div',
+      classes: 'items-center justify-between flex gap-3 hidden md:gap-6',
+    }).getElement();
     this.loginButton = new ElementButtonCreator({ text: 'log in', classes: 'primary-button' }).getElement();
     this.signupButton = new ElementButtonCreator({ text: 'sign up', classes: 'secondary-button' }).getElement();
     this.signoutButton = new ElementButtonCreator({ text: 'sign out', classes: 'secondary-button' })
@@ -42,17 +53,16 @@ export class Header extends HandlerLinks implements Observer {
       .getElement();
 
     this.createView();
-    this.handleLinks();
   }
 
-  createView(): void {
-    const burger = new ElementCreator({ tag: 'div', classes: 'burger space-y-2 z-10 block md:hidden cursor-pointer' });
+  async createView(): Promise<void> {
+    const burger = new ElementCreator({ tag: 'div', classes: 'burger space-y-2 z-40 block md:hidden cursor-pointer' });
     const spanBurger1 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     const spanBurger2 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     const spanBurger3 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     burger.appendNode(spanBurger1, spanBurger2, spanBurger3);
 
-    const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between py-5 gap-8' });
+    const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between mt-5 gap-8' });
     const logo = new ElementAnchorCreator({ href: '/', html: logotype });
     this.listOfLinks.push(logo.getElement());
     const mobileMenu = new ElementCreator({
@@ -72,71 +82,41 @@ export class Header extends HandlerLinks implements Observer {
     this.listOfLinks.push(aAboutUs.getElement());
     liAboutUs.appendNode(aAboutUs);
 
-    const liSummerTime = new ElementCreator({ tag: 'li' });
-    const aSummerTime = new ElementAnchorCreator({
-      href: '/categories#summer-time',
-      classes: 'h5 hover:text-primary-color',
-      text: 'Summer time',
+    const submenu = new ElementCreator({
+      tag: 'ul',
+      classes: 'submenu relative md:absolute hidden bg-primary-color text-white rounded-xl p-2 pt-1 w-max',
     });
-    this.listOfLinks.push(aSummerTime.getElement());
-    liSummerTime.appendNode(aSummerTime);
-
-    const liPeakClimber = new ElementCreator({ tag: 'li' });
-    const aPeakClimber = new ElementAnchorCreator({
-      href: '/categories#peak-climber',
-      classes: 'h5 hover:text-primary-color',
-      text: 'Peak climber',
-    });
-    this.listOfLinks.push(aPeakClimber.getElement());
-    liPeakClimber.appendNode(aPeakClimber);
-
-    const liBallGames = new ElementCreator({ tag: 'li' });
-    const aBallGames = new ElementAnchorCreator({
-      href: '/categories#ball-games',
-      classes: 'h5 hover:text-primary-color',
-      text: 'Ball games',
-    });
-    this.listOfLinks.push(aBallGames.getElement());
-    liBallGames.appendNode(aBallGames);
-
-    const liIceAdventures = new ElementCreator({ tag: 'li' });
-    const aIceAdventures = new ElementAnchorCreator({
-      href: '/categories#ice-adventures',
-      classes: 'h5 hover:text-primary-color',
-      text: 'Ice adventures',
-    });
-    this.listOfLinks.push(aIceAdventures.getElement());
-    liIceAdventures.appendNode(aIceAdventures);
-
-    const submenu = new ElementCreator({ tag: 'ul', classes: 'submenu relative md:absolute hidden bg-white px-2 py-1 w-max' });
-    submenu.appendNode(liSummerTime, liPeakClimber, liBallGames, liIceAdventures);
 
     const tab = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
-    const categories = new ElementCreator({
-      tag: 'div',
-      text: 'Categories',
+    const catalog = new ElementAnchorCreator({
+      href: '/catalog',
+      text: 'Catalog',
       classes: 'h4 hover:text-primary-color cursor-pointer',
     });
-    tab.appendNode(categories, submenu);
+    this.listOfLinks.push(catalog.getElement());
+    tab.appendNode(catalog, submenu);
 
-    const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-5' });
-    // linksList.appendNode(liHome, liAboutUs, tab); //TODO: delete comments in sprint3
-    linksList.appendNode(liHome);
+    const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-3 lg:gap-5' });
+    linksList.appendNode(liHome, tab, liAboutUs);
 
-    const divCart = new ElementCreator({ tag: 'div', classes: 'relative', html: cartSvg });
+    const divCart = new ElementCreator({ tag: 'div', classes: 'relative cart-button', html: cartSvg });
     const aCart = new ElementAnchorCreator({ href: '/cart', classes: 'absolute inset-0' });
     this.listOfLinks.push(aCart.getElement());
     divCart.appendNode(aCart);
 
-    const divCustomer = new ElementCreator({ tag: 'div', classes: 'relative', html: customerSvg });
+    const divCustomer = new ElementCreator({ tag: 'div', classes: 'relative profile-button', html: customerSvg });
     const aCustomer = new ElementAnchorCreator({ href: '/profile', classes: 'absolute inset-0' });
     this.listOfLinks.push(aCustomer.getElement());
     divCustomer.appendNode(aCustomer);
 
-    this.loginBtns.append(this.signupButton, this.loginButton, divCart.getElement(), this.logoutBtns);
-    this.logoutBtns.append(divCustomer.getElement(), this.signoutButton);
-    mobileMenu.appendNode(linksList, this.loginBtns);
+    const allBtns = new ElementCreator({ tag: 'div', classes: 'items-center flex gap-3 md:gap-6' });
+    this.loginBtns.append(divCart.getElement(), this.signupButton, this.loginButton);
+    this.logoutBtns.append(divCart.getElement(), divCustomer.getElement(), this.signoutButton);
+    allBtns.appendNode(divCart, this.loginBtns, this.logoutBtns);
+    mobileMenu.appendNode(linksList, allBtns);
     this.headerView.appendNode(nav);
+
+    await this.addCategories(submenu);
 
     const closeBurger = (): void => {
       mobileMenu.removeClass('active');
@@ -144,12 +124,6 @@ export class Header extends HandlerLinks implements Observer {
       bg.removeClass('active');
       document.body.classList.remove('active');
     };
-
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 768 && burger.getElement().classList.contains('active')) {
-        closeBurger();
-      }
-    });
 
     this.listOfLinks.forEach((link) => {
       link.addEventListener('click', () => closeBurger());
@@ -161,11 +135,12 @@ export class Header extends HandlerLinks implements Observer {
       bg.toggleClass('active');
       document.body.classList.toggle('active');
     });
+
     tab.getElement().addEventListener('mouseenter', () => {
-      submenu.addClass('active');
+      if (window.innerWidth > 768) submenu.addClass('active');
     });
     tab.getElement().addEventListener('mouseleave', () => {
-      submenu.removeClass('active');
+      if (window.innerWidth > 768) submenu.removeClass('active');
     });
 
     this.loginButton.addEventListener('click', () => {
@@ -179,6 +154,57 @@ export class Header extends HandlerLinks implements Observer {
       this.router.handleLocation();
       closeBurger();
     });
+
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768 && burger.getElement().classList.contains('active')) {
+        closeBurger();
+      }
+      if (window.innerWidth > 768 && submenu.getElement().classList.contains('active')) {
+        submenu.removeClass('active');
+      }
+    });
+  }
+
+  async addCategories(submenu: ElementCreator<HTMLElement>): Promise<void> {
+    const categories = await getTreeOfCategories(this.consumer.apiClient).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+    if (!categories) return;
+
+    this.categories = categories;
+    this.categories.forEach((category) => {
+      const liCategory = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
+      const aCategory = new ElementAnchorCreator({
+        href: `/categories/${category.slug}`,
+        classes: 'h5 hover:opacity-80',
+        text: `${category.name}`,
+      });
+      this.listOfLinks.push(aCategory.getElement());
+      liCategory.appendNode(aCategory);
+      submenu.appendNode(liCategory);
+      const submenuContent = new ElementCreator({
+        tag: 'ul',
+        classes: 'submenu relative hidden rounded-lg bg-white/25 px-2 py-1 w-max',
+      });
+      liCategory.appendNode(submenuContent);
+      category.children?.forEach((child) => {
+        const liCategoryContent = new ElementCreator({ tag: 'li' });
+        const aCategoryContent = new ElementAnchorCreator({
+          href: `/categories/${child.slug}`,
+          classes: 'h5 hover:opacity-80',
+          text: `${child.name}`,
+        });
+        this.listOfLinks.push(aCategoryContent.getElement());
+        liCategoryContent.appendNode(aCategoryContent);
+        submenuContent.appendNode(liCategoryContent);
+      });
+      liCategory.getElement().addEventListener('mouseenter', () => {
+        submenuContent.addClass('active');
+      });
+      liCategory.getElement().addEventListener('mouseleave', () => {
+        submenuContent.removeClass('active');
+      });
+    });
   }
 
   getView(): ElementCreator<HTMLElement> {
@@ -191,11 +217,15 @@ export class Header extends HandlerLinks implements Observer {
 
   update(): void {
     if (this.consumer.isConsumer) {
-      // this.loginBtns.classList.add('hidden');TODO: remove comment for sprint 3
+      this.loginBtns.classList.add('hidden');
       this.logoutBtns.classList.remove('hidden');
     } else {
-      // this.loginBtns.classList.remove('hidden');TODO: remove comment for sprint 3
+      this.loginBtns.classList.remove('hidden');
       this.logoutBtns.classList.add('hidden');
     }
+  }
+
+  getCategories(): CategoryTree[] {
+    return this.categories;
   }
 }

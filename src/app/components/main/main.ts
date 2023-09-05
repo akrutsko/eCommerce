@@ -1,6 +1,8 @@
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { Router } from '../../router/router';
 import { Consumer } from '../consumer/consumer';
+import { getProductIdBySlug } from '../../utils/api/api-product';
+import { Message } from '../../utils/message/toastify-message';
 
 export class Main implements Observer {
   router: Router;
@@ -12,11 +14,9 @@ export class Main implements Observer {
   constructor(router: Router, consumer: Consumer) {
     this.router = router;
     this.consumer = consumer;
-
     this.mainView = new ElementCreator({
       tag: 'main',
       classes: 'container flex flex-col grow justify-center items-center h-full my-5 md:my-10',
-      text: 'main',
     }).getElement();
   }
 
@@ -24,10 +24,11 @@ export class Main implements Observer {
     return this.mainView;
   }
 
-  update(data?: string, hashData?: string): void {
+  update(rootRoute: string, pathRoutes: string[]): void {
     this.mainView.innerHTML = '';
 
-    switch (data) {
+    switch (rootRoute) {
+      case '':
       case 'main':
         this.showMain();
         break;
@@ -43,9 +44,12 @@ export class Main implements Observer {
       case 'cart':
         this.showCart();
         break;
+      case 'catalog':
+        this.showCatalog();
+        break;
       case 'profile':
         if (!this.consumer.isConsumer) {
-          window.history.pushState({}, '', '/signup');
+          window.history.pushState({}, '', '/login');
           this.router.handleLocation();
         } else {
           this.showProfile();
@@ -68,7 +72,10 @@ export class Main implements Observer {
         }
         break;
       case 'categories':
-        this.showCategories(hashData);
+        this.showCategories(pathRoutes[0]);
+        break;
+      case 'product':
+        this.showProduct(pathRoutes[0]);
         break;
       default:
         this.show404();
@@ -94,9 +101,14 @@ export class Main implements Observer {
     this.mainView.append(new Cart().getElement());
   }
 
+  async showCatalog(): Promise<void> {
+    const { Catalog } = await import('../catalog/catalog');
+    this.mainView.append(new Catalog(this.router, this.consumer).getElement());
+  }
+
   async showProfile(): Promise<void> {
     const { Profile } = await import('../profile/profile');
-    this.mainView.append(new Profile().getElement());
+    this.mainView.append(new Profile(this.router, this.consumer).getElement());
   }
 
   async showGoods(): Promise<void> {
@@ -114,19 +126,25 @@ export class Main implements Observer {
     this.mainView.append(new Login(this.router, this.consumer).getElement());
   }
 
-  async showCategories(hashData?: string): Promise<void> {
-    if (hashData) {
-      const { Category } = await import('../category/category');
-      const categories = new Category(hashData);
-      if (categories.validateCategory()) {
-        this.mainView.append(categories.getElement());
-      } else {
-        this.show404();
-      }
-    } else {
-      const { Categories } = await import('../category/categories');
-      this.mainView.append(new Categories().getElement());
+  async showCategories(category: string): Promise<void> {
+    const { Catalog } = await import('../catalog/catalog');
+    this.mainView.append(new Catalog(this.router, this.consumer, category).getElement());
+  }
+
+  async showProduct(slug: string): Promise<void> {
+    const productResponse = await getProductIdBySlug(this.consumer.apiClient, slug).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+    if (!productResponse) return;
+
+    const productId = productResponse.body.results[0]?.id;
+    if (!productId) {
+      this.show404();
+      return;
     }
+
+    const { Product } = await import('../product/product');
+    this.mainView.append(new Product(this.router, this.consumer, productId).getElement());
   }
 
   async showSignup(): Promise<void> {

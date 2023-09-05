@@ -18,10 +18,9 @@ import { Consumer } from '../consumer/consumer';
 import { getCtpClient } from '../../utils/api/api-client';
 import { createConsumer } from '../../utils/api/api-consumer';
 import { countryCodes } from '../../data/country-codes';
-import { HandlerLinks } from '../../router/handler-links';
 import { Message } from '../../utils/message/toastify-message';
 
-export class Registration extends HandlerLinks {
+export class Registration {
   router: Router;
 
   consumer: Consumer;
@@ -69,7 +68,7 @@ export class Registration extends HandlerLinks {
   submitButton: HTMLButtonElement;
 
   constructor(router: Router, consumer: Consumer) {
-    super(router);
+    this.router = router;
     this.router = router;
     this.consumer = consumer;
 
@@ -118,7 +117,6 @@ export class Registration extends HandlerLinks {
     this.handleButtons();
     this.handleInputs();
     this.handleCheckbox();
-    this.handleLinks();
   }
 
   createView(): void {
@@ -312,7 +310,6 @@ export class Registration extends HandlerLinks {
 
     const question = new ElementCreator({ tag: 'div', text: 'Already have an account? ' });
     const signInAnchor = new ElementAnchorCreator({ href: '/login', classes: 'link', text: 'Log in' });
-    this.listOfLinks.push(signInAnchor.getElement());
     question.appendNode(signInAnchor);
 
     this.registrationView.appendNode(titleContainer, registrationForm, question);

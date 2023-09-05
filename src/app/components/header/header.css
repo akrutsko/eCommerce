@@ -6,7 +6,7 @@
   position: absolute;
   top: 0;
   right: 0;
-  z-index: 2;
+  z-index: 30;
   min-width: 390px;
   padding: 40px;
   justify-content: center;
@@ -25,9 +25,30 @@
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 1;
+  z-index: 20;
 }
 
 .submenu.active {
   display: block;
+}
+
+.profile-button .active circle,
+.profile-button:hover circle {
+  fill: #db5743;
+}
+.profile-button .active path,
+.profile-button:hover path {
+  fill: #fff;
+}
+.cart-button .active circle,
+.cart-button:hover circle {
+  fill: #db5743;
+}
+.cart-button .active path,
+.cart-button:hover path {
+  fill: #fff;
+}
+
+circle {
+  transition: fill 0.5s ease;
 }
