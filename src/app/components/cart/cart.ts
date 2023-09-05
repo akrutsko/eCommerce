@@ -89,7 +89,9 @@ export class Cart {
     });
     content.appendNode(cards, orderContainer);
 
-    this.cartView.appendNode(title, content);
+    const clearButton = new ElementButtonCreator({ classes: 'secondary-button mt-4', text: 'clear cart' });
+
+    this.cartView.appendNode(title, content, clearButton);
   }
 
   createProductCard(): HTMLElement {
