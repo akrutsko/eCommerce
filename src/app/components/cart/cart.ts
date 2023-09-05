@@ -1,5 +1,6 @@
 import trash from '../../../assets/svg/trash.svg';
 import promo from '../../../assets/svg/promo.svg';
+import sadCart from '../../../assets/svg/sad-cart.svg';
 
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
@@ -16,12 +17,12 @@ export class Cart {
 
   createView(): void {
     const title = new ElementCreator({ tag: 'h2', text: 'My shopping cart', classes: 'text-center' });
-    const cards = new ElementCreator({ tag: 'div', classes: 'flex grow flex-col gap-4' });
+    const cards = new ElementCreator({ tag: 'div', classes: 'flex grow-[99999] flex-col gap-4' });
     cards.appendNode(this.createProductCard(), this.createProductCard(), this.createProductCard());
 
     const orderContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-col gap-4 w-full md:w-fit self-start grow',
+      classes: 'flex flex-col gap-4 w-full md:w-fit self-start grow basis-72',
     });
     const options = new ElementCreator({
       tag: 'div',
@@ -90,6 +91,29 @@ export class Cart {
     content.appendNode(cards, orderContainer);
 
     const clearButton = new ElementButtonCreator({ classes: 'secondary-button mt-4', text: 'clear cart' });
+
+    const emptyCartContainer = new ElementCreator({
+      tag: 'div',
+      classes: 'h-full flex flex-col-reverse md:flex-row justify-center items-center gap-8 mt-6',
+    });
+    const sadCartSvg = new ElementCreator({
+      tag: 'div',
+      classes: 'drop-shadow-[5px_4px_0px_rgba(219,87,67,0.3)]',
+      html: sadCart,
+    });
+    const emptyCartContent = new ElementCreator({
+      tag: 'div',
+      classes: 'flex flex-col gap-8 max-w-full sm:max-w-2xl items-center',
+    });
+    const emptyCartText = new ElementCreator({
+      tag: 'div',
+      classes: 'bg-white p-4 rounded-xl text-justify h4',
+      text: "Oops, your cart is as empty as a football field on a rainy day! But don't worry, we've got plenty more sports treasures just waiting to be picked up. In the meantime, give your fingers a workout and start your shopping marathon now! 🏋️‍♀️🛒",
+    });
+    const emptyCartButton = new ElementButtonCreator({ tag: 'div', classes: 'primary-button', text: "let's go shopping" });
+
+    emptyCartContent.appendNode(emptyCartText, emptyCartButton);
+    emptyCartContainer.appendNode(sadCartSvg, emptyCartContent);
 
     this.cartView.appendNode(title, content, clearButton);
   }
