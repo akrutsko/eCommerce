@@ -1,4 +1,5 @@
 import { Category, ProductProjection, ProductType } from '@commercetools/platform-sdk';
+import cartSvg from '../../../assets/svg/cart.svg';
 import './catalog.css';
 import arrowDownSVG from '../../../assets/svg/arrow-down.svg';
 import searchIcon from '../../../assets/svg/search.svg';
@@ -549,6 +550,9 @@ export class Catalog {
     if (price !== priceWithOutDiscount) {
       productPricesBlock.appendNode(productPriceWithOutDiscountBlock);
     }
+
+    const cartElement = new ElementButtonCreator({ classes: 'relative cart-button', html: cartSvg });
+    productPricesBlock.appendNode(cartElement);
 
     const aCard = new ElementAnchorCreator({ href: `/product/${product.slug[Store.Language]}`, classes: 'absolute inset-0' });
 
