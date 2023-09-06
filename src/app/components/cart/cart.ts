@@ -6,6 +6,7 @@ import { ElementButtonCreator } from '../../utils/element-creator/element-button
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
+import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 
 export class Cart {
   cartView: ElementCreator<HTMLElement>;
@@ -110,7 +111,7 @@ export class Cart {
       classes: 'bg-white p-4 rounded-xl text-justify h4',
       text: "Oops, your cart is as empty as a football field on a rainy day! But don't worry, we've got plenty more sports treasures just waiting to be picked up. In the meantime, give your fingers a workout and start your shopping marathon now! 🏋️‍♀️🛒",
     });
-    const emptyCartButton = new ElementButtonCreator({ tag: 'div', classes: 'primary-button', text: "let's go shopping" });
+    const emptyCartButton = new ElementAnchorCreator({ href: '/catalog', classes: 'primary-button', text: "let's go shopping" });
 
     emptyCartContent.appendNode(emptyCartText, emptyCartButton);
     emptyCartContainer.appendNode(sadCartSvg, emptyCartContent);
