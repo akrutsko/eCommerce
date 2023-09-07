@@ -26,3 +26,17 @@ export function addToCart(client: Client, version: number, cartId: string, produ
     .post({ body: { version, actions: [{ action: 'addLineItem', productId }] } })
     .execute();
 }
+
+export function removeFromCart(
+  client: Client,
+  version: number,
+  cartId: string,
+  lineItemId: string,
+): Promise<ClientResponse<Cart>> {
+  return getApiRoot(client)
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .post({ body: { version, actions: [{ action: 'removeLineItem', lineItemId }] } })
+    .execute();
+}
