@@ -40,3 +40,18 @@ export function removeFromCart(
     .post({ body: { version, actions: [{ action: 'removeLineItem', lineItemId }] } })
     .execute();
 }
+
+export function updateQuantity(
+  client: Client,
+  version: number,
+  cartId: string,
+  lineItemId: string,
+  quantity: number,
+): Promise<ClientResponse<Cart>> {
+  return getApiRoot(client)
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .post({ body: { version, actions: [{ action: 'changeLineItemQuantity', lineItemId, quantity }] } })
+    .execute();
+}

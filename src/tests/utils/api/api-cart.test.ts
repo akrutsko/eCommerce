@@ -1,7 +1,15 @@
 /* eslint-disable jest/no-disabled-tests */
 import 'jest-fetch-mock';
 import { Cart, CartDraft } from '@commercetools/platform-sdk';
-import { addToCart, createCart, deleteCart, getActiveCart, getCartById, removeFromCart } from '../../../app/utils/api/api-cart';
+import {
+  addToCart,
+  createCart,
+  deleteCart,
+  getActiveCart,
+  getCartById,
+  removeFromCart,
+  updateQuantity,
+} from '../../../app/utils/api/api-cart';
 import { Consumer } from '../../../app/components/consumer/consumer';
 
 let consumer: Consumer;
@@ -85,10 +93,21 @@ describe('Tests for manage products in cart API', () => {
     expect(cartResponse.statusCode).toBe(200);
   });
 
+  test('update product quantity in the cart', async () => {
+    const lineItemId = consumerCart.lineItems.filter(
+      (lineItem) => lineItem.productId === '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27',
+    )[0].id;
+
+    const cartResponse = await updateQuantity(consumer.apiClient, consumerCart.version, consumerCart.id, lineItemId, 10);
+    consumerCart = cartResponse.body;
+    expect(cartResponse.statusCode).toBe(200);
+  });
+
   test('remove a product from the cart', async () => {
     const lineItemId = consumerCart.lineItems.filter(
       (lineItem) => lineItem.productId === '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27',
     )[0].id;
+
     const cartResponse = await removeFromCart(consumer.apiClient, consumerCart.version, consumerCart.id, lineItemId);
     consumerCart = cartResponse.body;
     expect(cartResponse.statusCode).toBe(200);
