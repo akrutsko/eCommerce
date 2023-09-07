@@ -17,3 +17,12 @@ export function getCartById(client: Client, id: string): Promise<ClientResponse<
 export function deleteCart(client: Client, version: number, id: string): Promise<ClientResponse<Cart>> {
   return getApiRoot(client).me().carts().withId({ ID: id }).delete({ queryArgs: { version } }).execute();
 }
+
+export function addToCart(client: Client, version: number, cartId: string, productId: string): Promise<ClientResponse<Cart>> {
+  return getApiRoot(client)
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .post({ body: { version, actions: [{ action: 'addLineItem', productId }] } })
+    .execute();
+}

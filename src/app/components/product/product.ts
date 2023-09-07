@@ -51,7 +51,7 @@ export class Product {
     const name = this.productData.name[Store.Language];
     const description = this.productData.description?.[Store.Language] || '';
     const mainImgUrl = this.productData.masterVariant.images?.[0].url || '';
-    const embeddedPrice = this.productData.masterVariant.prices?.filter((price) => price.country === Store.Country)[0];
+    const embeddedPrice = this.productData.masterVariant.prices?.[0];
     const firmPrice = embeddedPrice?.value;
     const discountedPrice = embeddedPrice?.discounted?.value;
     const { attributes } = this.productData.masterVariant;

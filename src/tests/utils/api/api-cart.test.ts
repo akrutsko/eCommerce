@@ -1,7 +1,7 @@
 /* eslint-disable jest/no-disabled-tests */
 import 'jest-fetch-mock';
 import { Cart, CartDraft } from '@commercetools/platform-sdk';
-import { createCart, deleteCart, getActiveCart, getCartById } from '../../../app/utils/api/api-cart';
+import { addToCart, createCart, deleteCart, getActiveCart, getCartById } from '../../../app/utils/api/api-cart';
 import { Consumer } from '../../../app/components/consumer/consumer';
 
 let consumer: Consumer;
@@ -28,7 +28,7 @@ describe.skip('Tests for anonymous cart API', () => {
   });
 });
 
-describe('Tests for consumer cart API', () => {
+describe.skip('Tests for manage consumer cart API', () => {
   beforeAll(async () => {
     consumer = new Consumer();
     await consumer.logIn('login@test.com', 'Password1');
@@ -64,5 +64,24 @@ describe('Tests for consumer cart API', () => {
     // console.log('customer cartafter delete: ', (await getActiveCart(consumer.apiClient)).body.id);
 
     expect(cartResponse.statusCode).toBe(200);
+  });
+});
+
+describe('Tests for manage products in cart API', () => {
+  beforeAll(async () => {
+    consumer = new Consumer();
+    await consumer.logIn('login@test.com', 'Password1');
+  });
+
+  test('add a product to the cart', async () => {
+    consumerCart = (await getActiveCart(consumer.apiClient)).body;
+    const res = await addToCart(
+      consumer.apiClient,
+      consumerCart.version,
+      consumerCart.id,
+      '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27',
+    );
+    console.log(res.body);
+    expect(res.statusCode).toBe(200);
   });
 });
