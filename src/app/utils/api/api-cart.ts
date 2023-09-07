@@ -1,5 +1,5 @@
 import { Client } from '@commercetools/sdk-client-v2';
-import { Cart, CartDraft, ClientResponse } from '@commercetools/platform-sdk';
+import { Cart, CartDraft, ClientResponse, DiscountCodeReference } from '@commercetools/platform-sdk';
 import { getApiRoot } from './api-client';
 
 export function createCart(client: Client, cart: CartDraft): Promise<ClientResponse<Cart>> {
@@ -53,5 +53,28 @@ export function updateQuantity(
     .carts()
     .withId({ ID: cartId })
     .post({ body: { version, actions: [{ action: 'changeLineItemQuantity', lineItemId, quantity }] } })
+    .execute();
+}
+
+export function addDiscount(client: Client, version: number, cartId: string, code: string): Promise<ClientResponse<Cart>> {
+  return getApiRoot(client)
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .post({ body: { version, actions: [{ action: 'addDiscountCode', code }] } })
+    .execute();
+}
+
+export function removeDiscount(
+  client: Client,
+  version: number,
+  cartId: string,
+  discountCode: DiscountCodeReference,
+): Promise<ClientResponse<Cart>> {
+  return getApiRoot(client)
+    .me()
+    .carts()
+    .withId({ ID: cartId })
+    .post({ body: { version, actions: [{ action: 'removeDiscountCode', discountCode }] } })
     .execute();
 }
