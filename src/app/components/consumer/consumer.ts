@@ -8,6 +8,7 @@ import {
   clearTokenStore,
   getRefreshToken,
   getRefreshTokenClient,
+  getAnonymousClient,
 } from '../../utils/api/api-client';
 import { ConsumerClient } from '../../enums/consumer-client';
 import {
@@ -39,7 +40,7 @@ export class Consumer implements Observable {
   }
 
   constructor() {
-    this.apiClient = getCtpClient();
+    this.apiClient = getAnonymousClient();
     this.status = ConsumerClient.CommerceTools;
   }
 

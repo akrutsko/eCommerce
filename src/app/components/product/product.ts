@@ -127,6 +127,11 @@ export class Product {
         classes: 'swiper-slide bg-white rounded-md cursor-pointer overflow-hidden',
       });
       const sliderImage = new ElementImageCreator({ src: image, alt: '', classes: 'h-full object-cover' });
+      sliderImage.setHandler('click', () => {
+        if (this.productImage) {
+          this.productImage.src = sliderImage.getElement().src;
+        }
+      });
       imgWrapper.appendNode(sliderImage);
       swiperWrapper.appendNode(imgWrapper);
     });
@@ -150,11 +155,6 @@ export class Product {
       pagination: { el: '.swiper-pagination', clickable: true },
     });
 
-    swiper.on('click', () => {
-      if (this.productImage && swiper.clickedSlide && swiper.clickedSlide.dataset.swiperSlideIndex) {
-        this.productImage.src = images[+swiper.clickedSlide.dataset.swiperSlideIndex];
-      }
-    });
     swiper.on('resize', () => {
       swiper.changeDirection(window.innerWidth < 768 ? 'horizontal' : 'vertical');
     });
