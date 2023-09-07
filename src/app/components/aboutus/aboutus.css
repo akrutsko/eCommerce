@@ -1,0 +1,8 @@
+.member:hover {
+  color: #db5743;
+  transform: scale(1.05);
+}
+
+.member:hover .circle {
+  background-color: #ffe7e3;
+}

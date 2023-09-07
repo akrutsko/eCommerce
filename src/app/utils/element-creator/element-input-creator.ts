@@ -8,6 +8,9 @@ export class ElementInputCreator extends ElementCreator<HTMLInputElement> {
     if (params.type) {
       this.element.type = params.type;
     }
+    if (params.name) {
+      this.element.name = params.name;
+    }
     if (params.value) {
       this.element.value = params.value;
     }

@@ -13,13 +13,14 @@ export class Footer {
     this.router = router;
     this.footerView = new ElementCreator({
       tag: 'footer',
-      classes:
-        'container flex flex-col-reverse items-center justify-center bg-secondary-color py-10 gap-4 sm:gap-10 sm:flex-row sm:justify-between',
+      classes: 'flex flex-col-reverse items-center bg-secondary-color py-10 gap-4 sm:gap-10 sm:flex-row sm:justify-between',
     });
     this.createView();
   }
 
   createView(): void {
+    const container = new ElementCreator({ tag: 'div', classes: 'container justify-center sm:justify-between' });
+
     const logo = new ElementCreator({
       tag: 'div',
       classes: 'hidden sm:block text-opacity-70 max-w-[157px] text-white w-full text-[8px] -font--secondary-font-family',
@@ -63,7 +64,9 @@ export class Footer {
     productsWrapper.appendNode(productsHeading, categoriesLink, sellersLink);
 
     nav.appendNode(companyWrapper, socialWrapper, productsWrapper);
-    this.footerView.appendNode(logo, nav);
+    container.appendNode(logo, nav);
+
+    this.footerView.appendNode(container);
   }
 
   getView(): ElementCreator<HTMLElement> {

@@ -38,7 +38,7 @@
 
   p {
     font-family: var(--secondary-font-family);
-    @apply text-lg md:text-xl font-normal;
+    @apply text-sm md:text-lg font-normal;
   }
 
   .link {
@@ -117,7 +117,7 @@
   }
 
   .container {
-    @apply px-4 md:px-10 flex items-center justify-between max-w-full;
+    @apply px-4 md:px-10 flex items-center justify-between max-w-full xl:max-w-[1400px] m-auto;
   }
 
   .breadcrumbs {
