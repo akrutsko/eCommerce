@@ -99,9 +99,10 @@ export class Consumer implements Observable {
 
     // TODO: remove
     this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')).body;
-    const lineItemId = this.cart.lineItems.filter((lineItem) => lineItem.productId === '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')[0]
-      .id;
-    this.cart = (await updateQuantity(this.apiClient, this.cart.version, this.cart.id, lineItemId, 2)).body;
+    const lineItemId = this.cart.lineItems.find((lineItem) => lineItem.productId === '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')?.id;
+    if (lineItemId) {
+      this.cart = (await updateQuantity(this.apiClient, this.cart.version, this.cart.id, lineItemId, 2)).body;
+    }
     this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, 'a632302c-d91d-499b-b680-6d29a1f22c19')).body;
     this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '4dab7e57-080a-43a3-9fb3-a55d95b91c9d')).body;
     this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '19328891-6cc1-46b2-9618-fa4404a06f24')).body;

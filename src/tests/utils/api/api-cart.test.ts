@@ -106,9 +106,9 @@ describe('Tests for manage products in cart API', () => {
   });
 
   test('update product quantity in the cart', async () => {
-    const lineItemId = consumerCart.lineItems.filter(
-      (lineItem) => lineItem.productId === '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27',
-    )[0].id;
+    const lineItemId = consumerCart.lineItems.find((lineItem) => lineItem.productId === '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')
+      ?.id;
+    if (!lineItemId) throw new Error();
 
     const cartResponse = await updateQuantity(consumer.apiClient, consumerCart.version, consumerCart.id, lineItemId, 10);
     consumerCart = cartResponse.body;
@@ -116,9 +116,9 @@ describe('Tests for manage products in cart API', () => {
   });
 
   test('remove a product from the cart', async () => {
-    const lineItemId = consumerCart.lineItems.filter(
-      (lineItem) => lineItem.productId === '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27',
-    )[0].id;
+    const lineItemId = consumerCart.lineItems.find((lineItem) => lineItem.productId === '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')
+      ?.id;
+    if (!lineItemId) throw new Error();
 
     const cartResponse = await removeFromCart(consumer.apiClient, consumerCart.version, consumerCart.id, lineItemId);
     consumerCart = cartResponse.body;
