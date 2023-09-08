@@ -88,6 +88,10 @@
     @apply w-12 h-12 fill-primary-color text-white rounded-full bg-white flex items-center justify-center hover:bg-primary-color hover:fill-white transition-colors;
   }
 
+  .counter-button {
+    @apply w-10 h-7 rounded-lg bg-primary-color text-white border-2 border-transparent hover:bg-red-600 disabled:border-primary-color disabled:bg-transparent disabled:text-primary-color disabled:opacity-60;
+  }
+
   .round-button.big {
     @apply w-24 h-24 bg-primary-color p-2 text-white font-medium hover:bg-red-600;
   }
