@@ -88,6 +88,10 @@
     @apply w-12 h-12 fill-primary-color text-white rounded-full bg-white flex items-center justify-center hover:bg-primary-color hover:fill-white transition-colors;
   }
 
+  .counter-button {
+    @apply w-10 h-7 rounded-lg bg-primary-color text-white border-2 border-transparent hover:bg-red-600 disabled:border-primary-color disabled:bg-transparent disabled:text-primary-color disabled:opacity-60;
+  }
+
   .round-button.big {
     @apply w-24 h-24 bg-primary-color p-2 text-white font-medium hover:bg-red-600;
   }
@@ -118,6 +122,14 @@
 
   .container {
     @apply px-4 md:px-10 flex items-center justify-between max-w-full xl:max-w-[1400px] m-auto;
+  }
+
+  .breadcrumbs {
+    @apply text-xs font-medium leading-6 text-left text-[#DB5743] md:text-base;
+  }
+
+  .sorting-button {
+    @apply text-sm font-normal border-2 border-primary-color transition-colors outline-transparent focus:outline-transparent disabled:pointer-events-none disabled:opacity-50 text-secondary-color bg-transparent hover:bg-red-600 hover:border-red-600 hover:text-white px-2 py-1;
   }
 
   .breadcrumbs {
