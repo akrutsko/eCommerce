@@ -1,7 +1,6 @@
 import { Client } from '@commercetools/sdk-client-v2';
 import { Customer } from '@commercetools/platform-sdk';
 import {
-  getCtpClient,
   getPasswordClient,
   getToken,
   getTokenClient,
@@ -20,6 +19,7 @@ import {
   changePassword,
   changePersonal,
   getConsumer,
+  login,
   removeAddress,
   setDefaultBillingAddress,
   setDefaultShippingAddress,
@@ -96,6 +96,7 @@ export class Consumer implements Observable {
   }
 
   async logIn(username: string, password: string): Promise<void> {
+    await login(this.apiClient, { email: username, password });
     clearTokenStore();
     this.apiClient = getPasswordClient(username, password);
     this.consumerData = await this.getConsumer();
@@ -110,7 +111,7 @@ export class Consumer implements Observable {
     this.status = ConsumerClient.CommerceTools;
     this.consumerData = null;
     clearTokenStore();
-    this.apiClient = getCtpClient();
+    this.apiClient = getAnonymousClient();
     this.notify();
   }
 

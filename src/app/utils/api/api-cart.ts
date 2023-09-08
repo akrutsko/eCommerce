@@ -3,7 +3,7 @@ import { Cart, CartDraft, ClientResponse, DiscountCodeReference } from '@commerc
 import { getApiRoot } from './api-client';
 
 export function createCart(client: Client, cart: CartDraft): Promise<ClientResponse<Cart>> {
-  return getApiRoot(client).carts().post({ body: cart }).execute();
+  return getApiRoot(client).me().carts().post({ body: cart }).execute();
 }
 
 export function getActiveCart(client: Client): Promise<ClientResponse<Cart>> {
