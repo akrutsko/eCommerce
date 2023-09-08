@@ -7,13 +7,18 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
+import { Consumer } from '../consumer/consumer';
 
 export class Cart {
+  consumer: Consumer;
+
   cartView: ElementCreator<HTMLElement>;
 
-  constructor() {
+  constructor(consumer: Consumer) {
+    this.consumer = consumer;
     this.cartView = new ElementCreator({ tag: 'div', classes: 'bg-[#F1EFEF] rounded-xl w-full flex-1 p-5 md:p-10 relative' });
     this.createView();
+    console.log('INIT CART: ', this.consumer.cart, 'isConsumer: ', this.consumer.isConsumer);
   }
 
   createView(): void {

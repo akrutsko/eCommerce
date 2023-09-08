@@ -106,7 +106,7 @@ export class Main implements Observer {
 
   async showCart(): Promise<void> {
     const { Cart } = await import('../cart/cart');
-    this.mainView.append(new Cart().getElement());
+    this.mainView.append(new Cart(this.consumer).getElement());
   }
 
   async showCatalog(): Promise<void> {

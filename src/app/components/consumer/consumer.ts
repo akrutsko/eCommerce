@@ -1,5 +1,5 @@
 import { Client } from '@commercetools/sdk-client-v2';
-import { Customer } from '@commercetools/platform-sdk';
+import { Cart, Customer } from '@commercetools/platform-sdk';
 import {
   getPasswordClient,
   getToken,
@@ -25,6 +25,7 @@ import {
   setDefaultShippingAddress,
 } from '../../utils/api/api-consumer';
 import { Token } from '../../enums/token';
+import { createCart, getActiveCart } from '../../utils/api/api-cart';
 
 export class Consumer implements Observable {
   observers: Observer[] = [];
@@ -34,6 +35,8 @@ export class Consumer implements Observable {
   status: ConsumerClient;
 
   consumerData: Customer | null = null;
+
+  cart: Cart | null = null;
 
   get isConsumer(): boolean {
     return this.status === ConsumerClient.Consumer;
@@ -87,6 +90,13 @@ export class Consumer implements Observable {
       this.consumerData = response.body;
       this.status = ConsumerClient.Consumer;
     }
+
+    if (this.isConsumer) {
+      this.cart = (await getActiveCart(this.apiClient)).body;
+    } else {
+      this.cart = (await createCart(this.apiClient, { currency: 'USD' })).body;
+    }
+
     this.notify();
   }
 
