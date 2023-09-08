@@ -1,8 +1,33 @@
+import Swiper from 'swiper';
+import { Autoplay, Pagination } from 'swiper/modules';
+
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import './main.css';
+
+import ads1 from '../../../assets/img/advertisement/addv1.png';
+import ads2 from '../../../assets/img/advertisement/addv2.png';
+import ads3 from '../../../assets/img/advertisement/addv3.png';
+
+import summer from '../../../assets/img/categories/summer.png';
+import peak from '../../../assets/img/categories/peak.png';
+import ball from '../../../assets/img/categories/ball.png';
+import ice from '../../../assets/img/categories/ice.png';
+
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { Router } from '../../router/router';
 import { Consumer } from '../consumer/consumer';
 import { getProductIdBySlug } from '../../utils/api/api-product';
 import { Message } from '../../utils/message/toastify-message';
+import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
+import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
+
+const advertisement = [
+  { img: ads1, href: '/categories/water-sports-gear' },
+  { img: ads2, href: '/categories/summer-time' },
+  { img: ads3, href: '/categories/ice-adventures' },
+];
 
 export class Main implements Observer {
   router: Router;
@@ -82,13 +107,105 @@ export class Main implements Observer {
     }
   }
 
-  showMain(): void {
-    const mainMessage = new ElementCreator({
-      tag: 'div',
-      classes: 'text-[#DFDDDF] text-8xl sd:text-[265px] mg:text-[350px] font-bold drop-shadow-[5px_4px_0px_rgba(57,62,77,0.18)]',
-      text: 'Main page',
+  initAdsSwiper(wrapper: HTMLElement): void {
+    const swiperContainer = new ElementCreator({ tag: 'div', classes: 'swiper w-full rounded-xl overflow-hidden' });
+    const swiperWrapper = new ElementCreator({ tag: 'div', classes: 'swiper-wrapper' });
+
+    advertisement.forEach((ads) => {
+      const imgWrapper = new ElementAnchorCreator({ href: ads.href, classes: 'swiper-slide' });
+      imgWrapper.appendNode(new ElementImageCreator({ src: ads.img, alt: '', classes: 'w-full rounded-xl overflow-hidden' }));
+      swiperWrapper.appendNode(imgWrapper);
     });
-    this.mainView.append(mainMessage.getElement());
+
+    const swiperPagination = new ElementCreator({ tag: 'div', classes: 'swiper-pagination' });
+    swiperContainer.appendNode(swiperWrapper, swiperPagination.getElement());
+    wrapper.append(swiperContainer.getElement());
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const swiper = new Swiper('.swiper', {
+      modules: [Pagination, Autoplay],
+      slidesPerView: 1,
+      centerInsufficientSlides: true,
+      spaceBetween: 10,
+      direction: 'horizontal',
+      loop: true,
+      pagination: { el: '.swiper-pagination', clickable: true },
+      autoplay: {
+        delay: 5000,
+        disableOnInteraction: true,
+      },
+    });
+  }
+
+  showMain(): void {
+    this.initAdsSwiper(this.mainView);
+    const categories = new ElementCreator({ tag: 'div', classes: 'bg-[#F1EFEF] rounded-xl w-full p-4 md:p-6 mt-6' });
+
+    const categoriesTitleContainer = new ElementCreator({ tag: 'div', classes: 'my-4' });
+    const categoriesSubtitle = new ElementCreator({ tag: 'h5', classes: 'h5 opacity-60', text: 'find something you enjoy' });
+    const categoriesTitle = new ElementCreator({ tag: 'h2', classes: '', text: 'Categories' });
+    categoriesTitleContainer.appendNode(categoriesSubtitle, categoriesTitle);
+
+    const categoriesContainer = new ElementCreator({
+      tag: 'div',
+      classes: 'grid grid-rows-2 grid-cols-2 gap-2 md:gap-4 lg:gap-6',
+    });
+
+    const summerTime = new ElementAnchorCreator({
+      href: '/categories/summer-time',
+      classes: 'bg-primary-color p-6 md:p-0 rounded-xl flex',
+    });
+    const summerTimeImage = new ElementCreator({ tag: 'div', classes: 'self-end hidden md:block' });
+    summerTimeImage.appendNode(new ElementImageCreator({ src: summer, alt: '' }));
+    const summerTitle = new ElementCreator({
+      tag: 'div',
+      classes: 'self-center open-sans font-semibold w-full text-center text-[3vw] text-white',
+      text: 'Summer time',
+    });
+    summerTime.appendNode(summerTimeImage, summerTitle);
+
+    const peakClimber = new ElementAnchorCreator({
+      href: '/categories/peak-climber',
+      classes: 'bg-[#FFBA5A] p-6 md:p-0 rounded-xl flex',
+    });
+    const peakClimberImage = new ElementCreator({ tag: 'div', classes: 'hidden md:block' });
+    peakClimberImage.appendNode(new ElementImageCreator({ src: peak, alt: '', classes: 'h-full' }));
+    const peakClimberTitle = new ElementCreator({
+      tag: 'div',
+      classes: 'self-center open-sans font-semibold w-full text-center text-[3vw] text-white',
+      text: 'Peak climber',
+    });
+    peakClimber.appendNode(peakClimberTitle, peakClimberImage);
+
+    const ballGames = new ElementAnchorCreator({
+      href: '/categories/ball-games',
+      classes: 'bg-[#4C7EC9] p-6 md:p-0 rounded-xl flex',
+    });
+    const ballGamesImage = new ElementCreator({ tag: 'div', classes: 'self-end hidden md:block' });
+    ballGamesImage.appendNode(new ElementImageCreator({ src: ball, alt: '' }));
+    const ballGamesTitle = new ElementCreator({
+      tag: 'div',
+      classes: 'self-center open-sans font-semibold w-full text-center text-[3vw] text-white',
+      text: 'Ball games',
+    });
+    ballGames.appendNode(ballGamesTitle, ballGamesImage);
+
+    const iceAdventures = new ElementAnchorCreator({
+      href: '/categories/ice-adventures',
+      classes: 'bg-[#3D93A3] p-6 md:p-0 rounded-xl flex',
+    });
+    const iceAdventuresImage = new ElementCreator({ tag: 'div', classes: 'self-end hidden md:block' });
+    iceAdventuresImage.appendNode(new ElementImageCreator({ src: ice, alt: '' }));
+    const iceAdventuresTitle = new ElementCreator({
+      tag: 'div',
+      classes: 'self-center open-sans font-semibold w-full text-center text-[3vw] text-white',
+      text: 'Ice adventures',
+    });
+    iceAdventures.appendNode(iceAdventuresImage, iceAdventuresTitle);
+
+    categoriesContainer.appendNode(summerTime, peakClimber, ballGames, iceAdventures);
+    categories.appendNode(categoriesTitleContainer, categoriesContainer);
+    this.mainView.append(categories.getElement());
   }
 
   async showContact(): Promise<void> {

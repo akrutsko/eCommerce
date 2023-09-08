@@ -62,7 +62,7 @@ export class Header implements Observer {
     const spanBurger3 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     burger.appendNode(spanBurger1, spanBurger2, spanBurger3);
 
-    const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between mt-5 gap-8' });
+    const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between mt-5 gap-4 lg:gap-8' });
     const logo = new ElementAnchorCreator({ href: '/', html: logotype });
     this.listOfLinks.push(logo.getElement());
     const mobileMenu = new ElementCreator({
