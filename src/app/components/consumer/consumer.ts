@@ -120,6 +120,7 @@ export class Consumer implements Observable {
     clearTokenStore();
     this.apiClient = getPasswordClient(username, password);
     this.consumerData = await this.getConsumer();
+    this.cart = (await getActiveCart(this.apiClient)).body;
     localStorage.setItem(Token.Access, getToken());
     localStorage.setItem(Token.Refresh, getRefreshToken());
     this.status = ConsumerClient.Consumer;
