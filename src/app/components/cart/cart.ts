@@ -1,3 +1,5 @@
+import { LineItem } from '@commercetools/platform-sdk';
+
 import trash from '../../../assets/svg/trash.svg';
 import promo from '../../../assets/svg/promo.svg';
 import sadCart from '../../../assets/svg/sad-cart.svg';
@@ -7,19 +9,34 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
+import { Consumer } from '../consumer/consumer';
+import { Store } from '../../enums/store';
+import { getPrice } from '../../utils/price/price';
 
 export class Cart {
+  consumer: Consumer;
+
   cartView: ElementCreator<HTMLElement>;
 
-  constructor() {
+  constructor(consumer: Consumer) {
+    this.consumer = consumer;
     this.cartView = new ElementCreator({ tag: 'div', classes: 'bg-[#F1EFEF] rounded-xl w-full flex-1 p-5 md:p-10 relative' });
-    this.createView();
+
+    if (consumer.cart?.lineItems.length && Math.random() > 0.5) {
+      // TODO: remove after testing
+      this.createView();
+    } else {
+      this.showEmpty();
+    }
   }
 
   createView(): void {
     const title = new ElementCreator({ tag: 'h2', text: 'My shopping cart', classes: 'text-center' });
-    const cards = new ElementCreator({ tag: 'div', classes: 'flex grow-[99999] flex-col gap-4' });
-    cards.appendNode(this.createProductCard(), this.createProductCard(), this.createProductCard());
+    const cards = new ElementCreator({ tag: 'div', classes: 'flex grow-[9999] flex-col gap-4' });
+
+    this.consumer.cart?.lineItems.forEach((product) => {
+      cards.appendNode(this.createProductCard(product));
+    });
 
     const orderContainer = new ElementCreator({
       tag: 'div',
@@ -30,7 +47,7 @@ export class Cart {
       classes: 'flex flex-col gap-4 rounded-xl p-3 md:p-4 bg-white',
     });
     const optionsTitle = new ElementCreator({ tag: 'h3', classes: 'text-primary-color text-center', text: 'Options' });
-    const orderButton = new ElementButtonCreator({ classes: 'primary-button', text: 'order' });
+    const orderButton = new ElementButtonCreator({ classes: 'primary-button', text: 'order', disabled: true });
 
     const firstPartition = new ElementCreator({ tag: 'hr', classes: 'border-none bg-primary-color h-[1px] opacity-10' });
     const secondPartition = new ElementCreator({ tag: 'hr', classes: 'border-none bg-primary-color h-[1px] opacity-10' });
@@ -67,14 +84,14 @@ export class Cart {
 
     const promocodeTitleContainer = new ElementCreator({ tag: 'div', classes: 'flex items-center gap-2' });
     const promocodeSvg = new ElementCreator({ tag: 'div', html: promo });
-    const promocodeTitle = new ElementCreator({ tag: 'h4', classes: 'h4', text: 'use promocode' });
+    const promocodeTitle = new ElementCreator({ tag: 'h4', classes: 'h4', text: 'promocode' });
     promocodeTitleContainer.appendNode(promocodeSvg, promocodeTitle);
 
     const promocodeFormContainer = new ElementCreator({
       tag: 'div',
       classes: 'flex w-full justify-center items-center gap-2 hidden',
     });
-    const promocodeInput = new ElementInputCreator({ placeholder: 'promocode', classes: 'form-input max-w-sm py-1 px-3' });
+    const promocodeInput = new ElementInputCreator({ classes: 'form-input max-w-sm py-1 px-3' });
     const promocodeButton = new ElementButtonCreator({ classes: 'primary-button py-1', text: 'apply' });
     promocodeFormContainer.appendNode(promocodeInput, promocodeButton);
 
@@ -93,6 +110,10 @@ export class Cart {
 
     const clearButton = new ElementButtonCreator({ classes: 'secondary-button mt-4', text: 'clear cart' });
 
+    this.cartView.appendNode(title, content, clearButton);
+  }
+
+  showEmpty(): void {
     const emptyCartContainer = new ElementCreator({
       tag: 'div',
       classes: 'h-full flex flex-col-reverse md:flex-row justify-center items-center gap-8 mt-6',
@@ -115,11 +136,10 @@ export class Cart {
 
     emptyCartContent.appendNode(emptyCartText, emptyCartButton);
     emptyCartContainer.appendNode(sadCartSvg, emptyCartContent);
-
-    this.cartView.appendNode(title, content, clearButton);
+    this.cartView.appendNode(emptyCartContainer);
   }
 
-  createProductCard(): HTMLElement {
+  createProductCard(lineItem: LineItem): HTMLElement {
     const card = new ElementCreator({
       tag: 'div',
       classes: 'flex rounded-xl w-full gap-4 p-3 md:p-4 max-h-40 bg-white',
@@ -130,7 +150,7 @@ export class Cart {
       classes: 'max-w-[6rem] self-start border-2 rounded-lg border-solid border-[#fbedec] p-1 bg-bg-color',
     });
     const image = new ElementImageCreator({
-      src: 'https://38550347d6acc3d2547b-bce9cf09789a934b34c0d83d782a270f.ssl.cf3.rackcdn.com/2-e2suRwBD.png',
+      src: lineItem.variant.images?.[0].url || '',
       alt: '',
       classes: 'w-full h-full object-cover',
     });
@@ -140,42 +160,49 @@ export class Cart {
     const firstContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between gap-4' });
 
     const nameContainer = new ElementCreator({ tag: 'div' });
-    const subcategory = new ElementCreator({ tag: 'div', text: 'Aqua equipment', classes: 'text-xs opacity-60' });
-    const name = new ElementCreator({ tag: 'div', classes: 'h4 text-base', text: 'Trespass short wetsuit' });
-    nameContainer.appendNode(subcategory, name);
+    const name = new ElementCreator({ tag: 'div', classes: 'h4 text-base product-name', text: lineItem.name[Store.Language] });
+    nameContainer.appendNode(name);
 
     const prices = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-1 items-center' });
-    const mainPrice = new ElementCreator({
-      tag: 'div',
-      text: `$${11}`,
-      classes: 'price',
-    });
-    const discountPrice = new ElementCreator({
-      tag: 'div',
-      text: `$${5674}`,
-      classes: 'subtitle line-through',
-    });
 
-    prices.appendNode(mainPrice, discountPrice);
+    const firmPrice = lineItem.variant.prices?.[0].value;
+    if (firmPrice) {
+      const mainPrice = new ElementCreator({
+        tag: 'div',
+        text: `${getPrice(firmPrice)}`,
+        classes: 'text-primary-color',
+      });
+
+      const money = { ...firmPrice };
+      money.centAmount *= lineItem.quantity;
+
+      const totalPrice = new ElementCreator({
+        tag: 'div',
+        text: `${getPrice(money)}`,
+        classes: 'price',
+      });
+
+      prices.appendNode(mainPrice, totalPrice);
+    }
 
     const secondContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between gap-4' });
 
     const deleteButton = new ElementButtonCreator({ html: trash, classes: '' });
 
     firstContainer.appendNode(nameContainer, prices);
-    secondContainer.appendNode(this.createCounterCard(), deleteButton);
+    secondContainer.appendNode(this.createCounterCard(lineItem.quantity), deleteButton);
     cartDetails.appendNode(firstContainer, secondContainer);
     card.appendNode(imageContainer, cartDetails);
     return card.getElement();
   }
 
-  createCounterCard(): HTMLElement {
+  createCounterCard(quantity: number): HTMLElement {
     const container = new ElementCreator({ tag: 'div', classes: 'flex items-center gap-2' });
     const minusButton = new ElementButtonCreator({ classes: 'counter-button', text: '–', disabled: true });
     const plusButton = new ElementButtonCreator({ classes: 'counter-button', text: '+' });
     const counter = new ElementCreator({
       tag: 'span',
-      text: '1',
+      text: String(quantity),
       classes: 'h5 py-1 px-3 bg-primary-color rounded-lg text-white',
     });
     container.appendNode(minusButton, counter, plusButton);

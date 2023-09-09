@@ -3,6 +3,7 @@ import { Router } from '../../router/router';
 import { Consumer } from '../consumer/consumer';
 import { getProductIdBySlug } from '../../utils/api/api-product';
 import { Message } from '../../utils/message/toastify-message';
+import { getTreeOfCategories } from '../../utils/api/api-categories';
 
 export class Main implements Observer {
   router: Router;
@@ -26,6 +27,13 @@ export class Main implements Observer {
 
   update(rootRoute: string, pathRoutes: string[]): void {
     this.mainView.innerHTML = '';
+
+    if (rootRoute !== 'categories' && rootRoute !== 'product') {
+      if (pathRoutes.length !== 0) {
+        this.show404();
+        return;
+      }
+    }
 
     switch (rootRoute) {
       case '':
@@ -98,7 +106,7 @@ export class Main implements Observer {
 
   async showCart(): Promise<void> {
     const { Cart } = await import('../cart/cart');
-    this.mainView.append(new Cart().getElement());
+    this.mainView.append(new Cart(this.consumer).getElement());
   }
 
   async showCatalog(): Promise<void> {
@@ -127,6 +135,21 @@ export class Main implements Observer {
   }
 
   async showCategories(category: string): Promise<void> {
+    const categories = await getTreeOfCategories(this.consumer.apiClient).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+    if (!categories || !categories.length) return;
+
+    if (category) {
+      const isCategory = categories.find(
+        (cat) => cat.slug === category || cat.children?.filter((child) => child.slug === category).length,
+      );
+      if (!isCategory) {
+        this.show404();
+        return;
+      }
+    }
+
     const { Catalog } = await import('../catalog/catalog');
     this.mainView.append(new Catalog(this.router, this.consumer, category).getElement());
   }

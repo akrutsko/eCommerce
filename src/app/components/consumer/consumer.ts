@@ -1,13 +1,13 @@
 import { Client } from '@commercetools/sdk-client-v2';
-import { Customer } from '@commercetools/platform-sdk';
+import { Cart, Customer } from '@commercetools/platform-sdk';
 import {
-  getCtpClient,
   getPasswordClient,
   getToken,
   getTokenClient,
   clearTokenStore,
   getRefreshToken,
   getRefreshTokenClient,
+  getAnonymousClient,
 } from '../../utils/api/api-client';
 import { ConsumerClient } from '../../enums/consumer-client';
 import {
@@ -19,11 +19,13 @@ import {
   changePassword,
   changePersonal,
   getConsumer,
+  login,
   removeAddress,
   setDefaultBillingAddress,
   setDefaultShippingAddress,
 } from '../../utils/api/api-consumer';
 import { Token } from '../../enums/token';
+import { addToCart, createCart, getActiveCart, updateQuantity } from '../../utils/api/api-cart';
 
 export class Consumer implements Observable {
   observers: Observer[] = [];
@@ -34,12 +36,14 @@ export class Consumer implements Observable {
 
   consumerData: Customer | null = null;
 
+  cart: Cart | null = null;
+
   get isConsumer(): boolean {
     return this.status === ConsumerClient.Consumer;
   }
 
   constructor() {
-    this.apiClient = getCtpClient();
+    this.apiClient = getAnonymousClient();
     this.status = ConsumerClient.CommerceTools;
   }
 
@@ -86,6 +90,28 @@ export class Consumer implements Observable {
       this.consumerData = response.body;
       this.status = ConsumerClient.Consumer;
     }
+
+    if (this.isConsumer) {
+      this.cart = (await getActiveCart(this.apiClient)).body;
+    } else {
+      this.cart = (await createCart(this.apiClient, { currency: 'USD' })).body;
+    }
+
+    // TODO: remove
+    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')).body;
+    const lineItemId = this.cart.lineItems.find((lineItem) => lineItem.productId === '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')?.id;
+    if (lineItemId) {
+      this.cart = (await updateQuantity(this.apiClient, this.cart.version, this.cart.id, lineItemId, 2)).body;
+    }
+    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, 'a632302c-d91d-499b-b680-6d29a1f22c19')).body;
+    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '4dab7e57-080a-43a3-9fb3-a55d95b91c9d')).body;
+    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '19328891-6cc1-46b2-9618-fa4404a06f24')).body;
+    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '635e5297-6c5f-412b-831c-35d72f5f6c15')).body;
+    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '8be62abc-213e-4907-85d0-8cb43c59d6da')).body;
+    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '9715bf15-891c-497a-9135-efb2437f43f0')).body;
+    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, 'c57f7614-3912-4eaf-83c2-184d26b2df0b')).body;
+    // TODO: remove
+
     this.notify();
   }
 
@@ -95,6 +121,7 @@ export class Consumer implements Observable {
   }
 
   async logIn(username: string, password: string): Promise<void> {
+    await login(this.apiClient, { email: username, password });
     clearTokenStore();
     this.apiClient = getPasswordClient(username, password);
     this.consumerData = await this.getConsumer();
@@ -109,7 +136,7 @@ export class Consumer implements Observable {
     this.status = ConsumerClient.CommerceTools;
     this.consumerData = null;
     clearTokenStore();
-    this.apiClient = getCtpClient();
+    this.apiClient = getAnonymousClient();
     this.notify();
   }
 
