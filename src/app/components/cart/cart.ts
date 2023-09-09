@@ -12,6 +12,8 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { Consumer } from '../consumer/consumer';
 import { Store } from '../../enums/store';
 import { getPrice } from '../../utils/price/price';
+import { updateQuantity } from '../../utils/api/api-cart';
+import { Message } from '../../utils/message/toastify-message';
 
 export class Cart {
   consumer: Consumer;
@@ -22,8 +24,7 @@ export class Cart {
     this.consumer = consumer;
     this.cartView = new ElementCreator({ tag: 'div', classes: 'bg-[#F1EFEF] rounded-xl w-full flex-1 p-5 md:p-10 relative' });
 
-    if (consumer.cart?.lineItems.length && Math.random() > 0.5) {
-      // TODO: remove after testing
+    if (consumer.cart?.lineItems.length) {
       this.createView();
     } else {
       this.showEmpty();
@@ -34,8 +35,8 @@ export class Cart {
     const title = new ElementCreator({ tag: 'h2', text: 'My shopping cart', classes: 'text-center' });
     const cards = new ElementCreator({ tag: 'div', classes: 'flex grow-[9999] flex-col gap-4' });
 
-    this.consumer.cart?.lineItems.forEach((product) => {
-      cards.appendNode(this.createProductCard(product));
+    this.consumer.cart?.lineItems.forEach((lineItem) => {
+      cards.appendNode(this.createProductCard(lineItem));
     });
 
     const orderContainer = new ElementCreator({
@@ -140,10 +141,7 @@ export class Cart {
   }
 
   createProductCard(lineItem: LineItem): HTMLElement {
-    const card = new ElementCreator({
-      tag: 'div',
-      classes: 'flex rounded-xl w-full gap-4 p-3 md:p-4 max-h-40 bg-white',
-    });
+    const card = new ElementCreator({ tag: 'div', classes: 'flex rounded-xl w-full gap-4 p-3 md:p-4 max-h-40 bg-white' });
 
     const imageContainer = new ElementCreator({
       tag: 'div',
@@ -163,49 +161,100 @@ export class Cart {
     const name = new ElementCreator({ tag: 'div', classes: 'h4 text-base product-name', text: lineItem.name[Store.Language] });
     nameContainer.appendNode(name);
 
-    const prices = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-1 items-center' });
+    const prices = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-1 items-end' });
+    const mainPrice = new ElementCreator({ tag: 'div', classes: 'text-primary-color' });
+    const totalPrice = new ElementCreator({ tag: 'div', classes: 'price' });
+    prices.appendNode(mainPrice, totalPrice);
 
-    const firmPrice = lineItem.variant.prices?.[0].value;
-    if (firmPrice) {
-      const mainPrice = new ElementCreator({
-        tag: 'div',
-        text: `${getPrice(firmPrice)}`,
-        classes: 'text-primary-color',
-      });
+    const setPrices = (cardItem = lineItem): void => {
+      const price = cardItem.variant.prices?.[0].discounted?.value || cardItem.variant.prices?.[0].value;
+      if (price) {
+        mainPrice.setContent(`${getPrice(price)}`);
 
-      const money = { ...firmPrice };
-      money.centAmount *= lineItem.quantity;
-
-      const totalPrice = new ElementCreator({
-        tag: 'div',
-        text: `${getPrice(money)}`,
-        classes: 'price',
-      });
-
-      prices.appendNode(mainPrice, totalPrice);
-    }
+        const money = { ...price };
+        money.centAmount *= cardItem.quantity;
+        totalPrice.setContent(`${getPrice(money)}`);
+      }
+    };
+    setPrices();
 
     const secondContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between gap-4' });
 
-    const deleteButton = new ElementButtonCreator({ html: trash, classes: '' });
+    const deleteButton = new ElementButtonCreator({ html: trash });
 
     firstContainer.appendNode(nameContainer, prices);
-    secondContainer.appendNode(this.createCounterCard(lineItem.quantity), deleteButton);
+    secondContainer.appendNode(this.createCounterCard(lineItem, setPrices), deleteButton);
     cartDetails.appendNode(firstContainer, secondContainer);
     card.appendNode(imageContainer, cartDetails);
     return card.getElement();
   }
 
-  createCounterCard(quantity: number): HTMLElement {
+  createCounterCard(lineItem: LineItem, setPrices: (lineItem?: LineItem) => void): HTMLElement {
     const container = new ElementCreator({ tag: 'div', classes: 'flex items-center gap-2' });
-    const minusButton = new ElementButtonCreator({ classes: 'counter-button', text: '–', disabled: true });
-    const plusButton = new ElementButtonCreator({ classes: 'counter-button', text: '+' });
+    const minusButton = new ElementButtonCreator({
+      classes: 'counter-button',
+      text: '–',
+      disabled: lineItem.quantity === 1,
+    }).getElement();
+    const plusButton = new ElementButtonCreator({ classes: 'counter-button', text: '+' }).getElement();
     const counter = new ElementCreator({
       tag: 'span',
-      text: String(quantity),
+      text: `${lineItem.quantity}`,
       classes: 'h5 py-1 px-3 bg-primary-color rounded-lg text-white',
     });
     container.appendNode(minusButton, counter, plusButton);
+
+    let item = this.consumer.cart?.lineItems.find((li) => li.id === lineItem.id);
+
+    minusButton.addEventListener('click', async () => {
+      if (!this.consumer.cart || !item) return;
+
+      minusButton.disabled = true;
+
+      try {
+        const res = await updateQuantity(
+          this.consumer.apiClient,
+          this.consumer.cart?.version,
+          this.consumer.cart?.id,
+          item.id,
+          item.quantity - 1,
+        );
+        this.consumer.cart = res.body;
+        item = this.consumer.cart?.lineItems.find((li) => li.id === lineItem.id);
+        counter.setContent(`${item?.quantity}`);
+        setPrices(item);
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
+      } finally {
+        minusButton.disabled = item?.quantity === 1;
+      }
+    });
+
+    plusButton.addEventListener('click', async () => {
+      if (!this.consumer.cart || !item) return;
+
+      plusButton.disabled = true;
+
+      try {
+        const res = await updateQuantity(
+          this.consumer.apiClient,
+          this.consumer.cart?.version,
+          this.consumer.cart?.id,
+          item.id,
+          item.quantity + 1,
+        );
+        this.consumer.cart = res.body;
+        item = this.consumer.cart?.lineItems.find((li) => li.id === lineItem.id);
+        counter.setContent(`${item?.quantity}`);
+        setPrices(item);
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
+      } finally {
+        minusButton.disabled = item?.quantity === 1;
+        plusButton.disabled = false;
+      }
+    });
+
     return container.getElement();
   }
 

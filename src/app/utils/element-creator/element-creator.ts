@@ -45,6 +45,11 @@ export class ElementCreator<T extends HTMLElement> {
     return this;
   }
 
+  public setContent(content: string): this {
+    this.element.textContent = content;
+    return this;
+  }
+
   // eslint-disable-next-line @typescript-eslint/array-type
   public appendNode(...nodes: Array<HTMLElement | ElementCreator<HTMLElement>>): this {
     nodes.forEach((node) => {
