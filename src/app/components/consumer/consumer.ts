@@ -94,9 +94,9 @@ export class Consumer implements Observable {
 
     // TODO: remove when RSS-ECOMM-4_02 is implemented
     if (this.isConsumer) {
-      if (this.cart) {
+      try {
         this.cart = (await getActiveCart(this.apiClient)).body;
-      } else {
+      } catch {
         this.cart = (await createCart(this.apiClient, { currency: 'USD' })).body;
       }
     } else {
@@ -126,7 +126,9 @@ export class Consumer implements Observable {
     this.consumerData = await this.getConsumer();
     try {
       this.cart = (await getActiveCart(this.apiClient)).body;
+      console.log(this.cart);
     } catch {
+      console.log('cathed');
       this.cart = null;
     }
     localStorage.setItem(Token.Access, getToken());
