@@ -169,7 +169,7 @@ export class Header implements Observer {
     const categories = await getTreeOfCategories(this.consumer.apiClient).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
-    if (!categories) return;
+    if (!categories || !categories.length) return;
 
     this.categories = categories;
     this.categories.forEach((category) => {

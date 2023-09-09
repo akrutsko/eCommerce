@@ -10,7 +10,6 @@ export function getCategories(client: Client): Promise<ClientResponse<CategoryPa
 
 export async function getTreeOfCategories(client: Client): Promise<CategoryTree[]> {
   const categoriesResponse = await getCategories(client);
-  if (!categoriesResponse) return [];
   const categoriesFromApi = categoriesResponse.body.results;
   const categories: CategoryTree[] = [];
   categoriesFromApi.forEach((category) => {
