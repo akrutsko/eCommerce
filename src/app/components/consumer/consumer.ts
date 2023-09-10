@@ -44,7 +44,7 @@ export class Consumer implements Observable {
 
   constructor() {
     this.apiClient = getAnonymousClient();
-    this.status = ConsumerClient.CommerceTools;
+    this.status = ConsumerClient.Anonymous;
   }
 
   subscribe(observer: Observer): void {
@@ -81,6 +81,7 @@ export class Consumer implements Observable {
             localStorage.setItem(Token.Access, getToken());
           } catch {
             localStorage.removeItem(Token.Refresh);
+            this.apiClient = getAnonymousClient();
           }
         }
       }
@@ -91,26 +92,24 @@ export class Consumer implements Observable {
       this.status = ConsumerClient.Consumer;
     }
 
+    // TODO: remove when RSS-ECOMM-4_02 is implemented
     if (this.isConsumer) {
-      this.cart = (await getActiveCart(this.apiClient)).body;
+      try {
+        this.cart = (await getActiveCart(this.apiClient)).body;
+      } catch {
+        this.cart = (await createCart(this.apiClient, { currency: 'USD' })).body;
+      }
     } else {
       this.cart = (await createCart(this.apiClient, { currency: 'USD' })).body;
+      this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')).body;
+      const lineItemId = this.cart.lineItems.find((lineItem) => lineItem.productId === '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')
+        ?.id;
+      if (lineItemId) {
+        this.cart = (await updateQuantity(this.apiClient, this.cart.version, this.cart.id, lineItemId, 10)).body;
+      }
+      this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '9715bf15-891c-497a-9135-efb2437f43f0')).body;
+      this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, 'a632302c-d91d-499b-b680-6d29a1f22c19')).body;
     }
-
-    // TODO: remove
-    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')).body;
-    const lineItemId = this.cart.lineItems.find((lineItem) => lineItem.productId === '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')?.id;
-    if (lineItemId) {
-      this.cart = (await updateQuantity(this.apiClient, this.cart.version, this.cart.id, lineItemId, 2)).body;
-    }
-    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, 'a632302c-d91d-499b-b680-6d29a1f22c19')).body;
-    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '4dab7e57-080a-43a3-9fb3-a55d95b91c9d')).body;
-    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '19328891-6cc1-46b2-9618-fa4404a06f24')).body;
-    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '635e5297-6c5f-412b-831c-35d72f5f6c15')).body;
-    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '8be62abc-213e-4907-85d0-8cb43c59d6da')).body;
-    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '9715bf15-891c-497a-9135-efb2437f43f0')).body;
-    this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, 'c57f7614-3912-4eaf-83c2-184d26b2df0b')).body;
-    // TODO: remove
 
     this.notify();
   }
@@ -125,6 +124,11 @@ export class Consumer implements Observable {
     clearTokenStore();
     this.apiClient = getPasswordClient(username, password);
     this.consumerData = await this.getConsumer();
+    try {
+      this.cart = (await getActiveCart(this.apiClient)).body;
+    } catch {
+      this.cart = null;
+    }
     localStorage.setItem(Token.Access, getToken());
     localStorage.setItem(Token.Refresh, getRefreshToken());
     this.status = ConsumerClient.Consumer;
@@ -133,7 +137,7 @@ export class Consumer implements Observable {
 
   logOut(): void {
     localStorage.clear();
-    this.status = ConsumerClient.CommerceTools;
+    this.status = ConsumerClient.Anonymous;
     this.consumerData = null;
     clearTokenStore();
     this.apiClient = getAnonymousClient();
