@@ -130,6 +130,8 @@ export class Cart {
   }
 
   showEmpty(): void {
+    this.getElement().innerHTML = '';
+
     const emptyCartContainer = new ElementCreator({
       tag: 'div',
       classes: 'h-full flex flex-col-reverse md:flex-row justify-center items-center gap-8 mt-6',
@@ -207,6 +209,9 @@ export class Cart {
       } catch {
         new Message('Something went wrong. Try later.', 'error').showMessage();
         deleteButton.disabled = false;
+      }
+      if (!this.consumer.cart.lineItems.length) {
+        this.showEmpty();
       }
     });
 
