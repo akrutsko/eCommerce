@@ -117,7 +117,8 @@ export class Cart {
       if (!this.consumer.cart) return;
       clearButton.disabled = true;
       try {
-        this.consumer.cart = (await deleteCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id)).body;
+        await deleteCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id);
+        this.consumer.cart = null;
         this.showEmpty();
       } catch {
         new Message('Something went wrong. Try later.', 'error').showMessage();
