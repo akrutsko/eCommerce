@@ -12,7 +12,7 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { Consumer } from '../consumer/consumer';
 import { Store } from '../../enums/store';
 import { getPrice } from '../../utils/price/price';
-import { updateQuantity } from '../../utils/api/api-cart';
+import { removeFromCart, updateQuantity } from '../../utils/api/api-cart';
 import { Message } from '../../utils/message/toastify-message';
 
 export class Cart {
@@ -180,7 +180,20 @@ export class Cart {
 
     const secondContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between gap-4' });
 
-    const deleteButton = new ElementButtonCreator({ html: trash });
+    const deleteButton = new ElementButtonCreator({ html: trash }).getElement();
+    deleteButton.addEventListener('click', async () => {
+      if (!this.consumer.cart) return;
+      deleteButton.disabled = true;
+      try {
+        this.consumer.cart = (
+          await removeFromCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, lineItem.id)
+        ).body;
+        card.getElement().remove();
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
+        deleteButton.disabled = false;
+      }
+    });
 
     firstContainer.appendNode(nameContainer, prices);
     secondContainer.appendNode(this.createCounterCard(lineItem, setPrices), deleteButton);
