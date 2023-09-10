@@ -109,13 +109,15 @@ export class Cart {
     });
     content.appendNode(cards, orderContainer);
 
-    const clearButton = new ElementButtonCreator({ classes: 'secondary-button mt-4', text: 'clear cart' }).getElement();
+    const clearButton = new ElementButtonCreator({
+      classes: 'secondary-button mt-4 self-start',
+      text: 'clear cart',
+    }).getElement();
     const clearCart = async (): Promise<void> => {
       if (!this.consumer.cart) return;
       clearButton.disabled = true;
       try {
         this.consumer.cart = (await deleteCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id)).body;
-        this.getElement().innerHTML = '';
         this.showEmpty();
       } catch {
         new Message('Something went wrong. Try later.', 'error').showMessage();
@@ -126,7 +128,8 @@ export class Cart {
       await clearCart();
     });
 
-    this.cartView.appendNode(title, content, clearButton);
+    cards.appendNode(clearButton);
+    this.cartView.appendNode(title, content);
   }
 
   showEmpty(): void {
