@@ -12,7 +12,7 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { Consumer } from '../consumer/consumer';
 import { Store } from '../../enums/store';
 import { getPrice } from '../../utils/price/price';
-import { removeFromCart, updateQuantity } from '../../utils/api/api-cart';
+import { deleteCart, removeFromCart, updateQuantity } from '../../utils/api/api-cart';
 import { Message } from '../../utils/message/toastify-message';
 
 export class Cart {
@@ -109,7 +109,22 @@ export class Cart {
     });
     content.appendNode(cards, orderContainer);
 
-    const clearButton = new ElementButtonCreator({ classes: 'secondary-button mt-4', text: 'clear cart' });
+    const clearButton = new ElementButtonCreator({ classes: 'secondary-button mt-4', text: 'clear cart' }).getElement();
+    const clearCart = async (): Promise<void> => {
+      if (!this.consumer.cart) return;
+      clearButton.disabled = true;
+      try {
+        this.consumer.cart = (await deleteCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id)).body;
+        this.getElement().innerHTML = '';
+        this.showEmpty();
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
+        clearButton.disabled = false;
+      }
+    };
+    clearButton.addEventListener('click', async () => {
+      await clearCart();
+    });
 
     this.cartView.appendNode(title, content, clearButton);
   }
@@ -223,15 +238,10 @@ export class Cart {
       if (!this.consumer.cart || !item) return;
 
       try {
-        const res = await updateQuantity(
-          this.consumer.apiClient,
-          this.consumer.cart?.version,
-          this.consumer.cart?.id,
-          item.id,
-          quantity,
-        );
-        this.consumer.cart = res.body;
-        item = this.consumer.cart?.lineItems.find((li) => li.id === lineItem.id);
+        this.consumer.cart = (
+          await updateQuantity(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, item.id, quantity)
+        ).body;
+        item = this.consumer.cart.lineItems.find((li) => li.id === lineItem.id);
         counter.setContent(`${item?.quantity}`);
         setPrices(item);
       } catch {
