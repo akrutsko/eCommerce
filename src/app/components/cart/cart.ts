@@ -231,7 +231,7 @@ export class Cart {
 
       minusButton.disabled = true;
       await updateCounter(item.quantity - 1);
-      minusButton.disabled = item?.quantity === 1;
+      minusButton.disabled = item.quantity === 1;
     });
 
     plusButton.addEventListener('click', async () => {
@@ -239,7 +239,7 @@ export class Cart {
 
       plusButton.disabled = true;
       await updateCounter(item.quantity + 1);
-      minusButton.disabled = item?.quantity === 1;
+      minusButton.disabled = item.quantity === 1;
       plusButton.disabled = false;
     });
 
