@@ -206,10 +206,8 @@ export class Cart {
 
     let item = this.consumer.cart?.lineItems.find((li) => li.id === lineItem.id);
 
-    minusButton.addEventListener('click', async () => {
+    const updateCounter = async (quantity: number): Promise<void> => {
       if (!this.consumer.cart || !item) return;
-
-      minusButton.disabled = true;
 
       try {
         const res = await updateQuantity(
@@ -217,7 +215,7 @@ export class Cart {
           this.consumer.cart?.version,
           this.consumer.cart?.id,
           item.id,
-          item.quantity - 1,
+          quantity,
         );
         this.consumer.cart = res.body;
         item = this.consumer.cart?.lineItems.find((li) => li.id === lineItem.id);
@@ -225,34 +223,24 @@ export class Cart {
         setPrices(item);
       } catch {
         new Message('Something went wrong. Try later.', 'error').showMessage();
-      } finally {
-        minusButton.disabled = item?.quantity === 1;
       }
+    };
+
+    minusButton.addEventListener('click', async () => {
+      if (!item) return;
+
+      minusButton.disabled = true;
+      await updateCounter(item.quantity - 1);
+      minusButton.disabled = item?.quantity === 1;
     });
 
     plusButton.addEventListener('click', async () => {
-      if (!this.consumer.cart || !item) return;
+      if (!item) return;
 
       plusButton.disabled = true;
-
-      try {
-        const res = await updateQuantity(
-          this.consumer.apiClient,
-          this.consumer.cart?.version,
-          this.consumer.cart?.id,
-          item.id,
-          item.quantity + 1,
-        );
-        this.consumer.cart = res.body;
-        item = this.consumer.cart?.lineItems.find((li) => li.id === lineItem.id);
-        counter.setContent(`${item?.quantity}`);
-        setPrices(item);
-      } catch {
-        new Message('Something went wrong. Try later.', 'error').showMessage();
-      } finally {
-        minusButton.disabled = item?.quantity === 1;
-        plusButton.disabled = false;
-      }
+      await updateCounter(item.quantity + 1);
+      minusButton.disabled = item?.quantity === 1;
+      plusButton.disabled = false;
     });
 
     return container.getElement();
