@@ -34,11 +34,6 @@ export class Cart {
 
   createView(): void {
     const title = new ElementCreator({ tag: 'h2', text: 'My shopping cart', classes: 'text-center' });
-    const cards = new ElementCreator({ tag: 'div', classes: 'flex grow-[9999] flex-col gap-4' });
-
-    this.consumer.cart?.lineItems.forEach((lineItem) => {
-      cards.appendNode(this.createProductCard(lineItem));
-    });
 
     const orderContainer = new ElementCreator({
       tag: 'div',
@@ -56,18 +51,46 @@ export class Cart {
 
     const subtotalContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between gap-4' });
     const subtotalTitle = new ElementCreator({ tag: 'h5', classes: 'h5 opacity-60', text: 'Subtotal:' });
-    const subtotalPrice = new ElementCreator({ tag: 'h5', classes: 'h5 text-primary-color', text: '$256,46' });
+    const subtotalPrice = new ElementCreator({ tag: 'h5', classes: 'h5 text-primary-color' });
     subtotalContainer.appendNode(subtotalTitle, subtotalPrice);
 
     const discountContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between gap-4' });
     const discountTitle = new ElementCreator({ tag: 'h5', classes: 'h5 opacity-60', text: 'Discount:' });
-    const discountPrice = new ElementCreator({ tag: 'h5', classes: 'h5 text-primary-color', text: '-$19.80' });
+    const discountPrice = new ElementCreator({ tag: 'h5', classes: 'h5 text-primary-color' });
     discountContainer.appendNode(discountTitle, discountPrice);
 
     const totalContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between items-end gap-4' });
     const totalTitle = new ElementCreator({ tag: 'h4', classes: 'h4', text: 'Total amount:' });
-    const totalPrice = new ElementCreator({ tag: 'h4', classes: 'h4 text-primary-color', text: ' $236,66' });
+    const totalPrice = new ElementCreator({ tag: 'h4', classes: 'h4 text-primary-color' });
     totalContainer.appendNode(totalTitle, totalPrice);
+
+    const setTotal = (): void => {
+      if (!this.consumer.cart) return;
+
+      const total = this.consumer.cart.totalPrice;
+      const subtotalCents = this.consumer.cart.lineItems.reduce((acc, item) => {
+        const price = item.variant.prices?.[0].discounted?.value.centAmount || item.variant.prices?.[0].value.centAmount || 0;
+        return acc + price * item.quantity;
+      }, 0);
+
+      const subtotal = { ...total };
+      subtotal.centAmount = subtotalCents;
+
+      const discount = { ...total };
+      discount.centAmount = total.centAmount - subtotal.centAmount;
+
+      if (total) {
+        subtotalPrice.setContent(`${getPrice(subtotal)}`);
+        discountPrice.setContent(`${getPrice(discount)}`);
+        totalPrice.setContent(`${getPrice(total)}`);
+      }
+    };
+    setTotal();
+
+    const cards = new ElementCreator({ tag: 'div', classes: 'flex grow-[9999] flex-col gap-4' });
+    this.consumer.cart?.lineItems.forEach((lineItem) => {
+      cards.appendNode(this.createProductCard(lineItem, setTotal));
+    });
 
     options.appendNode(
       optionsTitle,
@@ -89,10 +112,7 @@ export class Cart {
     const promocodeTitle = new ElementCreator({ tag: 'h4', classes: 'h4', text: 'promocode' });
     promocodeTitleContainer.appendNode(promocodeSvg, promocodeTitle);
 
-    const promocodeFormContainer = new ElementCreator({
-      tag: 'div',
-      classes: 'flex w-full justify-center items-center gap-2 hidden',
-    });
+    const promocodeFormContainer = new ElementCreator({ tag: 'div', classes: 'flex w-full justify-center items-center gap-2' });
     const promocodeInput = new ElementInputCreator({ classes: 'form-input max-w-sm py-1 px-3' });
     const promocodeButton = new ElementButtonCreator({ classes: 'primary-button py-1', text: 'apply' });
     promocodeFormContainer.appendNode(promocodeInput, promocodeButton);
@@ -168,7 +188,7 @@ export class Cart {
     this.cartView.appendNode(emptyCartContainer);
   }
 
-  createProductCard(lineItem: LineItem): HTMLElement {
+  createProductCard(lineItem: LineItem, setTotal: () => void): HTMLElement {
     const card = new ElementCreator({ tag: 'div', classes: 'flex rounded-xl w-full gap-4 p-3 md:p-4 max-h-40 bg-white' });
 
     const imageContainer = new ElementCreator({
@@ -217,6 +237,7 @@ export class Cart {
           await removeFromCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, lineItem.id)
         ).body;
         card.getElement().remove();
+        setTotal();
       } catch {
         new Message('Something went wrong. Try later.', 'error').showMessage();
         deleteButton.disabled = false;
@@ -227,13 +248,13 @@ export class Cart {
     });
 
     firstContainer.appendNode(nameContainer, prices);
-    secondContainer.appendNode(this.createCounterCard(lineItem, setPrices), deleteButton);
+    secondContainer.appendNode(this.createCounterCard(lineItem, setPrices, setTotal), deleteButton);
     cartDetails.appendNode(firstContainer, secondContainer);
     card.appendNode(imageContainer, cartDetails);
     return card.getElement();
   }
 
-  createCounterCard(lineItem: LineItem, setPrices: (lineItem?: LineItem) => void): HTMLElement {
+  createCounterCard(lineItem: LineItem, setPrices: (lineItem?: LineItem) => void, setTotal: () => void): HTMLElement {
     const container = new ElementCreator({ tag: 'div', classes: 'flex items-center gap-2' });
     const minusButton = new ElementButtonCreator({
       classes: 'counter-button',
@@ -260,6 +281,7 @@ export class Cart {
         item = this.consumer.cart.lineItems.find((li) => li.id === lineItem.id);
         counter.setContent(`${item?.quantity}`);
         setPrices(item);
+        setTotal();
       } catch {
         new Message('Something went wrong. Try later.', 'error').showMessage();
       }
