@@ -38,7 +38,7 @@
 
   p {
     font-family: var(--secondary-font-family);
-    @apply text-lg md:text-xl font-normal;
+    @apply text-sm md:text-lg font-normal;
   }
 
   .link {
