@@ -1,28 +1,27 @@
-import Swiper from 'swiper';
 import { Autoplay, Pagination } from 'swiper/modules';
+import Swiper from 'swiper';
 
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import './main.css';
 
-import ads1 from '../../../assets/img/advertisement/addv1.png';
-import ads2 from '../../../assets/img/advertisement/addv2.png';
-import ads3 from '../../../assets/img/advertisement/addv3.png';
+import ads1 from '../../../assets/img/advertisement/ads1.png';
+import ads2 from '../../../assets/img/advertisement/ads2.png';
+import ads3 from '../../../assets/img/advertisement/ads3.png';
 
 import summer from '../../../assets/img/categories/summer.png';
 import peak from '../../../assets/img/categories/peak.png';
 import ball from '../../../assets/img/categories/ball.png';
 import ice from '../../../assets/img/categories/ice.png';
 
-import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { Router } from '../../router/router';
 import { Consumer } from '../consumer/consumer';
-import { getProductIdBySlug } from '../../utils/api/api-product';
 import { Message } from '../../utils/message/toastify-message';
+import { getProductIdBySlug } from '../../utils/api/api-product';
+import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
-import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 
 const advertisement = [
   { img: ads1, href: '/categories/water-sports-gear' },
@@ -211,13 +210,7 @@ export class Main implements Observer {
     categoriesContainer.appendNode(summerTime, peakClimber, ballGames, iceAdventures);
     categories.appendNode(categoriesTitleContainer, categoriesContainer);
 
-    const promoButton = new ElementButtonCreator({
-      text: 'Promo codes',
-      classes:
-        'flex h-16 w-16 md:h-24 md:w-24 lg:h-28 lg:w-28 md:text-xl items-center justify-center rounded-full p-4 primary-button fixed z-20 right-4 md:right-6 bottom-36',
-    });
-
-    this.mainView.append(categories.getElement(), promoButton.getElement());
+    this.mainView.append(categories.getElement());
   }
 
   async showContact(): Promise<void> {
