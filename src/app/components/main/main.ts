@@ -22,6 +22,7 @@ import { getProductIdBySlug } from '../../utils/api/api-product';
 import { Message } from '../../utils/message/toastify-message';
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
+import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 
 const advertisement = [
   { img: ads1, href: '/categories/water-sports-gear' },
@@ -141,7 +142,7 @@ export class Main implements Observer {
     this.initAdsSwiper(this.mainView);
     const categories = new ElementCreator({ tag: 'div', classes: 'bg-[#F1EFEF] rounded-xl w-full p-4 md:p-6 mt-6' });
 
-    const categoriesTitleContainer = new ElementCreator({ tag: 'div', classes: 'my-4' });
+    const categoriesTitleContainer = new ElementCreator({ tag: 'div', classes: 'text-center my-4 sm:text-start' });
     const categoriesSubtitle = new ElementCreator({ tag: 'h5', classes: 'h5 opacity-60', text: 'find something you enjoy' });
     const categoriesTitle = new ElementCreator({ tag: 'h2', classes: '', text: 'Categories' });
     categoriesTitleContainer.appendNode(categoriesSubtitle, categoriesTitle);
@@ -153,7 +154,8 @@ export class Main implements Observer {
 
     const summerTime = new ElementAnchorCreator({
       href: '/categories/summer-time',
-      classes: 'bg-primary-color p-6 md:p-0 rounded-xl flex',
+      classes:
+        'bg-primary-color p-6 md:p-0 rounded-xl flex hover:drop-shadow-[3px_5px_5px_rgba(219,76,67,0.40)] hover:scale-[1.01] transition-all',
     });
     const summerTimeImage = new ElementCreator({ tag: 'div', classes: 'self-end hidden md:block' });
     summerTimeImage.appendNode(new ElementImageCreator({ src: summer, alt: '' }));
@@ -166,7 +168,8 @@ export class Main implements Observer {
 
     const peakClimber = new ElementAnchorCreator({
       href: '/categories/peak-climber',
-      classes: 'bg-[#FFBA5A] p-6 md:p-0 rounded-xl flex',
+      classes:
+        'bg-[#FFBA5A] p-6 md:p-0 rounded-xl flex hover:drop-shadow-[3px_5px_5px_rgba(226,164,78,0.40)] hover:scale-[1.01] transition-all',
     });
     const peakClimberImage = new ElementCreator({ tag: 'div', classes: 'hidden md:block' });
     peakClimberImage.appendNode(new ElementImageCreator({ src: peak, alt: '', classes: 'h-full' }));
@@ -179,7 +182,8 @@ export class Main implements Observer {
 
     const ballGames = new ElementAnchorCreator({
       href: '/categories/ball-games',
-      classes: 'bg-[#4C7EC9] p-6 md:p-0 rounded-xl flex',
+      classes:
+        'bg-[#4C7EC9] p-6 md:p-0 rounded-xl flex hover:drop-shadow-[3px_5px_5px_rgba(76,126,201,0.40)] hover:scale-[1.01] transition-all',
     });
     const ballGamesImage = new ElementCreator({ tag: 'div', classes: 'self-end hidden md:block' });
     ballGamesImage.appendNode(new ElementImageCreator({ src: ball, alt: '' }));
@@ -192,7 +196,8 @@ export class Main implements Observer {
 
     const iceAdventures = new ElementAnchorCreator({
       href: '/categories/ice-adventures',
-      classes: 'bg-[#3D93A3] p-6 md:p-0 rounded-xl flex',
+      classes:
+        'bg-[#3D93A3] p-6 md:p-0 rounded-xl flex hover:drop-shadow-[3px_5px_5px_rgba(61,147,163,0.40)] hover:scale-[1.01] transition-all',
     });
     const iceAdventuresImage = new ElementCreator({ tag: 'div', classes: 'self-end hidden md:block' });
     iceAdventuresImage.appendNode(new ElementImageCreator({ src: ice, alt: '' }));
@@ -205,7 +210,14 @@ export class Main implements Observer {
 
     categoriesContainer.appendNode(summerTime, peakClimber, ballGames, iceAdventures);
     categories.appendNode(categoriesTitleContainer, categoriesContainer);
-    this.mainView.append(categories.getElement());
+
+    const promoButton = new ElementButtonCreator({
+      text: 'Promo codes',
+      classes:
+        'flex h-16 w-16 md:h-24 md:w-24 lg:h-28 lg:w-28 md:text-xl items-center justify-center rounded-full p-4 primary-button fixed z-20 right-4 md:right-6 bottom-36',
+    });
+
+    this.mainView.append(categories.getElement(), promoButton.getElement());
   }
 
   async showContact(): Promise<void> {
