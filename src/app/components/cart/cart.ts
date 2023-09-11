@@ -14,6 +14,7 @@ import { Store } from '../../enums/store';
 import { getPrice } from '../../utils/price/price';
 import { deleteCart, removeFromCart, updateQuantity } from '../../utils/api/api-cart';
 import { Message } from '../../utils/message/toastify-message';
+import { Confirmation } from '../../utils/confirmation/confirmation';
 
 export class Cart {
   consumer: Consumer;
@@ -109,24 +110,30 @@ export class Cart {
     });
     content.appendNode(cards, orderContainer);
 
-    const clearButton = new ElementButtonCreator({
-      classes: 'secondary-button mt-4 self-start',
-      text: 'clear cart',
-    }).getElement();
     const clearCart = async (): Promise<void> => {
       if (!this.consumer.cart) return;
-      clearButton.disabled = true;
       try {
         await deleteCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id);
         this.consumer.cart = null;
         this.showEmpty();
       } catch {
         new Message('Something went wrong. Try later.', 'error').showMessage();
-        clearButton.disabled = false;
       }
     };
+
+    const clearButton = new ElementButtonCreator({
+      classes: 'secondary-button mt-4 self-start',
+      text: 'clear cart',
+    }).getElement();
     clearButton.addEventListener('click', async () => {
-      await clearCart();
+      clearButton.disabled = true;
+      const confirmation = new Confirmation(clearCart);
+      confirmation.showConfirmation(
+        `Watch out, champ! Clearing your cart is like resetting all your workouts.
+        If you're ready to start over, click 'ok'.
+        If not, click 'cancel' and let's get back to your shopping training!`,
+      );
+      clearButton.disabled = false;
     });
 
     cards.appendNode(clearButton);
