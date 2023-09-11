@@ -1,4 +1,5 @@
 import './aboutus.css';
+
 import member1 from '../../../assets/img/svetik1.png';
 import member2 from '../../../assets/img/aliaksei1.png';
 import member3 from '../../../assets/img/sveta1.png';
@@ -8,10 +9,10 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 import { ElementInputCreator } from '../../utils/element-creator/element-input-creator';
 import { ElementLabelCreator } from '../../utils/element-creator/element-label-creator';
-import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
-
+import { contributorsList, membersList } from './members';
 import { Member } from '../../interfaces/member';
-import { membersList } from './members';
+import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
+import { MemberModal } from '../modal/member-modal';
 
 export class AboutUs {
   aboutUsView: ElementCreator<HTMLElement>;
@@ -58,6 +59,12 @@ export class AboutUs {
 
     firstMember.appendNode(firstMemberImageContainer, firstMemberDescription);
 
+    firstMember.setHandler('click', () => {
+      const modal = new MemberModal(membersList[0]);
+      document.body.append(modal.getElement());
+      modal.showModal();
+    });
+
     const secondMember = new ElementCreator({
       tag: 'div',
       classes: 'flex flex-col order-first md:order-none gap-2 items-center scale-[1.1] cursor-pointer',
@@ -76,6 +83,11 @@ export class AboutUs {
     );
 
     secondMember.appendNode(secondMemberImageContainer, secondMemberDescription);
+    secondMember.setHandler('click', () => {
+      const modal = new MemberModal(membersList[1]);
+      document.body.append(modal.getElement());
+      modal.showModal();
+    });
 
     const thirdMember = new ElementCreator({
       tag: 'div',
@@ -95,6 +107,11 @@ export class AboutUs {
     );
 
     thirdMember.appendNode(thirdMemberImageContainer, thirdMemberDescription);
+    thirdMember.setHandler('click', () => {
+      const modal = new MemberModal(membersList[2]);
+      document.body.append(modal.getElement());
+      modal.showModal();
+    });
 
     membersContent.appendNode(firstMember, secondMember, thirdMember);
     members.appendNode(membersTitle, membersContent);
@@ -134,11 +151,11 @@ export class AboutUs {
     const tabs = new ElementCreator({ tag: 'ul', classes: 'w-full flex justify-between items-center gap-16' });
     const contributionContent = new ElementCreator({
       tag: 'div',
-      classes: 'bg-[#F1EFEF] p-6 mt-2 rounded-lg',
+      classes: 'bg-[#F1EFEF] p-6 mt-2 rounded-xl',
       text: 'We value the contributions and unique skills of each member and believe that the diversity of our talents makes us stronger. Everyone plays a key role in creating our software masterpieces. We strive to create an environment where everyone can realize their potential and contribute to common goals. We encourage ideas and initiatives, respect different points of view, and listen carefully to everyone. Mutual respect and trust are the foundation of our team, and we take pride in the way we work together to create something amazing.',
     });
 
-    membersList.forEach((member) => tabs.appendNode(this.createTab(member, contributionContent.getElement())));
+    contributorsList.forEach((member) => tabs.appendNode(this.createTab(member, contributionContent.getElement())));
 
     contribution.appendNode(contributionTitle, tabs, contributionContent);
 
@@ -199,7 +216,9 @@ export class AboutUs {
 
     tab.setHandler('click', () => {
       const contentField = content;
-      contentField.innerText = member.contribution;
+      if (typeof member.text === 'string') {
+        contentField.innerText = member.text;
+      }
     });
 
     tab.appendNode(tabInput, tabLabel);
