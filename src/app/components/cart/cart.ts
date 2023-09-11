@@ -12,8 +12,9 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { Consumer } from '../consumer/consumer';
 import { Store } from '../../enums/store';
 import { getPrice } from '../../utils/price/price';
-import { updateQuantity } from '../../utils/api/api-cart';
+import { deleteCart, removeFromCart, updateQuantity } from '../../utils/api/api-cart';
 import { Message } from '../../utils/message/toastify-message';
+import { Confirmation } from '../../utils/confirmation/confirmation';
 
 export class Cart {
   consumer: Consumer;
@@ -109,12 +110,39 @@ export class Cart {
     });
     content.appendNode(cards, orderContainer);
 
-    const clearButton = new ElementButtonCreator({ classes: 'secondary-button mt-4', text: 'clear cart' });
+    const clearCart = async (): Promise<void> => {
+      if (!this.consumer.cart) return;
+      try {
+        await deleteCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id);
+        this.consumer.cart = null;
+        this.showEmpty();
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
+      }
+    };
 
-    this.cartView.appendNode(title, content, clearButton);
+    const clearButton = new ElementButtonCreator({
+      classes: 'secondary-button mt-4 self-start',
+      text: 'clear cart',
+    }).getElement();
+    clearButton.addEventListener('click', async () => {
+      clearButton.disabled = true;
+      const confirmation = new Confirmation(clearCart);
+      confirmation.showConfirmation(
+        `Watch out, champ! Clearing your cart is like resetting all your workouts.
+        If you're ready to start over, click 'ok'.
+        If not, click 'cancel' and let's get back to your shopping training!`,
+      );
+      clearButton.disabled = false;
+    });
+
+    cards.appendNode(clearButton);
+    this.cartView.appendNode(title, content);
   }
 
   showEmpty(): void {
+    this.getElement().innerHTML = '';
+
     const emptyCartContainer = new ElementCreator({
       tag: 'div',
       classes: 'h-full flex flex-col-reverse md:flex-row justify-center items-center gap-8 mt-6',
@@ -180,7 +208,23 @@ export class Cart {
 
     const secondContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between gap-4' });
 
-    const deleteButton = new ElementButtonCreator({ html: trash });
+    const deleteButton = new ElementButtonCreator({ html: trash }).getElement();
+    deleteButton.addEventListener('click', async () => {
+      if (!this.consumer.cart) return;
+      deleteButton.disabled = true;
+      try {
+        this.consumer.cart = (
+          await removeFromCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, lineItem.id)
+        ).body;
+        card.getElement().remove();
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
+        deleteButton.disabled = false;
+      }
+      if (!this.consumer.cart.lineItems.length) {
+        this.showEmpty();
+      }
+    });
 
     firstContainer.appendNode(nameContainer, prices);
     secondContainer.appendNode(this.createCounterCard(lineItem, setPrices), deleteButton);
@@ -210,15 +254,10 @@ export class Cart {
       if (!this.consumer.cart || !item) return;
 
       try {
-        const res = await updateQuantity(
-          this.consumer.apiClient,
-          this.consumer.cart?.version,
-          this.consumer.cart?.id,
-          item.id,
-          quantity,
-        );
-        this.consumer.cart = res.body;
-        item = this.consumer.cart?.lineItems.find((li) => li.id === lineItem.id);
+        this.consumer.cart = (
+          await updateQuantity(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, item.id, quantity)
+        ).body;
+        item = this.consumer.cart.lineItems.find((li) => li.id === lineItem.id);
         counter.setContent(`${item?.quantity}`);
         setPrices(item);
       } catch {
