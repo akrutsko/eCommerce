@@ -31,16 +31,18 @@ export const membersList: Member[] = [
     name: 'Svitlana Moiseienko',
     img: bio1,
     text: {
-      bio: 'Svitlana began her journey into the world of web development at the age of 17. Her story started when she accidentally interviewed for an internship in social media management. Once there, she was surprised to learn that they needed a website. Despite her lack of experience in the field, she created her first website in a matter of weeks. This was the beginning of her passion for web development. Svitlana fell so deeply in love with the world of web development that she made the decision to drop out of management school and dedicate herself to learning web development. She is constantly absorbing new knowledge and seeking new challenges.',
+      bio: 'Svitlana began her journey into the world of web development at the age of 17. Her story started when she accidentally interviewed for an internship in social media management. Once there, she was surprised to learn that they needed a website. Despite her lack of experience in the field, she created her first website in a matter of weeks. This was the beginning of her passion for web development. Svitlana fell so deeply in love with the world of web development that she made the decision to drop out of management school and dedicate herself to learning web development.',
       hobby:
-        'Svitlana is a true nomad, constantly on the move and exploring the world without knowing where she will end up tomorrow. Her lifestyle inspires her and gives her a unique perspective on design and development. In her spare time, she indulges her creative side by writing poetry and playing the ukulele. These hobbies give her a distinct style and creative approach to her work.',
+        'Svitlana is a true nomad, constantly on the move and exploring the world without knowing where she will end up tomorrow. In her spare time, she indulges her creative side by writing poetry and playing the ukulele. These hobbies give her a distinct style and creative approach to her work.',
       ultimate: 'Record keeping, Figma master',
     },
+    github: 'https://github.com/Luchiweb',
   },
   {
     name: 'Aliaksei Krutsko',
     img: bio2,
     text: { bio: '', hobby: '', ultimate: 'perfectionist, attention to details, finds bugs where there were none.' },
+    github: 'https://github.com/akrutsko',
   },
   {
     name: 'Sviatlana Yurusava',
@@ -50,5 +52,6 @@ export const membersList: Member[] = [
       hobby: 'In her free time, Sviatlana enjoys reading and spending time with friends.',
       ultimate: 'Business logic',
     },
+    github: 'https://github.com/Sviatl',
   },
 ];

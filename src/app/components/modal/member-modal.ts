@@ -2,6 +2,7 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
 import { Modal } from './modal';
 import { Member } from '../../interfaces/member';
+import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 
 export class MemberModal extends Modal {
   member: Member;
@@ -39,7 +40,17 @@ export class MemberModal extends Modal {
     const utility = new ElementCreator({ tag: 'div', classes: 'text-secondary-color', text: this.member.text.ultimate });
     utilityContainer.appendNode(utilityTitle, utility);
 
-    info.appendNode(bioContainer, hobbyContainer, utilityContainer);
+    const githubContainer = new ElementCreator({ tag: 'div' });
+    const githubTitle = new ElementCreator({ tag: 'h3', classes: 'text-primary-color', text: 'GitHub' });
+    const username = this.member.github?.split('/').pop();
+    const github = new ElementAnchorCreator({
+      href: this.member.github || '',
+      classes: 'text-secondary-color',
+      text: username,
+    });
+    githubContainer.appendNode(githubTitle, github);
+
+    info.appendNode(bioContainer, hobbyContainer, utilityContainer, githubContainer);
     container.appendNode(imageContainer, info);
 
     this.getView().appendNode(container);
