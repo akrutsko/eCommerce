@@ -4,7 +4,6 @@ import Swiper from 'swiper';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import './main.css';
 
 import ads1 from '../../../assets/img/advertisement/ads1.png';
 import ads2 from '../../../assets/img/advertisement/ads2.png';
@@ -27,7 +26,7 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 const advertisement = [
   { img: ads1, href: '/categories/water-sports-gear' },
   { img: ads2, href: '/categories/summer-time' },
-  { img: ads3, href: '/categories/ice-adventures' },
+  { img: ads3, href: '/categories' },
 ];
 
 export class Main implements Observer {
