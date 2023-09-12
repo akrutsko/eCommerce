@@ -106,8 +106,9 @@ export class Catalog {
         if (endOfPage) {
           this.loading.showLoader();
           this.currentPage += 1;
-          this.createCards();
-          this.loading.hideLoader();
+          this.createCards().then(() => {
+            this.loading.hideLoader();
+          });
         }
       }, 1000);
     });
@@ -488,6 +489,7 @@ export class Catalog {
 
   clearCards(): void {
     this.cardsView.getElement().innerHTML = '';
+    this.currentPage = 1;
   }
 
   async createCards(filter?: string | string[], sort?: string, search?: string): Promise<void> {
