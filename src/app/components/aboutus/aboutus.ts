@@ -203,22 +203,25 @@ export class AboutUs {
     const tab = new ElementCreator({ tag: 'li' });
     const tabInput = new ElementInputCreator({
       type: 'radio',
-      classes: `peer/${member.name} sr-only`,
+      classes: 'sr-only tab-input',
       name: 'tab',
       id: member.name,
     });
     const tabLabel = new ElementLabelCreator({
       for: member.name,
-      classes: `block max-w-xs cursor-pointer rounded-full p-4 peer-checked/${member.name}:bg-zinc-100`,
+      classes: 'block max-w-xs cursor-pointer rounded-full p-4',
     });
 
-    tabLabel.appendNode(new ElementImageCreator({ src: member.img, alt: '' }));
+    tabLabel.appendNode(new ElementImageCreator({ src: member.img, alt: `${member.name}` }));
 
     tab.setHandler('click', () => {
       const contentField = content;
       if (typeof member.text === 'string') {
         contentField.innerText = member.text;
       }
+
+      const inputs = this.getElement().querySelectorAll('input');
+      inputs.forEach((input) => input.nextElementSibling?.classList.toggle('bg-zinc-100', input.checked));
     });
 
     tab.appendNode(tabInput, tabLabel);
