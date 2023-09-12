@@ -64,6 +64,11 @@ export class Header implements Observer {
 
     const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between mt-5 gap-8' });
     const logo = new ElementAnchorCreator({ href: '/', html: logotype });
+    logo.setHandler('click', (e) => {
+      e.preventDefault();
+      window.history.pushState({}, '', '/');
+      this.router.handleLocation();
+    });
     this.listOfLinks.push(logo.getElement());
     const mobileMenu = new ElementCreator({
       tag: 'div',
