@@ -17,6 +17,7 @@ import { getPrice } from '../../utils/price/price';
 import { getProductProjections, getProductTypes } from '../../utils/api/api-product';
 import { Consumer } from '../consumer/consumer';
 import { CategoryTree } from '../../interfaces/category';
+import { Loading } from '../loader/loader';
 
 export class Catalog {
   router: Router;
@@ -38,6 +39,8 @@ export class Catalog {
   selectedFiltersView: ElementCreator<HTMLElement>;
 
   breadcrumbsBlock: ElementCreator<HTMLElement>;
+
+  loading: Loading;
 
   categories: Category[] = [];
 
@@ -70,6 +73,7 @@ export class Catalog {
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top gap-2' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex gap-2 flex-wrap md:max-w-[55%]' });
+    this.loading = new Loading();
     this.cardsView = new ElementCreator({
       tag: 'div',
       classes: 'w-full gap-4 products',
@@ -100,8 +104,10 @@ export class Catalog {
       this.throttle(() => {
         const endOfPage = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
         if (endOfPage) {
+          this.loading.showLoader();
           this.currentPage += 1;
           this.createCards();
+          this.loading.hideLoader();
         }
       }, 1000);
     });
