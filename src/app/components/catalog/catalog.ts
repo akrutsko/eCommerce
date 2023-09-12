@@ -55,6 +55,14 @@ export class Catalog {
 
   currentSearch = '';
 
+  currentPage = 1;
+
+  cardIncrease = 8;
+
+  cardLimit = 0;
+
+  throttleTimer = false;
+
   constructor(router: Router, consumer: Consumer, subCategory?: string) {
     this.router = router;
     this.consumer = consumer;
@@ -75,11 +83,34 @@ export class Catalog {
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] w-0 grow max-w-[90px]',
     });
     this.createView(subCategory);
+    this.createInfiniteScroll();
   }
 
-  sort(fieldName: String, method: String): void {
+  throttle(callback: Function, time: number): void {
+    if (this.throttleTimer) return;
+    this.throttleTimer = true;
+    setTimeout(() => {
+      callback();
+      this.throttleTimer = false;
+    }, time);
+  }
+
+  createInfiniteScroll(): void {
+    window.addEventListener('scroll', () => {
+      this.throttle(() => {
+        const endOfPage = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+        if (endOfPage) {
+          this.currentPage += 1;
+          this.createCards();
+        }
+      }, 1000);
+    });
+  }
+
+  async sort(fieldName: String, method: String): Promise<void> {
     const sortingString = `${fieldName} ${method}`;
-    this.createCards(this.currentFilters, sortingString, this.currentSearch);
+    this.clearCards();
+    await this.createCards(this.currentFilters, sortingString, this.currentSearch);
     this.currentSortingString = sortingString;
   }
 
@@ -358,7 +389,7 @@ export class Catalog {
     });
   }
 
-  applyFilters(): void {
+  async applyFilters(): Promise<void> {
     const filterArray: string[] = [];
     this.selectedFiltersView.getElement().innerHTML = '';
 
@@ -422,8 +453,8 @@ export class Catalog {
     if (this.currentCategoryFilter) {
       filterArray.push(this.currentCategoryFilter);
     }
-
-    this.createCards(filterArray, this.currentSortingString, this.currentSearch);
+    this.clearCards();
+    await this.createCards(filterArray, this.currentSortingString, this.currentSearch);
   }
 
   resetFilters(): void {
@@ -437,7 +468,7 @@ export class Catalog {
     this.applyFilters();
   }
 
-  search(word: string): void {
+  async search(word: string): Promise<void> {
     this.checkBoxFilterViews.forEach((element) => {
       const checkBox = element.getElement();
       checkBox.checked = false;
@@ -445,11 +476,15 @@ export class Catalog {
     this.selectedCheckBoxFilters = [];
     this.minPriceFilterView.getElement().value = '';
     this.maxPriceFilterView.getElement().value = '';
-    this.createCards([], this.currentSortingString, word);
+    this.clearCards();
+    await this.createCards([], this.currentSortingString, word);
+  }
+
+  clearCards(): void {
+    this.cardsView.getElement().innerHTML = '';
   }
 
   async createCards(filter?: string | string[], sort?: string, search?: string): Promise<void> {
-    this.cardsView.getElement().innerHTML = '';
     let curFilter = filter;
     if (this.currentCategoryFilter) {
       if (curFilter instanceof Array) {
@@ -462,13 +497,21 @@ export class Catalog {
         curFilter = this.currentCategoryFilter;
       }
     }
-    const productsResponse = await getProductProjections(this.consumer.apiClient, 50, 0, curFilter, sort, search).catch(() => {
+    const productsResponse = await getProductProjections(
+      this.consumer.apiClient,
+      this.cardIncrease,
+      (this.currentPage - 1) * this.cardIncrease,
+      curFilter,
+      sort,
+      search,
+    ).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!productsResponse) return;
 
     this.products = productsResponse.body.results;
-    this.countOfResultsView.getElement().textContent = `${this.products.length} results`;
+    this.cardLimit = productsResponse.body.total || 0;
+    this.countOfResultsView.getElement().textContent = `${this.cardLimit} results`;
     this.products.forEach((product) => {
       this.addProduct(product);
     });
