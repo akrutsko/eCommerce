@@ -12,7 +12,7 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { Consumer } from '../consumer/consumer';
 import { Store } from '../../enums/store';
 import { getPrice } from '../../utils/price/price';
-import { deleteCart, removeFromCart, updateQuantity } from '../../utils/api/api-cart';
+import { addDiscount, deleteCart, removeDiscount, removeFromCart, updateQuantity } from '../../utils/api/api-cart';
 import { Message } from '../../utils/message/toastify-message';
 import { Confirmation } from '../../utils/confirmation/confirmation';
 
@@ -113,15 +113,63 @@ export class Cart {
     promocodeTitleContainer.appendNode(promocodeSvg, promocodeTitle);
 
     const promocodeFormContainer = new ElementCreator({ tag: 'div', classes: 'flex w-full justify-center items-center gap-2' });
-    const promocodeInput = new ElementInputCreator({ classes: 'form-input max-w-sm py-1 px-3' });
-    const promocodeButton = new ElementButtonCreator({ classes: 'primary-button py-1', text: 'apply' });
-    promocodeFormContainer.appendNode(promocodeInput, promocodeButton);
+    const promocodeInput = new ElementInputCreator({ classes: 'form-input max-w-sm py-1 px-3' }).getElement();
+    const applyButton = new ElementButtonCreator({ classes: 'primary-button py-1', text: 'apply' });
+    const discardButton = new ElementButtonCreator({ classes: 'primary-button py-1 hidden', text: 'discard' });
+    promocodeFormContainer.appendNode(promocodeInput, applyButton, discardButton);
 
     promocodeContainer.appendNode(promocodeTitleContainer, promocodeFormContainer);
     orderContainer.appendNode(options, promocodeContainer);
 
-    promocodeContainer.setHandler('click', () => {
-      promocodeFormContainer.getElement().classList.toggle('hidden');
+    applyButton.setHandler('click', async () => {
+      const code = promocodeInput.value;
+      if (!this.consumer.cart || !code) return;
+
+      try {
+        this.consumer.cart = (
+          await addDiscount(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, code)
+        ).body;
+        new Message('The discount code is successfully applied.', 'info').showMessage();
+        applyButton.addClass('hidden');
+        discardButton.removeClass('hidden');
+        promocodeInput.disabled = true;
+        setTotal();
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message) {
+            new Message(err.message, 'error').showMessage();
+          } else {
+            new Message('Something went wrong. Try later.', 'error').showMessage();
+          }
+        }
+      }
+    });
+    discardButton.setHandler('click', async () => {
+      if (!this.consumer.cart) return;
+
+      try {
+        this.consumer.cart = (
+          await removeDiscount(
+            this.consumer.apiClient,
+            this.consumer.cart.version,
+            this.consumer.cart.id,
+            this.consumer.cart.discountCodes[0].discountCode,
+          )
+        ).body;
+        discardButton.addClass('hidden');
+        applyButton.removeClass('hidden');
+        promocodeInput.value = '';
+        promocodeInput.disabled = false;
+        setTotal();
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message) {
+            new Message(err.message, 'error').showMessage();
+          } else {
+            new Message('Something went wrong. Try later.', 'error').showMessage();
+          }
+        }
+      }
     });
 
     const content = new ElementCreator({
