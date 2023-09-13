@@ -25,8 +25,8 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 
 const advertisement = [
   { img: ads1, href: '/categories/water-sports-gear' },
-  { img: ads2, href: '/categories/summer-time' },
-  { img: ads3, href: '/categories' },
+  { img: ads2, href: '/catalog' },
+  { img: ads3, href: '/categories/peak-climber' },
 ];
 
 export class Main implements Observer {
