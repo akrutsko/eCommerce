@@ -24,12 +24,11 @@ dialog::backdrop {
   backdrop-filter: blur(2px);
 }
 
-dialog::-webkit-scrollbar {
-  width: 0.4em;
+::-webkit-scrollbar {
+  width: 6px;
 }
 
-dialog::-webkit-scrollbar-thumb {
-  background: hsla(4, 68%, 56%, 0.658);
+::-webkit-scrollbar-thumb {
+  background: rgba(219, 87, 67, 0.4);
   border-radius: 100vw;
-  height: 10px;
 }

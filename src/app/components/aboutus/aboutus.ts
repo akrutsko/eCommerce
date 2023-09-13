@@ -33,7 +33,7 @@ export class AboutUs {
     });
     heading.appendNode(headingTeamName, headingTitle, headingSubtitle);
 
-    const members = new ElementCreator({ tag: 'div', classes: '' });
+    const members = new ElementCreator({ tag: 'div', classes: 'overflow-hidden md:overflow-visible' });
     const membersTitle = new ElementCreator({ tag: 'h2', classes: 'text-center mb-8', text: 'Our members' });
     const membersContent = new ElementCreator({
       tag: 'div',
