@@ -72,7 +72,7 @@ export class Header implements Observer {
     this.listOfLinks.push(logo.getElement());
     const mobileMenu = new ElementCreator({
       tag: 'div',
-      classes: 'mobile-menu md:w-full md:max-w-full max-w-[390px] hidden justify-between md:flex gap-8',
+      classes: 'mobile-menu md:w-full md:max-w-full max-w-[390px] hidden justify-between md:flex gap-4 lg:gap-8',
     });
     const bg = new ElementCreator({ tag: 'div', classes: 'bg hidden' });
     nav.appendNode(logo, mobileMenu, burger, bg);
