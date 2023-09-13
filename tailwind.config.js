@@ -13,6 +13,9 @@ module.exports = {
         '--main-font-family': 'Ubuntu, sans-serif',
         '--secondary-font-family': '"Open Sans", sans-serif',
       },
+      fontSize: {
+        us: ['0.65rem', '0.65rem'],
+      },
     },
   },
   plugins: [],

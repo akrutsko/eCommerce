@@ -66,7 +66,7 @@ export class Header implements Observer {
     const logo = new ElementAnchorCreator({ href: '/', html: logotype });
     logo.setHandler('click', (e) => {
       e.preventDefault();
-      window.history.pushState({}, '', '/');
+      window.history.pushState({}, '', logo.getElement().href);
       this.router.handleLocation();
     });
     this.listOfLinks.push(logo.getElement());
