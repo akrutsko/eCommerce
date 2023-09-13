@@ -60,7 +60,7 @@ export class PersonalTab extends AccordionTab {
 
     const inputsContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-col justify-between gap-2 md:flex-row md:flex-nowrap md:gap-4',
+      classes: 'flex flex-col justify-between lg:flex-row md:flex-nowrap gap-4',
     });
 
     this.nameInputContainer.addLabel('name');
