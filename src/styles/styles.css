@@ -23,3 +23,13 @@ label {
 dialog::backdrop {
   backdrop-filter: blur(2px);
 }
+
+dialog::-webkit-scrollbar {
+  width: 0.4em;
+}
+
+dialog::-webkit-scrollbar-thumb {
+  background: hsla(4, 68%, 56%, 0.658);
+  border-radius: 100vw;
+  height: 10px;
+}

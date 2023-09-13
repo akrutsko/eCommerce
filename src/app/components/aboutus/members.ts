@@ -41,7 +41,12 @@ export const membersList: Member[] = [
   {
     name: 'Aliaksei Krutsko',
     img: bio2,
-    text: { bio: '', hobby: '', ultimate: 'perfectionist, attention to details, finds bugs where there were none.' },
+    text: {
+      bio: '',
+      hobby:
+        'Alexei enjoys watching TV shows because they tell interesting stories, and playing computer games is a challenge for him to excel at while enjoying online games with his friends.',
+      ultimate: 'perfectionist, attention to details, finds bugs where there were none.',
+    },
     github: 'https://github.com/akrutsko',
   },
   {
