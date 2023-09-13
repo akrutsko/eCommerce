@@ -34,7 +34,7 @@ export class Cart {
 
   createView(): void {
     const title = new ElementCreator({ tag: 'h2', text: 'My shopping cart', classes: 'text-center' });
-    
+
     const orderContainer = new ElementCreator({
       tag: 'div',
       classes: 'flex flex-col gap-4 w-full md:w-fit self-start grow basis-72',
@@ -237,7 +237,6 @@ export class Cart {
   }
 
   createProductCard(lineItem: LineItem, setTotal: () => void): HTMLElement {
-
     const card = new ElementCreator({ tag: 'div', classes: 'flex rounded-xl w-full gap-4 p-3 md:p-4 max-h-40 bg-white' });
 
     const imageContainer = new ElementCreator({
@@ -302,7 +301,6 @@ export class Cart {
     card.appendNode(imageContainer, cartDetails);
     return card.getElement();
   }
-
 
   createCounterCard(lineItem: LineItem, setPrices: (lineItem?: LineItem) => void, setTotal: () => void): HTMLElement {
     const container = new ElementCreator({ tag: 'div', classes: 'flex items-center gap-2' });
