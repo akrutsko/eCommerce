@@ -167,6 +167,17 @@ export class Catalog {
     secondBlock.appendNode(this.selectedFiltersView, resultSortingView);
 
     const thirdBlock = new ElementCreator({ tag: 'div', classes: 'catalog gap-4' });
+    const categoriesPanel = new ElementCreator({
+      tag: 'div',
+      classes: 'w-full h-fit filters gap-2 bg-bg-color border-1 rounded-lg border-solid border-[#fbedec] p-4',
+    });
+    const categoriesPanelHeader = new ElementCreator({
+      tag: 'h4',
+      text: 'Categories',
+      classes: 'h4',
+    });
+    categoriesPanel.appendNode(categoriesPanelHeader);
+
     const filtersPanel = new ElementCreator({
       tag: 'div',
       classes: 'w-full h-fit filters gap-2 bg-bg-color border-1 rounded-lg border-solid border-[#fbedec] p-4',
@@ -178,9 +189,13 @@ export class Catalog {
     });
     filtersPanel.appendNode(filtersPanelHeader);
 
-    this.createFiltersView(filtersPanel);
+    await this.addCategories(categoriesPanel);
+    await this.createFiltersView(filtersPanel);
 
-    thirdBlock.appendNode(filtersPanel, this.cardsView);
+    const options = new ElementCreator({ tag: 'div', classes: 'flex flex-col w-full h-fit gap-2' });
+
+    options.appendNode(categoriesPanel, filtersPanel);
+    thirdBlock.appendNode(options, this.cardsView);
 
     this.catalogView.appendNode(firstBlock, secondBlock, thirdBlock);
   }
@@ -228,8 +243,7 @@ export class Catalog {
     const elementFilterName = new ElementCreator({
       tag: 'h5',
       text: 'Price',
-      classes:
-        'flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-primary-color cursor-pointer',
+      classes: 'flex items-center gap-2 h5 text-base text-primary-color cursor-pointer',
     });
     const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDownSVG });
     elementFilterName.appendNode(elementFilterArrow);
@@ -262,8 +276,7 @@ export class Catalog {
     const elementFilterName = new ElementCreator({
       tag: 'h5',
       text: filterName,
-      classes:
-        'w-full flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-primary-color cursor-pointer',
+      classes: 'w-full flex items-center text-base gap-2 h5 text-primary-color cursor-pointer',
     });
     const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDownSVG });
     elementFilterName.appendNode(elementFilterArrow);
@@ -316,6 +329,47 @@ export class Catalog {
       }
     });
     return uniqueAttributes;
+  }
+
+  async addCategories(container: ElementCreator<HTMLElement>): Promise<void> {
+    const categories = await getTreeOfCategories(this.consumer.apiClient).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+    if (!categories || !categories.length) return;
+
+    categories.forEach((category) => {
+      const elementAccordion = new ElementCreator({
+        tag: 'div',
+        classes: 'w-full',
+      });
+      const elementCategoriesName = new ElementCreator({ tag: 'div', classes: 'flex gap-2 items-center' });
+      const aElementCategoriesName = new ElementAnchorCreator({
+        href: `/categories/${category.slug}`,
+        text: category.name,
+        classes: 'h5 text-base text-primary-color cursor-pointer',
+      });
+      const elementCategoriesArrow = new ElementCreator({ tag: 'div', classes: 'relative cursor-pointer', html: arrowDownSVG });
+      elementCategoriesName.appendNode(aElementCategoriesName, elementCategoriesArrow);
+
+      const elementCategoriesPanel = new ElementCreator({ tag: 'div', classes: 'w-full hidden' });
+      elementAccordion.appendNode(elementCategoriesName, elementCategoriesPanel);
+
+      category.children?.forEach((child) => {
+        const elementCategoriesWrapper = new ElementCreator({ tag: 'div' });
+        const aCategoryContent = new ElementAnchorCreator({
+          href: `/categories/${child.slug}`,
+          classes: 'h5 text-sm',
+          text: `${child.name}`,
+        });
+        elementCategoriesWrapper.appendNode(aCategoryContent);
+        elementCategoriesPanel.appendNode(elementCategoriesWrapper);
+      });
+      container.appendNode(elementAccordion);
+      elementCategoriesArrow.setHandler('click', () => {
+        elementCategoriesArrow.toggleClass('arrow-active');
+        elementCategoriesPanel.toggleClass('hidden');
+      });
+    });
   }
 
   async createFiltersView(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
