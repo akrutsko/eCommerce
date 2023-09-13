@@ -25,7 +25,7 @@ import {
   setDefaultShippingAddress,
 } from '../../utils/api/api-consumer';
 import { Token } from '../../enums/token';
-import { addToCart, createCart, getActiveCart, updateQuantity } from '../../utils/api/api-cart';
+import { addToCart, createCart, getActiveCart } from '../../utils/api/api-cart';
 
 export class Consumer implements Observable {
   observers: Observer[] = [];
@@ -101,14 +101,9 @@ export class Consumer implements Observable {
       }
     } else {
       this.cart = (await createCart(this.apiClient, { currency: 'USD' })).body;
-      this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')).body;
-      const lineItemId = this.cart.lineItems.find((lineItem) => lineItem.productId === '8ef892fb-cd1f-47e1-8a7f-c38c0ac57f27')
-        ?.id;
-      if (lineItemId) {
-        this.cart = (await updateQuantity(this.apiClient, this.cart.version, this.cart.id, lineItemId, 10)).body;
-      }
+      this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '473b53dc-d1b4-4495-8d24-9af25d71a8ff')).body;
+      this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '4ce336b4-1207-4288-b9ac-93f774deed71')).body;
       this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '9715bf15-891c-497a-9135-efb2437f43f0')).body;
-      this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, 'a632302c-d91d-499b-b680-6d29a1f22c19')).body;
     }
 
     this.notify();
