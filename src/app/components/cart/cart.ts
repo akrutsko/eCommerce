@@ -316,7 +316,6 @@ export class Cart {
           await removeFromCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, lineItem.id)
         ).body;
         card.getElement().remove();
-        // TODO: notify other cards that this card is removed and discount must be recalculated
         updatePrices();
         setTotal();
       } catch {
