@@ -120,6 +120,11 @@ export class Main implements Observer {
 
     advertisement.forEach((ads) => {
       const imgWrapper = new ElementAnchorCreator({ href: ads.href, classes: 'swiper-slide' });
+      imgWrapper.setHandler('click', (e) => {
+        e.preventDefault();
+        window.history.pushState({}, '', imgWrapper.getElement().href);
+        this.router.handleLocation();
+      });
       imgWrapper.appendNode(new ElementImageCreator({ src: ads.img, alt: '', classes: 'w-full rounded-xl overflow-hidden' }));
       swiperWrapper.appendNode(imgWrapper);
     });
@@ -146,6 +151,7 @@ export class Main implements Observer {
 
   showMain(): void {
     this.initAdsSwiper(this.mainView);
+    const links = [];
     const categories = new ElementCreator({ tag: 'div', classes: 'bg-[#F1EFEF] rounded-xl w-full p-4 md:p-6 mt-6' });
 
     const categoriesTitleContainer = new ElementCreator({ tag: 'div', classes: 'text-center my-4 sm:text-start' });
@@ -171,6 +177,7 @@ export class Main implements Observer {
       text: 'Summer time',
     });
     summerTime.appendNode(summerTimeImage, summerTitle);
+    links.push(summerTime);
 
     const peakClimber = new ElementAnchorCreator({
       href: '/categories/peak-climber',
@@ -185,6 +192,7 @@ export class Main implements Observer {
       text: 'Peak climber',
     });
     peakClimber.appendNode(peakClimberTitle, peakClimberImage);
+    links.push(peakClimber);
 
     const ballGames = new ElementAnchorCreator({
       href: '/categories/ball-games',
@@ -199,6 +207,7 @@ export class Main implements Observer {
       text: 'Ball games',
     });
     ballGames.appendNode(ballGamesTitle, ballGamesImage);
+    links.push(ballGames);
 
     const iceAdventures = new ElementAnchorCreator({
       href: '/categories/ice-adventures',
@@ -213,9 +222,18 @@ export class Main implements Observer {
       text: 'Ice adventures',
     });
     iceAdventures.appendNode(iceAdventuresImage, iceAdventuresTitle);
+    links.push(iceAdventures);
 
     categoriesContainer.appendNode(summerTime, peakClimber, ballGames, iceAdventures);
     categories.appendNode(categoriesTitleContainer, categoriesContainer);
+
+    links.forEach((link) => {
+      link.setHandler('click', (e) => {
+        e.preventDefault();
+        window.history.pushState({}, '', link.getElement().href);
+        this.router.handleLocation();
+      });
+    });
 
     this.mainView.append(categories.getElement());
   }
