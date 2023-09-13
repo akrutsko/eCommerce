@@ -41,6 +41,10 @@
     @apply text-lg md:text-xl font-normal;
   }
 
+  .open-sans {
+    font-family: var(--secondary-font-family);
+  }
+
   .link {
     font-family: var(--secondary-font-family);
     @apply text-lg font-medium text-primary-color hover:underline;
