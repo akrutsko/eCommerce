@@ -7,7 +7,7 @@ export class Loading {
 
   parent: ElementCreator<HTMLElement>;
 
-  constructor(parent:ElementCreator<HTMLElement>) {
+  constructor(parent: ElementCreator<HTMLElement>) {
     this.loader = new ElementCreator({ tag: 'div', classes: 'fixed inset-0 w-full h-full flex justify-center items-center' });
     this.parent = parent;
   }

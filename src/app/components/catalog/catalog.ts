@@ -501,7 +501,7 @@ export class Catalog {
     const productsResponse = await getProductProjections(
       this.consumer.apiClient,
       this.cardIncrease,
-      (this.currentPage) * this.cardIncrease,
+      this.currentPage * this.cardIncrease,
       curFilter,
       sort,
       search,
