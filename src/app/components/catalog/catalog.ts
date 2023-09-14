@@ -90,28 +90,19 @@ export class Catalog {
     this.createInfiniteScroll();
   }
 
-  throttle(callback: Function, time: number): void {
-    if (this.throttleTimer) return;
-    this.throttleTimer = true;
-    setTimeout(() => {
-      callback();
-      this.throttleTimer = false;
-    }, time);
+  async createInfiniteScroll(): Promise<void> {
+    window.addEventListener('scroll', this.handleInfiniteScroll.bind(this));
   }
 
-  createInfiniteScroll(): void {
-    window.addEventListener('scroll', () => {
-      this.throttle(() => {
-        const endOfPage = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
-        if (endOfPage) {
-          this.loading.showLoader();
-          this.currentPage += 1;
-          this.createCards().then(() => {
-            this.loading.hideLoader();
-          });
-        }
-      }, 1000);
-    });
+  async handleInfiniteScroll(): Promise<void> {
+    const endOfPage = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+    const pageCount = Math.ceil(this.cardLimit / this.cardIncrease);
+    if (endOfPage && this.currentPage !== pageCount) {
+      this.loading.showLoader();
+      this.currentPage += 1;
+      await this.createCards();
+      this.loading.hideLoader();
+    }
   }
 
   async sort(fieldName: String, method: String): Promise<void> {
