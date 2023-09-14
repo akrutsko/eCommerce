@@ -64,8 +64,6 @@ export class Catalog {
 
   cardLimit = 0;
 
-  throttleTimer = false;
-
   constructor(router: Router, consumer: Consumer, subCategory?: string) {
     this.router = router;
     this.consumer = consumer;
