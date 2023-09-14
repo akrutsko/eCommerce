@@ -62,8 +62,6 @@ export class Catalog {
 
   isScrolling = false;
 
-  cardIncrease = 8;
-
   cardLimit = 0;
 
   throttleTimer = false;
@@ -98,7 +96,7 @@ export class Catalog {
 
   async handleInfiniteScroll(): Promise<void> {
     const endOfPage = window.innerHeight + window.scrollY >= document.body.offsetHeight;
-    const pageCount = Math.ceil(this.cardLimit / this.cardIncrease);
+    const pageCount = Math.ceil(this.cardLimit / Store.CardIncrease);
     if (endOfPage && this.currentPage < pageCount && !this.isScrolling) {
       this.isScrolling = true;
       await this.createCards(this.currentFilters, this.currentSortingString, this.currentSearch);
@@ -500,8 +498,8 @@ export class Catalog {
     }
     const productsResponse = await getProductProjections(
       this.consumer.apiClient,
-      this.cardIncrease,
-      this.currentPage * this.cardIncrease,
+      Store.CardIncrease,
+      this.currentPage * Store.CardIncrease,
       curFilter,
       sort,
       search,
