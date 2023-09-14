@@ -36,3 +36,8 @@ dialog::backdrop {
 .swiper-pagination {
   --swiper-pagination-color: var(--main-color);
 }
+
+.swiper-button-prev,
+.swiper-button-next {
+  --swiper-navigation-color: var(--main-color);
+}
