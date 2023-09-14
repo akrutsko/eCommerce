@@ -137,7 +137,7 @@ export class Catalog {
     });
     search.getElement().addEventListener('search', () => {
       this.currentSearch = '';
-      this.search(this.currentSearch);
+      this.resetFilters();
     });
     form.appendNode(search, submitButton);
     firstBlock.appendNode(catalogNameBlock, form);
