@@ -2,6 +2,7 @@ import { Category, ProductProjection, ProductType } from '@commercetools/platfor
 import './catalog.css';
 import arrowDownSVG from '../../../assets/svg/arrow-down.svg';
 import searchIcon from '../../../assets/svg/search.svg';
+import addToCartSVG from '../../../assets/svg/cart-add.svg';
 
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
@@ -17,6 +18,7 @@ import { getPrice } from '../../utils/price/price';
 import { getProductProjections, getProductTypes } from '../../utils/api/api-product';
 import { Consumer } from '../consumer/consumer';
 import { CategoryTree } from '../../interfaces/category';
+import { addToCart, createCart } from '../../utils/api/api-cart';
 
 export class Catalog {
   router: Router;
@@ -62,10 +64,7 @@ export class Catalog {
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top gap-2' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex gap-2 flex-wrap md:max-w-[55%]' });
-    this.cardsView = new ElementCreator({
-      tag: 'div',
-      classes: 'w-full gap-4 products',
-    });
+    this.cardsView = new ElementCreator({ tag: 'div', classes: 'w-full gap-4 products' });
     this.minPriceFilterView = new ElementInputCreator({
       type: 'number',
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] w-0 grow max-w-[90px]',
@@ -485,13 +484,13 @@ export class Catalog {
     const card = new ElementCreator({
       tag: 'div',
       classes:
-        'relative max-w-full sm:max-w-sm card bg-white w-full h-auto mx-auto rounded-lg transition-all shadow-md hover:scale-[1.02] hover:shadow-xl',
+        'max-w-full sm:max-w-sm card bg-white w-full h-auto mx-auto rounded-lg transition-all shadow-md hover:scale-[1.02] hover:shadow-xl',
     });
     this.cardsView.appendNode(card);
 
     const productImageBlock = new ElementCreator({
       tag: 'div',
-      classes: 'w-full h-auto border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-bg-color',
+      classes: 'relative w-full h-auto border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-bg-color',
     });
     let url = '';
     let { masterVariant } = product;
@@ -517,8 +516,9 @@ export class Catalog {
         price = priceWithOutDiscount;
       }
     }
+    const aCard = new ElementAnchorCreator({ href: `/product/${product.slug[Store.Language]}`, classes: 'absolute inset-0' });
     const image = new ElementImageCreator({ alt: productName, src: url, classes: 'w-full h-full object-cover' });
-    productImageBlock.appendNode(image);
+    productImageBlock.appendNode(image, aCard);
 
     const infoBlock = new ElementCreator({ tag: 'div', classes: 'p-3 h-full flex flex-col justify-between gap-1' });
     const nameDescriptionBlock = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-1' });
@@ -550,11 +550,52 @@ export class Catalog {
       productPricesBlock.appendNode(productPriceWithOutDiscountBlock);
     }
 
-    const aCard = new ElementAnchorCreator({ href: `/product/${product.slug[Store.Language]}`, classes: 'absolute inset-0' });
+    const addButton = new ElementButtonCreator({ classes: 'add-to-cart ml-auto scale-125', html: addToCartSVG }).getElement();
+    productPricesBlock.appendNode(addButton);
+
+    let lineItemId = this.consumer.cart?.lineItems.find((li) => li.productId === product.id)?.id;
+    if (lineItemId) {
+      addButton.disabled = true;
+    }
+
+    addButton.addEventListener('click', async () => {
+      if (!this.consumer.cart) {
+        try {
+          this.consumer.cart = (await createCart(this.consumer.apiClient, { currency: 'USD' })).body;
+        } catch (err) {
+          if (err instanceof Error) {
+            if (err.message) {
+              new Message(err.message, 'error').showMessage();
+            } else {
+              new Message('Something went wrong. Try later.', 'error').showMessage();
+            }
+          }
+        }
+      }
+
+      if (!this.consumer.cart) return;
+
+      try {
+        this.consumer.cart = (
+          await addToCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, product.id)
+        ).body;
+        lineItemId = this.consumer.cart.lineItems.find((li) => li.productId === product.id)?.id;
+        addButton.disabled = true;
+        new Message('Product has been added to cart.', 'info').showMessage();
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message) {
+            new Message(err.message, 'error').showMessage();
+          } else {
+            new Message('Something went wrong. Try later.', 'error').showMessage();
+          }
+        }
+      }
+    });
 
     nameDescriptionBlock.appendNode(productNameBlock, productDescriptionBlock);
     infoBlock.appendNode(nameDescriptionBlock, productPricesBlock);
-    card.appendNode(productImageBlock, infoBlock, aCard);
+    card.appendNode(productImageBlock, infoBlock);
   }
 
   getView(): ElementCreator<HTMLElement> {
