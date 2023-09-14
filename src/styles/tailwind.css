@@ -121,7 +121,7 @@
   }
 
   .container {
-    @apply px-4 md:px-10 flex items-center justify-between max-w-full;
+    @apply px-4 md:px-10 flex items-center justify-between max-w-[1400px] mx-auto;
   }
 
   .breadcrumbs {

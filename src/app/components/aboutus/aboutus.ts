@@ -38,7 +38,7 @@ export class AboutUs {
     const membersTitle = new ElementCreator({ tag: 'h2', classes: 'text-center mb-8', text: 'Our members' });
     const membersContent = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-col md:flex-row justify-between gap-8 2xl:justify-center',
+      classes: 'flex flex-col md:flex-row justify-between gap-8 2xl:justify-center 2xl:gap-16',
     });
 
     const firstMember = new ElementCreator({
