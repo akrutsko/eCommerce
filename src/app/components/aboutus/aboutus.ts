@@ -4,6 +4,7 @@ import member1 from '../../../assets/img/svetik1.png';
 import member2 from '../../../assets/img/aliaksei1.png';
 import member3 from '../../../assets/img/sveta1.png';
 import rs from '../../../assets/img/rs-logo.png';
+import circus from '../../../assets/img/circus.png';
 
 import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementImageCreator } from '../../utils/element-creator/element-image-creator';
@@ -138,9 +139,8 @@ export class AboutUs {
 
     const aboutTeamSticker = new ElementCreator({
       tag: 'div',
-      classes: 'text-3xl md:text-[180px] lg:text-[250px] leading-none',
-      text: '🎪',
-    });
+      classes: 'w-[20px] md:w-full md:min-w-[150px] md:max-w-[250px]',
+    }).appendNode(new ElementImageCreator({ src: circus, alt: 'sticker' }));
 
     aboutTeamContent.appendNode(aboutTeamText, aboutTeamSticker);
     aboutTeam.appendNode(aboutTeamTitle, aboutTeamContent);
@@ -183,7 +183,7 @@ export class AboutUs {
     const aboutCourseThirdP = new ElementCreator({
       tag: 'p',
       classes: 'text-opacity-60',
-      text: 'If you also want to start your journey in the world of web development, we highly recommend you to visit the official website of RS School and join the training.',
+      text: 'If you also want to start your journey in the world of web development, we strongly encourage you to visit the official website of RS School and join the training.',
     });
 
     aboutCourseText.appendNode(aboutCourseFirstP, aboutCourseSecondP, aboutCourseThirdP);

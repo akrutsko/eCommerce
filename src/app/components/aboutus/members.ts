@@ -12,17 +12,17 @@ export const contributorsList: Member[] = [
   {
     name: 'sveta',
     img: tab1,
-    text: 'Sviatlana is a real engine of the team, she was responsible for setting up and managing the business logic in our project. She was entrusted with the role of analyzing the API and SDK of Commercetools. In addition, Sviatlana actively developed important features of the project. She created catalog sorting and filtering tools, configured routing, implemented lazy loading of products and many other important components. Her work made our project more functional and user-friendly. Sviatlana also brought a positive atmosphere to the team. Her enthusiasm and optimism always lifted the spirits of her colleagues and created a pleasant working atmosphere. Without Sviatlana, our project would not only be less functional, but also less inspiring.',
+    text: 'Sviatlana is a true driving force behind our team. She was responsible for establishing and managing the business logic in our project, and she was entrusted with the task of analyzing Commercetools API and SDK. Additionally, Sviatlana actively developed critical features for the project. She created catalog sorting and filtering tools, configured routing, implemented lazy loading of products, and many other essential components. Her contributions significantly enhanced the functionality and user-friendliness of our project. Sviatlana also infused the team with a positive atmosphere. Her enthusiasm and optimism consistently boosted the morale of her colleagues, creating a pleasant work environment. Without Sviatlana, our project would not only be less functional but also less inspiring.',
   },
   {
     name: 'aliaksei',
     img: tab2,
-    text: "Aliaksei, our team lead, was an indispensable leader. His role in the project was invaluable. He took care of curating tasks, distributing them on the Kanban board, and setting tasks that each team member was aware of his or her responsibilities. In addition, Alexei was willing to help with any question or task. He was always there to help and advise. His experience and knowledge were a real help to us. Aliaksei also took on the important task of testing the project. He found and fixed API related bugs and other issues. His attention to detail and commitment to perfection ensured the quality of our project. His passion for the project was off the charts. It wasn't uncommon for him to stay up late with it to make sure everything was working flawlessly. Without his dedication and hard work, our store would not be what it is today.",
+    text: "Aliaksei, our team lead, was an indispensable leader. Aliaksei's contribution to the project was invaluable. He not only efficiently coordinated the team's efforts but also motivated us to achieve outstanding results. One of his primary responsibilities as a team leader was task management. He create methods for communicating with the API and the development of functionality such as consumer flow, authorization tokens, shopping cart creation, and management, among others. He also testing our project and resolving bugs related to the API and other aspects. Aliaksei was always willing to tackle the most challenging tasks, and his passion for the project inspired the entire team. It's no wonder he occasionally worked late on the project. Without his dedication, talent, and leadership, our store wouldn't exist in its current form. Aliaksei was and continues to be an irreplaceable leader of our team.",
   },
   {
     name: 'svetik',
     img: tab3,
-    text: 'Svitlana was the creative genius of our team, developing a unique store concept. She researched products, determined prices, and created the text content for the website. Her ideas and efforts made our store an exciting place for our customers. She was responsible for the design of the store and took care of the quality of the layout using Tailwind CSS. Svitlana was also responsible for documentation and project management. She created concise call summaries and planning sprints to keep the project moving forward.',
+    text: "Svitlana was the creative genius of our team, responsible for developing a unique store concept. She conducted product research, determined pricing, and crafted the textual content for the website. Her ideas and efforts transformed our store into an exciting destination for customers. Svitlana took charge of the store's design and ensured high-quality layout using Tailwind CSS. She also handled documentation and project management, creating concise meeting summaries and sprint plans to keep the project on track.",
   },
 ];
 
@@ -42,9 +42,9 @@ export const membersList: Member[] = [
     name: 'Aliaksei Krutsko',
     img: bio2,
     text: {
-      bio: '',
+      bio: 'Aliaksei started his journey with computers from childhood. After finishing school, he entered university to specialize in "Economic Informatics", but eventually graduated with a degree in "Economics and Business Management". After university, Aliaksei worked for a year in his specialty and then for two years as a customs declarant. However, his passion for IT led him to a testing course organized by EPAM. In 2005, his passion for IT led to his first job in this field. For 17 years Aliaksei has been actively developing in IT, starting as a Junior Software Testing Engineer and reaching the position of Lead Software Testing Engineer. During his career he also held the roles of Scrum Master, QA Lead and Team Lead. But then Aliaksei decided to change his primary skill set and started studying automation. During this process he got in touch with JavaScript and continued his education at RS School.',
       hobby:
-        'Alexei enjoys watching TV shows because they tell interesting stories, and playing computer games is a challenge for him to excel at while enjoying online games with his friends.',
+        'Aliaksei enjoys watching TV shows because they tell interesting stories, and playing computer games is a challenge for him to excel at while enjoying online games with his friends.',
       ultimate: 'perfectionist, attention to details, finds bugs where there were none.',
     },
     github: 'https://github.com/akrutsko',
