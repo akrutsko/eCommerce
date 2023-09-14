@@ -20,6 +20,24 @@ label {
   user-select: none;
 }
 
+dialog::backdrop {
+  backdrop-filter: blur(2px);
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(219, 87, 67, 0.4);
+  border-radius: 100vw;
+}
+
 .swiper-pagination {
   --swiper-pagination-color: var(--main-color);
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  --swiper-navigation-color: var(--main-color);
 }
