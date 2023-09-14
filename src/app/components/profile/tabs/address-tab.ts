@@ -187,9 +187,11 @@ export class AddressTab extends AccordionTab {
 
     const container = this.createInputsContainer(currentAddress);
     const existingContainer = this.getElement().querySelector('.change-addresses');
+    const prevContainer = this.getElement().querySelector('.change-address');
 
     if (existingContainer) {
       existingContainer.append(container);
+      if (prevContainer) prevContainer.remove();
     }
   }
 
@@ -206,7 +208,7 @@ export class AddressTab extends AccordionTab {
   }
 
   createInputsContainer(address?: Address): HTMLElement {
-    const wrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4' });
+    const wrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4 change-address' });
     const inputsContainer = new ElementCreator({
       tag: 'div',
       classes: 'flex flex-col justify-between gap-4 md:flex-row md:flex-nowrap',
