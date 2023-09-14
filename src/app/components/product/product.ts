@@ -17,6 +17,8 @@ import { getPrice } from '../../utils/price/price';
 import { ProductModal } from '../modal/product-modal';
 import { getCategoryById, getTreeOfCategories } from '../../utils/api/api-categories';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
+import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
+import { addToCart, createCart, removeFromCart } from '../../utils/api/api-cart';
 
 export class Product {
   router: Router;
@@ -24,6 +26,8 @@ export class Product {
   consumer: Consumer;
 
   productId: string;
+
+  lineItemId: string | undefined;
 
   productView: ElementCreator<HTMLElement>;
 
@@ -99,19 +103,89 @@ export class Product {
 
     this.initSwiper(swiper.getElement());
 
-    if (!firmPrice) return;
-    const priceWrapper = new ElementCreator({ tag: 'div', classes: 'mt-5' });
-    priceWrapper.appendNode(
-      new ElementCreator({
-        tag: 'div',
-        classes: discountedPrice ? 'subtitle line-through' : 'price',
-        text: getPrice(firmPrice),
-      }),
-    );
+    const priceWrapper = new ElementCreator({ tag: 'div', classes: 'mt-5 mb-5' });
     productWrapper.appendNode(priceWrapper);
-    if (!discountedPrice) return;
-    priceWrapper.appendNode(new ElementCreator({ tag: 'div', classes: 'price', text: getPrice(discountedPrice) }));
-    productWrapper.appendNode(priceWrapper);
+
+    if (firmPrice) {
+      priceWrapper.appendNode(
+        new ElementCreator({
+          tag: 'div',
+          classes: discountedPrice ? 'subtitle line-through' : 'price',
+          text: getPrice(firmPrice),
+        }),
+      );
+    }
+    if (discountedPrice) {
+      priceWrapper.appendNode(new ElementCreator({ tag: 'div', classes: 'price', text: getPrice(discountedPrice) }));
+    }
+
+    const addButton = new ElementButtonCreator({ classes: 'primary-button py-1', text: 'add to cart' });
+    const removeButton = new ElementButtonCreator({ classes: 'secondary-button py-1 hidden', text: 'remove from cart' });
+    productWrapper.appendNode(addButton, removeButton);
+
+    this.lineItemId = this.consumer.cart?.lineItems.find((li) => li.productId === this.productId)?.id;
+    if (this.lineItemId) {
+      addButton.addClass('hidden');
+      removeButton.removeClass('hidden');
+    }
+
+    addButton.setHandler('click', async () => {
+      if (!this.consumer.cart) {
+        try {
+          this.consumer.cart = (await createCart(this.consumer.apiClient, { currency: 'USD' })).body;
+        } catch (err) {
+          if (err instanceof Error) {
+            if (err.message) {
+              new Message(err.message, 'error').showMessage();
+            } else {
+              new Message('Something went wrong. Try later.', 'error').showMessage();
+            }
+          }
+        }
+      }
+
+      if (!this.consumer.cart) return;
+
+      try {
+        this.consumer.cart = (
+          await addToCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, this.productId)
+        ).body;
+        this.lineItemId = this.consumer.cart.lineItems.find((li) => li.productId === this.productId)?.id;
+        addButton.addClass('hidden');
+        removeButton.removeClass('hidden');
+        new Message('Product has been added to cart.', 'info').showMessage();
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message) {
+            new Message(err.message, 'error').showMessage();
+          } else {
+            new Message('Something went wrong. Try later.', 'error').showMessage();
+          }
+        }
+      }
+    });
+
+    removeButton.setHandler('click', async () => {
+      if (!this.consumer.cart || !this.lineItemId) return;
+
+      try {
+        this.consumer.cart = (
+          await removeFromCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, this.lineItemId)
+        ).body;
+        this.lineItemId = this.consumer.cart.lineItems.find((li) => li.productId === this.productId)?.id;
+        addButton.removeClass('hidden');
+        removeButton.addClass('hidden');
+        new Message('Product has been removed from cart.', 'info').showMessage();
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message) {
+            new Message(err.message, 'error').showMessage();
+          } else {
+            new Message('Something went wrong. Try later.', 'error').showMessage();
+          }
+        }
+      }
+    });
   }
 
   initSwiper(wrapper: HTMLElement): void {

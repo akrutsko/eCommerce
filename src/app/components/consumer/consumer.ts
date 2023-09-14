@@ -25,7 +25,7 @@ import {
   setDefaultShippingAddress,
 } from '../../utils/api/api-consumer';
 import { Token } from '../../enums/token';
-import { addToCart, createCart, getActiveCart } from '../../utils/api/api-cart';
+import { getActiveCart } from '../../utils/api/api-cart';
 
 export class Consumer implements Observable {
   observers: Observer[] = [];
@@ -92,20 +92,6 @@ export class Consumer implements Observable {
       this.status = ConsumerClient.Consumer;
     }
 
-    // TODO: remove when RSS-ECOMM-4_02 is implemented
-    if (this.isConsumer) {
-      try {
-        this.cart = (await getActiveCart(this.apiClient)).body;
-      } catch {
-        this.cart = (await createCart(this.apiClient, { currency: 'USD' })).body;
-      }
-    } else {
-      this.cart = (await createCart(this.apiClient, { currency: 'USD' })).body;
-      this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '473b53dc-d1b4-4495-8d24-9af25d71a8ff')).body;
-      this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '4ce336b4-1207-4288-b9ac-93f774deed71')).body;
-      this.cart = (await addToCart(this.apiClient, this.cart.version, this.cart.id, '9715bf15-891c-497a-9135-efb2437f43f0')).body;
-    }
-
     this.notify();
   }
 
@@ -134,6 +120,7 @@ export class Consumer implements Observable {
     localStorage.clear();
     this.status = ConsumerClient.Anonymous;
     this.consumerData = null;
+    this.cart = null;
     clearTokenStore();
     this.apiClient = getAnonymousClient();
     this.notify();
