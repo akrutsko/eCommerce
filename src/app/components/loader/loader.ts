@@ -5,8 +5,11 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 export class Loading {
   loader: ElementCreator<HTMLElement>;
 
-  constructor() {
+  parent: ElementCreator<HTMLElement>;
+
+  constructor(parent:ElementCreator<HTMLElement>) {
     this.loader = new ElementCreator({ tag: 'div', classes: 'fixed inset-0 w-full h-full flex justify-center items-center' });
+    this.parent = parent;
   }
 
   showLoader(): void {
@@ -19,7 +22,7 @@ export class Loading {
     bg.appendNode(loader);
     this.loader.appendNode(bg);
 
-    document.body.append(this.loader.getElement());
+    this.parent.appendNode(this.loader);
     document.body.classList.add('overflow-hidden');
   }
 

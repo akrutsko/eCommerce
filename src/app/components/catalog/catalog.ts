@@ -58,7 +58,9 @@ export class Catalog {
 
   currentSearch = '';
 
-  currentPage = 1;
+  currentPage = 0;
+
+  isScrolling = false;
 
   cardIncrease = 8;
 
@@ -73,11 +75,11 @@ export class Catalog {
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top gap-2' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex gap-2 flex-wrap md:max-w-[55%]' });
-    this.loading = new Loading();
     this.cardsView = new ElementCreator({
       tag: 'div',
-      classes: 'w-full gap-4 products',
+      classes: 'w-full gap-4 products relative',
     });
+    this.loading = new Loading(this.cardsView);
     this.minPriceFilterView = new ElementInputCreator({
       type: 'number',
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] w-0 grow max-w-[90px]',
@@ -95,13 +97,12 @@ export class Catalog {
   }
 
   async handleInfiniteScroll(): Promise<void> {
-    const endOfPage = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+    const endOfPage = window.innerHeight + window.scrollY >= document.body.offsetHeight;
     const pageCount = Math.ceil(this.cardLimit / this.cardIncrease);
-    if (endOfPage && this.currentPage !== pageCount) {
-      this.loading.showLoader();
-      this.currentPage += 1;
-      await this.createCards();
-      this.loading.hideLoader();
+    if (endOfPage && this.currentPage < pageCount && !this.isScrolling) {
+      this.isScrolling = true;
+      await this.createCards(this.currentFilters, this.currentSortingString, this.currentSearch);
+      this.isScrolling = false;
     }
   }
 
@@ -480,10 +481,11 @@ export class Catalog {
 
   clearCards(): void {
     this.cardsView.getElement().innerHTML = '';
-    this.currentPage = 1;
+    this.currentPage = 0;
   }
 
   async createCards(filter?: string | string[], sort?: string, search?: string): Promise<void> {
+    this.loading.showLoader();
     let curFilter = filter;
     if (this.currentCategoryFilter) {
       if (curFilter instanceof Array) {
@@ -499,7 +501,7 @@ export class Catalog {
     const productsResponse = await getProductProjections(
       this.consumer.apiClient,
       this.cardIncrease,
-      (this.currentPage - 1) * this.cardIncrease,
+      (this.currentPage) * this.cardIncrease,
       curFilter,
       sort,
       search,
@@ -507,13 +509,14 @@ export class Catalog {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
     if (!productsResponse) return;
-
+    this.currentPage += 1;
     this.products = productsResponse.body.results;
     this.cardLimit = productsResponse.body.total || 0;
     this.countOfResultsView.getElement().textContent = `${this.cardLimit} results`;
     this.products.forEach((product) => {
       this.addProduct(product);
     });
+    this.loading.hideLoader();
   }
 
   addProduct(product: ProductProjection): void {
