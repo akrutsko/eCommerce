@@ -28,7 +28,7 @@ export class PasswordTab extends AccordionTab {
   createEdit(): HTMLElement {
     this.resetInputs();
 
-    const container = new ElementCreator({ tag: 'div', classes: 'flex flex-col sm:flex-row gap-4' });
+    const container = new ElementCreator({ tag: 'div', classes: 'flex flex-col md:flex-row gap-4' });
     container.appendNode(this.currentInputContainer.getContainer(), this.newInputContainer.getContainer());
     return container.getElement();
   }

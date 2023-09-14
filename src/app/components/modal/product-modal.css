@@ -1,8 +1,3 @@
-.swiper-button-prev-modal,
-.swiper-button-next-modal {
-  --swiper-navigation-color: var(--main-color);
-}
-
 .swiper-slide-modal {
   display: flex;
   align-items: center;

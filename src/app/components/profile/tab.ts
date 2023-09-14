@@ -20,7 +20,7 @@ export abstract class AccordionTab {
   constructor(consumer: Consumer, svg: string, heading: string) {
     this.consumer = consumer;
     this.tab = new ElementCreator({ tag: 'div', classes: 'tab w-full p-4 md:p-6 bg-white rounded-xl' });
-    this.contentField = new ElementCreator({ tag: 'div', classes: 'content mx-2 sm:mx-4 md:mx-8 mt-2 hidden' });
+    this.contentField = new ElementCreator({ tag: 'div', classes: 'content mx-2 sm:mx-4 md:mx-2 mt-2 hidden' });
     this.editButton = new ElementButtonCreator({ classes: 'primary-button mt-3 py-1', text: 'edit' }).getElement();
     this.saveButton = new ElementButtonCreator({ disabled: true, classes: 'primary-button py-1', text: 'save' }).getElement();
     this.cancelButton = new ElementButtonCreator({ classes: 'secondary-button py-1', text: 'cancel' }).getElement();

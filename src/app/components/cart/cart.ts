@@ -12,8 +12,11 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { Consumer } from '../consumer/consumer';
 import { Store } from '../../enums/store';
 import { getPrice } from '../../utils/price/price';
-import { updateQuantity } from '../../utils/api/api-cart';
+import { addDiscount, deleteCart, removeDiscount, removeFromCart, updateQuantity } from '../../utils/api/api-cart';
 import { Message } from '../../utils/message/toastify-message';
+import { Confirmation } from '../../utils/confirmation/confirmation';
+import { getDiscountCode } from '../../utils/api/api-discount';
+import { getCtpClient } from '../../utils/api/api-client';
 
 export class Cart {
   consumer: Consumer;
@@ -33,11 +36,6 @@ export class Cart {
 
   createView(): void {
     const title = new ElementCreator({ tag: 'h2', text: 'My shopping cart', classes: 'text-center' });
-    const cards = new ElementCreator({ tag: 'div', classes: 'flex grow-[9999] flex-col gap-4' });
-
-    this.consumer.cart?.lineItems.forEach((lineItem) => {
-      cards.appendNode(this.createProductCard(lineItem));
-    });
 
     const orderContainer = new ElementCreator({
       tag: 'div',
@@ -55,18 +53,50 @@ export class Cart {
 
     const subtotalContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between gap-4' });
     const subtotalTitle = new ElementCreator({ tag: 'h5', classes: 'h5 opacity-60', text: 'Subtotal:' });
-    const subtotalPrice = new ElementCreator({ tag: 'h5', classes: 'h5 text-primary-color', text: '$256,46' });
+    const subtotalPrice = new ElementCreator({ tag: 'h5', classes: 'h5 text-primary-color' });
     subtotalContainer.appendNode(subtotalTitle, subtotalPrice);
 
     const discountContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between gap-4' });
     const discountTitle = new ElementCreator({ tag: 'h5', classes: 'h5 opacity-60', text: 'Discount:' });
-    const discountPrice = new ElementCreator({ tag: 'h5', classes: 'h5 text-primary-color', text: '-$19.80' });
+    const discountPrice = new ElementCreator({ tag: 'h5', classes: 'h5 text-primary-color' });
     discountContainer.appendNode(discountTitle, discountPrice);
 
     const totalContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between items-end gap-4' });
     const totalTitle = new ElementCreator({ tag: 'h4', classes: 'h4', text: 'Total amount:' });
-    const totalPrice = new ElementCreator({ tag: 'h4', classes: 'h4 text-primary-color', text: ' $236,66' });
+    const totalPrice = new ElementCreator({ tag: 'h4', classes: 'h4 text-primary-color' });
     totalContainer.appendNode(totalTitle, totalPrice);
+
+    const setTotal = (): void => {
+      if (!this.consumer.cart) return;
+
+      const total = this.consumer.cart.totalPrice;
+      const subtotalCents = this.consumer.cart.lineItems.reduce((acc, item) => {
+        const price = item.price.discounted?.value.centAmount || item.price.value.centAmount;
+        return acc + price * item.quantity;
+      }, 0);
+
+      const subtotal = { ...total };
+      subtotal.centAmount = subtotalCents;
+
+      const discount = { ...total };
+      discount.centAmount = total.centAmount - subtotal.centAmount;
+
+      if (total) {
+        subtotalPrice.setContent(`${getPrice(subtotal)}`);
+        discountPrice.setContent(`${getPrice(discount)}`);
+        totalPrice.setContent(`${getPrice(total)}`);
+      }
+    };
+    setTotal();
+
+    const cards = new ElementCreator({ tag: 'div', classes: 'flex grow-[9999] flex-col gap-4' });
+    const updatePrices = (): void => {
+      const discountEvent = new Event('discount');
+      [...cards.getElement().children].forEach((card) => card.dispatchEvent(discountEvent));
+    };
+    this.consumer.cart?.lineItems.forEach((lineItem) => {
+      cards.appendNode(this.createProductCard(lineItem, setTotal, updatePrices));
+    });
 
     options.appendNode(
       optionsTitle,
@@ -88,19 +118,86 @@ export class Cart {
     const promocodeTitle = new ElementCreator({ tag: 'h4', classes: 'h4', text: 'promocode' });
     promocodeTitleContainer.appendNode(promocodeSvg, promocodeTitle);
 
-    const promocodeFormContainer = new ElementCreator({
-      tag: 'div',
-      classes: 'flex w-full justify-center items-center gap-2 hidden',
-    });
-    const promocodeInput = new ElementInputCreator({ classes: 'form-input max-w-sm py-1 px-3' });
-    const promocodeButton = new ElementButtonCreator({ classes: 'primary-button py-1', text: 'apply' });
-    promocodeFormContainer.appendNode(promocodeInput, promocodeButton);
+    const promocodeFormContainer = new ElementCreator({ tag: 'div', classes: 'flex w-full justify-center items-center gap-2' });
+    const promocodeInput = new ElementInputCreator({ classes: 'form-input text-us/2 max-w-sm py-1 px-3' }).getElement();
+    const applyButton = new ElementButtonCreator({ classes: 'primary-button py-1', text: 'apply' });
+    const discardButton = new ElementButtonCreator({ classes: 'primary-button py-1 hidden', text: 'discard' });
+    promocodeFormContainer.appendNode(promocodeInput, applyButton, discardButton);
+
+    const discountId = this.consumer.cart?.discountCodes[0]?.discountCode.id;
+    if (discountId) {
+      applyButton.addClass('hidden');
+      discardButton.removeClass('hidden');
+      promocodeInput.disabled = true;
+      getDiscountCode(getCtpClient(), discountId)
+        .then((res) => {
+          promocodeInput.value = res.body.code;
+        })
+        .catch((err) => {
+          if (err instanceof Error) {
+            if (err.message) {
+              new Message(err.message, 'error').showMessage();
+            } else {
+              new Message('Something went wrong. Try later.', 'error').showMessage();
+            }
+          }
+        });
+    }
 
     promocodeContainer.appendNode(promocodeTitleContainer, promocodeFormContainer);
     orderContainer.appendNode(options, promocodeContainer);
 
-    promocodeContainer.setHandler('click', () => {
-      promocodeFormContainer.getElement().classList.toggle('hidden');
+    applyButton.setHandler('click', async () => {
+      const code = promocodeInput.value;
+      if (!this.consumer.cart || !code) return;
+
+      try {
+        this.consumer.cart = (
+          await addDiscount(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, code)
+        ).body;
+        new Message('The discount code is successfully applied.', 'info').showMessage();
+        applyButton.addClass('hidden');
+        discardButton.removeClass('hidden');
+        promocodeInput.disabled = true;
+        updatePrices();
+        setTotal();
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message) {
+            new Message(err.message, 'error').showMessage();
+          } else {
+            new Message('Something went wrong. Try later.', 'error').showMessage();
+          }
+        }
+      }
+    });
+    discardButton.setHandler('click', async () => {
+      if (!this.consumer.cart) return;
+
+      try {
+        this.consumer.cart = (
+          await removeDiscount(
+            this.consumer.apiClient,
+            this.consumer.cart.version,
+            this.consumer.cart.id,
+            this.consumer.cart.discountCodes[0].discountCode,
+          )
+        ).body;
+        discardButton.addClass('hidden');
+        applyButton.removeClass('hidden');
+        promocodeInput.value = '';
+        promocodeInput.disabled = false;
+        updatePrices();
+        setTotal();
+      } catch (err) {
+        if (err instanceof Error) {
+          if (err.message) {
+            new Message(err.message, 'error').showMessage();
+          } else {
+            new Message('Something went wrong. Try later.', 'error').showMessage();
+          }
+        }
+      }
     });
 
     const content = new ElementCreator({
@@ -109,12 +206,39 @@ export class Cart {
     });
     content.appendNode(cards, orderContainer);
 
-    const clearButton = new ElementButtonCreator({ classes: 'secondary-button mt-4', text: 'clear cart' });
+    const clearCart = async (): Promise<void> => {
+      if (!this.consumer.cart) return;
+      try {
+        await deleteCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id);
+        this.consumer.cart = null;
+        this.showEmpty();
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
+      }
+    };
 
-    this.cartView.appendNode(title, content, clearButton);
+    const clearButton = new ElementButtonCreator({
+      classes: 'secondary-button mt-4 self-start',
+      text: 'clear cart',
+    }).getElement();
+    clearButton.addEventListener('click', async () => {
+      clearButton.disabled = true;
+      const confirmation = new Confirmation(clearCart);
+      confirmation.showConfirmation(
+        `Watch out, champ! Clearing your cart is like resetting all your workouts.
+        If you're ready to start over, click 'ok'.
+        If not, click 'cancel' and let's get back to your shopping training!`,
+      );
+      clearButton.disabled = false;
+    });
+
+    cards.appendNode(clearButton);
+    this.cartView.appendNode(title, content);
   }
 
   showEmpty(): void {
+    this.getElement().innerHTML = '';
+
     const emptyCartContainer = new ElementCreator({
       tag: 'div',
       classes: 'h-full flex flex-col-reverse md:flex-row justify-center items-center gap-8 mt-6',
@@ -140,7 +264,7 @@ export class Cart {
     this.cartView.appendNode(emptyCartContainer);
   }
 
-  createProductCard(lineItem: LineItem): HTMLElement {
+  createProductCard(lineItem: LineItem, setTotal: () => void, updatePrices: () => void): HTMLElement {
     const card = new ElementCreator({ tag: 'div', classes: 'flex rounded-xl w-full gap-4 p-3 md:p-4 max-h-40 bg-white' });
 
     const imageContainer = new ElementCreator({
@@ -161,35 +285,61 @@ export class Cart {
     const name = new ElementCreator({ tag: 'div', classes: 'h4 text-base product-name', text: lineItem.name[Store.Language] });
     nameContainer.appendNode(name);
 
-    const prices = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-1 items-end' });
-    const mainPrice = new ElementCreator({ tag: 'div', classes: 'text-primary-color' });
+    const prices = new ElementCreator({ tag: 'div', classes: 'flex flex-col items-end' });
+    const cartPrice = new ElementCreator({ tag: 'div', classes: 'discount' });
+    const mainPrice = new ElementCreator({ tag: 'div', classes: 'text-xs text-primary-color' });
     const totalPrice = new ElementCreator({ tag: 'div', classes: 'price' });
-    prices.appendNode(mainPrice, totalPrice);
+    prices.appendNode(cartPrice, mainPrice, totalPrice);
 
     const setPrices = (cardItem = lineItem): void => {
-      const price = cardItem.variant.prices?.[0].discounted?.value || cardItem.variant.prices?.[0].value;
-      if (price) {
-        mainPrice.setContent(`${getPrice(price)}`);
+      const discountedPrice = cardItem.discountedPricePerQuantity[0]?.discountedPrice.value;
+      const individualPrice = cardItem.price.discounted?.value || cardItem.price.value;
 
-        const money = { ...price };
-        money.centAmount *= cardItem.quantity;
-        totalPrice.setContent(`${getPrice(money)}`);
-      }
+      cartPrice.setContent(discountedPrice ? `${getPrice(individualPrice)}` : '');
+      mainPrice.setContent(discountedPrice ? `${getPrice(discountedPrice)}` : `${getPrice(individualPrice)}`);
+
+      const money = { ...(discountedPrice || individualPrice) };
+      money.centAmount *= cardItem.quantity;
+
+      totalPrice.setContent(`${getPrice(money)}`);
     };
     setPrices();
 
     const secondContainer = new ElementCreator({ tag: 'div', classes: 'flex justify-between gap-4' });
 
-    const deleteButton = new ElementButtonCreator({ html: trash });
+    const deleteButton = new ElementButtonCreator({ html: trash }).getElement();
+    deleteButton.addEventListener('click', async () => {
+      if (!this.consumer.cart) return;
+      deleteButton.disabled = true;
+      try {
+        this.consumer.cart = (
+          await removeFromCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, lineItem.id)
+        ).body;
+        card.getElement().remove();
+        updatePrices();
+        setTotal();
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
+        deleteButton.disabled = false;
+      }
+      if (!this.consumer.cart.lineItems.length) {
+        this.showEmpty();
+      }
+    });
 
     firstContainer.appendNode(nameContainer, prices);
-    secondContainer.appendNode(this.createCounterCard(lineItem, setPrices), deleteButton);
+    secondContainer.appendNode(this.createCounterCard(lineItem, setPrices, setTotal), deleteButton);
     cartDetails.appendNode(firstContainer, secondContainer);
     card.appendNode(imageContainer, cartDetails);
+
+    card.setHandler('discount', () => {
+      const item = this.consumer.cart?.lineItems.find((li) => li.id === lineItem.id);
+      setPrices(item);
+    });
     return card.getElement();
   }
 
-  createCounterCard(lineItem: LineItem, setPrices: (lineItem?: LineItem) => void): HTMLElement {
+  createCounterCard(lineItem: LineItem, setPrices: (lineItem?: LineItem) => void, setTotal: () => void): HTMLElement {
     const container = new ElementCreator({ tag: 'div', classes: 'flex items-center gap-2' });
     const minusButton = new ElementButtonCreator({
       classes: 'counter-button',
@@ -210,17 +360,13 @@ export class Cart {
       if (!this.consumer.cart || !item) return;
 
       try {
-        const res = await updateQuantity(
-          this.consumer.apiClient,
-          this.consumer.cart?.version,
-          this.consumer.cart?.id,
-          item.id,
-          quantity,
-        );
-        this.consumer.cart = res.body;
-        item = this.consumer.cart?.lineItems.find((li) => li.id === lineItem.id);
+        this.consumer.cart = (
+          await updateQuantity(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, item.id, quantity)
+        ).body;
+        item = this.consumer.cart.lineItems.find((li) => li.id === lineItem.id);
         counter.setContent(`${item?.quantity}`);
         setPrices(item);
+        setTotal();
       } catch {
         new Message('Something went wrong. Try later.', 'error').showMessage();
       }

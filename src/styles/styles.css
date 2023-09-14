@@ -32,3 +32,7 @@ dialog::backdrop {
   background: rgba(219, 87, 67, 0.4);
   border-radius: 100vw;
 }
+
+.swiper-pagination {
+  --swiper-pagination-color: var(--main-color);
+}
