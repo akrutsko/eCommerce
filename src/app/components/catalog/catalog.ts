@@ -42,8 +42,6 @@ export class Catalog {
 
   breadcrumbsBlock: ElementCreator<HTMLElement>;
 
-  loader: Loader;
-
   categories: Category[] = [];
 
   categoryTree: CategoryTree[] = [];
@@ -74,7 +72,6 @@ export class Catalog {
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex gap-2 flex-wrap md:max-w-[55%]' });
     this.cardsView = new ElementCreator({ tag: 'div', classes: 'w-full gap-4 products relative' });
-    this.loader = new Loader(this.cardsView.getElement());
     this.minPriceFilterView = new ElementInputCreator({
       type: 'number',
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] w-0 grow max-w-[90px]',
