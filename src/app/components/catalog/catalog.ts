@@ -507,10 +507,9 @@ export class Catalog {
       search,
     ).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
-      loader.remove();
     });
-    if (!productsResponse) return;
     loader.remove();
+    if (!productsResponse) return;
 
     this.currentPage += 1;
     this.products = productsResponse.body.results;
