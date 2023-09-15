@@ -503,7 +503,10 @@ export class Catalog {
     ).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
-    if (!productsResponse) { this.loading.hideLoader(); return; }
+    if (!productsResponse) {
+      this.loading.hideLoader();
+      return;
+    }
     this.currentPage += 1;
     this.products = productsResponse.body.results;
     this.cardLimit = productsResponse.body.total || 0;
