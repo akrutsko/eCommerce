@@ -130,6 +130,8 @@ export class Product {
     }
 
     addButton.setHandler('click', async () => {
+      addButton.addClass('pointer-events-none');
+
       if (!this.consumer.cart) {
         try {
           this.consumer.cart = (await createCart(this.consumer.apiClient, { currency: 'USD' })).body;
@@ -140,6 +142,7 @@ export class Product {
             } else {
               new Message('Something went wrong. Try later.', 'error').showMessage();
             }
+            addButton.removeClass('pointer-events-none');
           }
         }
       }
@@ -163,10 +166,13 @@ export class Product {
           }
         }
       }
+      addButton.removeClass('pointer-events-none');
     });
 
     removeButton.setHandler('click', async () => {
       if (!this.consumer.cart || !this.lineItemId) return;
+
+      removeButton.addClass('pointer-events-none');
 
       try {
         this.consumer.cart = (
@@ -185,6 +191,7 @@ export class Product {
           }
         }
       }
+      removeButton.removeClass('pointer-events-none');
     });
   }
 
