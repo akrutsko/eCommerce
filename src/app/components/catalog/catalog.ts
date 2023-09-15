@@ -18,6 +18,7 @@ import { getPrice } from '../../utils/price/price';
 import { getProductProjections, getProductTypes } from '../../utils/api/api-product';
 import { Consumer } from '../consumer/consumer';
 import { CategoryTree } from '../../interfaces/category';
+import { Loading } from '../loader/loader';
 import { addToCart, createCart } from '../../utils/api/api-cart';
 
 export class Catalog {
@@ -41,6 +42,8 @@ export class Catalog {
 
   breadcrumbsBlock: ElementCreator<HTMLElement>;
 
+  loading: Loading;
+
   categories: Category[] = [];
 
   categoryTree: CategoryTree[] = [];
@@ -57,6 +60,12 @@ export class Catalog {
 
   currentSearch = '';
 
+  currentPage = 0;
+
+  isScrolling = false;
+
+  cardLimit = 0;
+
   constructor(router: Router, consumer: Consumer, subCategory?: string) {
     this.router = router;
     this.consumer = consumer;
@@ -64,7 +73,8 @@ export class Catalog {
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top gap-2' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex gap-2 flex-wrap md:max-w-[55%]' });
-    this.cardsView = new ElementCreator({ tag: 'div', classes: 'w-full gap-4 products' });
+    this.cardsView = new ElementCreator({ tag: 'div', classes: 'w-full gap-4 products relative' });
+    this.loading = new Loading(this.cardsView);
     this.minPriceFilterView = new ElementInputCreator({
       type: 'number',
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] w-0 grow max-w-[90px]',
@@ -74,11 +84,27 @@ export class Catalog {
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] w-0 grow max-w-[90px]',
     });
     this.createView(subCategory);
+    this.createInfiniteScroll();
   }
 
-  sort(fieldName: String, method: String): void {
+  createInfiniteScroll(): void {
+    window.addEventListener('scroll', this.handleInfiniteScroll.bind(this));
+  }
+
+  async handleInfiniteScroll(): Promise<void> {
+    const endOfPage = window.innerHeight + window.scrollY >= document.body.offsetHeight;
+    const pageCount = Math.ceil(this.cardLimit / Store.CardIncrease);
+    if (endOfPage && this.currentPage < pageCount && !this.isScrolling) {
+      this.isScrolling = true;
+      await this.createCards(this.currentFilters, this.currentSortingString, this.currentSearch);
+      this.isScrolling = false;
+    }
+  }
+
+  async sort(fieldName: String, method: String): Promise<void> {
     const sortingString = `${fieldName} ${method}`;
-    this.createCards(this.currentFilters, sortingString, this.currentSearch);
+    this.clearCards();
+    await this.createCards(this.currentFilters, sortingString, this.currentSearch);
     this.currentSortingString = sortingString;
   }
 
@@ -107,7 +133,7 @@ export class Catalog {
     });
     search.getElement().addEventListener('search', () => {
       this.currentSearch = '';
-      this.search(this.currentSearch);
+      this.resetFilters();
     });
     form.appendNode(search, submitButton);
     firstBlock.appendNode(catalogNameBlock, form);
@@ -357,7 +383,7 @@ export class Catalog {
     });
   }
 
-  applyFilters(): void {
+  async applyFilters(): Promise<void> {
     const filterArray: string[] = [];
     this.selectedFiltersView.getElement().innerHTML = '';
 
@@ -421,8 +447,8 @@ export class Catalog {
     if (this.currentCategoryFilter) {
       filterArray.push(this.currentCategoryFilter);
     }
-
-    this.createCards(filterArray, this.currentSortingString, this.currentSearch);
+    this.clearCards();
+    await this.createCards(filterArray, this.currentSortingString, this.currentSearch);
   }
 
   resetFilters(): void {
@@ -436,7 +462,7 @@ export class Catalog {
     this.applyFilters();
   }
 
-  search(word: string): void {
+  async search(word: string): Promise<void> {
     this.checkBoxFilterViews.forEach((element) => {
       const checkBox = element.getElement();
       checkBox.checked = false;
@@ -444,11 +470,17 @@ export class Catalog {
     this.selectedCheckBoxFilters = [];
     this.minPriceFilterView.getElement().value = '';
     this.maxPriceFilterView.getElement().value = '';
-    this.createCards([], this.currentSortingString, word);
+    this.clearCards();
+    await this.createCards([], this.currentSortingString, word);
+  }
+
+  clearCards(): void {
+    this.cardsView.getElement().innerHTML = '';
+    this.currentPage = 0;
   }
 
   async createCards(filter?: string | string[], sort?: string, search?: string): Promise<void> {
-    this.cardsView.getElement().innerHTML = '';
+    this.loading.showLoader();
     let curFilter = filter;
     if (this.currentCategoryFilter) {
       if (curFilter instanceof Array) {
@@ -461,16 +493,28 @@ export class Catalog {
         curFilter = this.currentCategoryFilter;
       }
     }
-    const productsResponse = await getProductProjections(this.consumer.apiClient, 50, 0, curFilter, sort, search).catch(() => {
+    const productsResponse = await getProductProjections(
+      this.consumer.apiClient,
+      Store.CardIncrease,
+      this.currentPage * Store.CardIncrease,
+      curFilter,
+      sort,
+      search,
+    ).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
-    if (!productsResponse) return;
-
+    if (!productsResponse) {
+      this.loading.hideLoader();
+      return;
+    }
+    this.currentPage += 1;
     this.products = productsResponse.body.results;
-    this.countOfResultsView.getElement().textContent = `${this.products.length} results`;
+    this.cardLimit = productsResponse.body.total || 0;
+    this.countOfResultsView.getElement().textContent = `${this.cardLimit} results`;
     this.products.forEach((product) => {
       this.addProduct(product);
     });
+    this.loading.hideLoader();
   }
 
   addProduct(product: ProductProjection): void {
