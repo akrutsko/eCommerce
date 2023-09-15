@@ -87,7 +87,7 @@ export class Catalog {
     this.createInfiniteScroll();
   }
 
-  async createInfiniteScroll(): Promise<void> {
+  createInfiniteScroll(): void {
     window.addEventListener('scroll', this.handleInfiniteScroll.bind(this));
   }
 
@@ -503,7 +503,7 @@ export class Catalog {
     ).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
-    if (!productsResponse) return;
+    if (!productsResponse) { this.loading.hideLoader(); return; }
     this.currentPage += 1;
     this.products = productsResponse.body.results;
     this.cardLimit = productsResponse.body.total || 0;
