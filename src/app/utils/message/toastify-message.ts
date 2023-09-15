@@ -15,10 +15,7 @@ export class Message {
     Toastify({
       text: this.message,
       duration: 3000,
-      offset: {
-        x: 0,
-        y: 170,
-      },
+      position: 'right',
       gravity: 'bottom',
       style: {
         background: this.getBackgroundColor(),

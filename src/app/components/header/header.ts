@@ -60,12 +60,17 @@ export class Header implements Observer {
     const spanBurger3 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     burger.appendNode(spanBurger1, spanBurger2, spanBurger3);
 
-    const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between mt-5 gap-8' });
+    const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between mt-5 gap-4 lg:gap-8' });
     const logo = new ElementAnchorCreator({ href: '/', html: logotype });
+    logo.setHandler('click', (e) => {
+      e.preventDefault();
+      window.history.pushState({}, '', logo.getElement().href);
+      this.router.handleLocation();
+    });
     this.listOfLinks.push(logo.getElement());
     const mobileMenu = new ElementCreator({
       tag: 'div',
-      classes: 'mobile-menu md:w-full md:max-w-full max-w-[390px] hidden justify-between md:flex gap-8',
+      classes: 'mobile-menu md:w-full md:max-w-full max-w-[390px] hidden justify-between md:flex gap-4 lg:gap-8',
     });
     const bg = new ElementCreator({ tag: 'div', classes: 'bg hidden' });
     nav.appendNode(logo, mobileMenu, burger, bg);
