@@ -9,7 +9,9 @@ export class Confirmation {
   }
 
   showConfirmation(text?: string): void {
-    const bg = new ElementCreator({ tag: 'div', classes: 'absolute bg-secondary-color opacity-50 inset-0' });
+    document.body.classList.add('active');
+
+    const container = new ElementCreator({ tag: 'div', classes: 'fixed bg-gray-500/50 inset-0' });
     const confirmation = new ElementCreator({
       tag: 'div',
       classes:
@@ -25,17 +27,18 @@ export class Confirmation {
     buttons.appendNode(okButton, cancelButton);
 
     confirmation.appendNode(title, message, buttons);
+    container.appendNode(confirmation);
 
     cancelButton.setHandler('click', () => {
-      bg.getElement().remove();
-      confirmation.getElement().remove();
+      document.body.classList.remove('active');
+      container.getElement().remove();
     });
     okButton.setHandler('click', async () => {
-      bg.getElement().remove();
-      confirmation.getElement().remove();
+      document.body.classList.remove('active');
+      container.getElement().remove();
       await this.callback();
     });
 
-    document.body.append(bg.getElement(), confirmation.getElement());
+    document.body.append(container.getElement());
   }
 }
