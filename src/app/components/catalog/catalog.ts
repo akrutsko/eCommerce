@@ -510,10 +510,10 @@ export class Catalog {
       search,
     ).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
-      loader.removeLoader();
+      loader.remove();
     });
     if (!productsResponse) return;
-    loader.removeLoader();
+    loader.remove();
 
     this.currentPage += 1;
     this.products = productsResponse.body.results;
@@ -535,7 +535,7 @@ export class Catalog {
     const card = new ElementCreator({
       tag: 'div',
       classes:
-        'max-w-full sm:max-w-sm card bg-white w-full h-auto mx-auto rounded-lg transition-all shadow-md hover:scale-[1.02] hover:shadow-xl',
+        'relative overflow-hidden max-w-full sm:max-w-sm card bg-white w-full h-auto mx-auto rounded-lg transition-all shadow-md hover:scale-[1.02] hover:shadow-xl',
     });
 
     const productImageBlock = new ElementCreator({
@@ -609,6 +609,8 @@ export class Catalog {
     }
 
     addButton.setHandler('click', async () => {
+      const loader = new Loader(card.getElement());
+      loader.showLoader();
       addButton.addClass('pointer-events-none');
 
       if (!this.consumer.cart) {
@@ -621,6 +623,7 @@ export class Catalog {
             } else {
               new Message('Something went wrong. Try later.', 'error').showMessage();
             }
+            loader.hideLoader();
             addButton.removeClass('pointer-events-none');
           }
         }
@@ -644,6 +647,7 @@ export class Catalog {
           }
         }
       }
+      loader.hideLoader();
       addButton.removeClass('pointer-events-none');
     });
 
