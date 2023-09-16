@@ -130,17 +130,14 @@ export class Product {
     }
 
     addButton.setHandler('click', async () => {
+      addButton.addClass('pointer-events-none');
+
       if (!this.consumer.cart) {
         try {
           this.consumer.cart = (await createCart(this.consumer.apiClient, { currency: 'USD' })).body;
-        } catch (err) {
-          if (err instanceof Error) {
-            if (err.message) {
-              new Message(err.message, 'error').showMessage();
-            } else {
-              new Message('Something went wrong. Try later.', 'error').showMessage();
-            }
-          }
+        } catch {
+          new Message('Something went wrong. Try later.', 'error').showMessage();
+          addButton.removeClass('pointer-events-none');
         }
       }
 
@@ -154,19 +151,16 @@ export class Product {
         addButton.addClass('hidden');
         removeButton.removeClass('hidden');
         new Message('Product has been added to cart.', 'info').showMessage();
-      } catch (err) {
-        if (err instanceof Error) {
-          if (err.message) {
-            new Message(err.message, 'error').showMessage();
-          } else {
-            new Message('Something went wrong. Try later.', 'error').showMessage();
-          }
-        }
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
       }
+      addButton.removeClass('pointer-events-none');
     });
 
     removeButton.setHandler('click', async () => {
       if (!this.consumer.cart || !this.lineItemId) return;
+
+      removeButton.addClass('pointer-events-none');
 
       try {
         this.consumer.cart = (
@@ -176,15 +170,10 @@ export class Product {
         addButton.removeClass('hidden');
         removeButton.addClass('hidden');
         new Message('Product has been removed from cart.', 'info').showMessage();
-      } catch (err) {
-        if (err instanceof Error) {
-          if (err.message) {
-            new Message(err.message, 'error').showMessage();
-          } else {
-            new Message('Something went wrong. Try later.', 'error').showMessage();
-          }
-        }
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
       }
+      removeButton.removeClass('pointer-events-none');
     });
   }
 

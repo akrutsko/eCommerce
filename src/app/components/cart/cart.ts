@@ -133,15 +133,7 @@ export class Cart {
         .then((res) => {
           promocodeInput.value = res.body.code;
         })
-        .catch((err) => {
-          if (err instanceof Error) {
-            if (err.message) {
-              new Message(err.message, 'error').showMessage();
-            } else {
-              new Message('Something went wrong. Try later.', 'error').showMessage();
-            }
-          }
-        });
+        .catch(() => new Message('Something went wrong. Try later.', 'error').showMessage());
     }
 
     promocodeContainer.appendNode(promocodeTitleContainer, promocodeFormContainer);
@@ -161,14 +153,8 @@ export class Cart {
         promocodeInput.disabled = true;
         updatePrices();
         setTotal();
-      } catch (err) {
-        if (err instanceof Error) {
-          if (err.message) {
-            new Message(err.message, 'error').showMessage();
-          } else {
-            new Message('Something went wrong. Try later.', 'error').showMessage();
-          }
-        }
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
       }
     });
     discardButton.setHandler('click', async () => {
@@ -189,14 +175,8 @@ export class Cart {
         promocodeInput.disabled = false;
         updatePrices();
         setTotal();
-      } catch (err) {
-        if (err instanceof Error) {
-          if (err.message) {
-            new Message(err.message, 'error').showMessage();
-          } else {
-            new Message('Something went wrong. Try later.', 'error').showMessage();
-          }
-        }
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
       }
     });
 

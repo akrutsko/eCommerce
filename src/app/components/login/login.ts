@@ -138,11 +138,7 @@ export class Login {
       new Message('Welcome! Start shopping and reach new sports peak.', 'info').showMessage();
     } catch (err) {
       if (err instanceof Error) {
-        if (err.message) {
-          new Message(err.message, 'error').showMessage();
-        } else {
-          new Message('Something went wrong. Try later.', 'error').showMessage();
-        }
+        new Message(err.message || 'Something went wrong. Try later.', 'error').showMessage();
       }
     }
   }

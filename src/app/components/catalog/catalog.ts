@@ -18,7 +18,7 @@ import { getPrice } from '../../utils/price/price';
 import { getProductProjections, getProductTypes } from '../../utils/api/api-product';
 import { Consumer } from '../consumer/consumer';
 import { CategoryTree } from '../../interfaces/category';
-import { Loading } from '../loader/loader';
+import { Loader } from '../loader/loader';
 import { addToCart, createCart } from '../../utils/api/api-cart';
 
 export class Catalog {
@@ -41,8 +41,6 @@ export class Catalog {
   selectedFiltersView: ElementCreator<HTMLElement>;
 
   breadcrumbsBlock: ElementCreator<HTMLElement>;
-
-  loading: Loading;
 
   categories: Category[] = [];
 
@@ -74,7 +72,6 @@ export class Catalog {
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex gap-2 flex-wrap md:max-w-[55%]' });
     this.cardsView = new ElementCreator({ tag: 'div', classes: 'w-full gap-4 products relative' });
-    this.loading = new Loading(this.cardsView);
     this.minPriceFilterView = new ElementInputCreator({
       type: 'number',
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] w-0 grow max-w-[90px]',
@@ -88,12 +85,12 @@ export class Catalog {
   }
 
   createInfiniteScroll(): void {
-    window.addEventListener('scroll', this.handleInfiniteScroll.bind(this));
+    window.addEventListener('scroll', () => this.handleInfiniteScroll());
   }
 
   async handleInfiniteScroll(): Promise<void> {
     const endOfPage = window.innerHeight + window.scrollY >= document.body.offsetHeight;
-    const pageCount = Math.ceil(this.cardLimit / Store.CardIncrease);
+    const pageCount = Math.ceil(this.cardLimit / Store.CardsPerPage);
     if (endOfPage && this.currentPage < pageCount && !this.isScrolling) {
       this.isScrolling = true;
       await this.createCards(this.currentFilters, this.currentSortingString, this.currentSearch);
@@ -480,7 +477,6 @@ export class Catalog {
   }
 
   async createCards(filter?: string | string[], sort?: string, search?: string): Promise<void> {
-    this.loading.showLoader();
     let curFilter = filter;
     if (this.currentCategoryFilter) {
       if (curFilter instanceof Array) {
@@ -493,20 +489,28 @@ export class Catalog {
         curFilter = this.currentCategoryFilter;
       }
     }
+
+    const card = new ElementCreator({ tag: 'div', classes: 'card relative bg-white w-full rounded-lg shadow-md' });
+    const divImg = new ElementCreator({ tag: 'div', classes: 'w-full aspect-square' });
+    const divDesc = new ElementCreator({ tag: 'div', classes: 'h-28' });
+    card.appendNode(divImg, divDesc);
+    const loader = new Loader(card.getElement());
+    this.cardsView.appendNode(card);
+    loader.showLoader();
+
     const productsResponse = await getProductProjections(
       this.consumer.apiClient,
-      Store.CardIncrease,
-      this.currentPage * Store.CardIncrease,
+      Store.CardsPerPage,
+      this.currentPage * Store.CardsPerPage,
       curFilter,
       sort,
       search,
     ).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
-    if (!productsResponse) {
-      this.loading.hideLoader();
-      return;
-    }
+    loader.remove();
+    if (!productsResponse) return;
+
     this.currentPage += 1;
     this.products = productsResponse.body.results;
     this.cardLimit = productsResponse.body.total || 0;
@@ -514,7 +518,6 @@ export class Catalog {
     this.products.forEach((product) => {
       this.addProduct(product);
     });
-    this.loading.hideLoader();
   }
 
   addProduct(product: ProductProjection): void {
@@ -528,13 +531,12 @@ export class Catalog {
     const card = new ElementCreator({
       tag: 'div',
       classes:
-        'max-w-full sm:max-w-sm card bg-white w-full h-auto mx-auto rounded-lg transition-all shadow-md hover:scale-[1.02] hover:shadow-xl',
+        'relative overflow-hidden max-w-full sm:max-w-sm card bg-white w-full h-auto mx-auto rounded-lg transition-all shadow-md hover:scale-[1.02] hover:shadow-xl',
     });
-    this.cardsView.appendNode(card);
 
     const productImageBlock = new ElementCreator({
       tag: 'div',
-      classes: 'relative w-full h-auto border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-bg-color',
+      classes: 'relative w-full aspect-square border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-bg-color',
     });
     let url = '';
     let { masterVariant } = product;
@@ -594,26 +596,26 @@ export class Catalog {
       productPricesBlock.appendNode(productPriceWithOutDiscountBlock);
     }
 
-    const addButton = new ElementButtonCreator({ classes: 'add-to-cart ml-auto scale-125', html: addToCartSVG }).getElement();
+    const addButton = new ElementButtonCreator({ classes: 'add-to-cart ml-auto scale-125', html: addToCartSVG });
     productPricesBlock.appendNode(addButton);
 
     let lineItemId = this.consumer.cart?.lineItems.find((li) => li.productId === product.id)?.id;
     if (lineItemId) {
-      addButton.disabled = true;
+      addButton.getElement().disabled = true;
     }
 
-    addButton.addEventListener('click', async () => {
+    addButton.setHandler('click', async () => {
+      const loader = new Loader(card.getElement());
+      loader.showLoader();
+      addButton.addClass('pointer-events-none');
+
       if (!this.consumer.cart) {
         try {
           this.consumer.cart = (await createCart(this.consumer.apiClient, { currency: 'USD' })).body;
-        } catch (err) {
-          if (err instanceof Error) {
-            if (err.message) {
-              new Message(err.message, 'error').showMessage();
-            } else {
-              new Message('Something went wrong. Try later.', 'error').showMessage();
-            }
-          }
+        } catch {
+          new Message('Something went wrong. Try later.', 'error').showMessage();
+          loader.hideLoader();
+          addButton.removeClass('pointer-events-none');
         }
       }
 
@@ -623,23 +625,20 @@ export class Catalog {
         this.consumer.cart = (
           await addToCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, product.id)
         ).body;
+        addButton.getElement().disabled = true;
         lineItemId = this.consumer.cart.lineItems.find((li) => li.productId === product.id)?.id;
-        addButton.disabled = true;
         new Message('Product has been added to cart.', 'info').showMessage();
-      } catch (err) {
-        if (err instanceof Error) {
-          if (err.message) {
-            new Message(err.message, 'error').showMessage();
-          } else {
-            new Message('Something went wrong. Try later.', 'error').showMessage();
-          }
-        }
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
       }
+      loader.hideLoader();
+      addButton.removeClass('pointer-events-none');
     });
 
     nameDescriptionBlock.appendNode(productNameBlock, productDescriptionBlock);
     infoBlock.appendNode(nameDescriptionBlock, productPricesBlock);
     card.appendNode(productImageBlock, infoBlock);
+    this.cardsView.appendNode(card);
   }
 
   getView(): ElementCreator<HTMLElement> {
