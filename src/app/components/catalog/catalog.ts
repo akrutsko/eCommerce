@@ -612,16 +612,10 @@ export class Catalog {
       if (!this.consumer.cart) {
         try {
           this.consumer.cart = (await createCart(this.consumer.apiClient, { currency: 'USD' })).body;
-        } catch (err) {
-          if (err instanceof Error) {
-            if (err.message) {
-              new Message(err.message, 'error').showMessage();
-            } else {
-              new Message('Something went wrong. Try later.', 'error').showMessage();
-            }
-            loader.hideLoader();
-            addButton.removeClass('pointer-events-none');
-          }
+        } catch {
+          new Message('Something went wrong. Try later.', 'error').showMessage();
+          loader.hideLoader();
+          addButton.removeClass('pointer-events-none');
         }
       }
 
@@ -634,14 +628,8 @@ export class Catalog {
         addButton.getElement().disabled = true;
         lineItemId = this.consumer.cart.lineItems.find((li) => li.productId === product.id)?.id;
         new Message('Product has been added to cart.', 'info').showMessage();
-      } catch (err) {
-        if (err instanceof Error) {
-          if (err.message) {
-            new Message(err.message, 'error').showMessage();
-          } else {
-            new Message('Something went wrong. Try later.', 'error').showMessage();
-          }
-        }
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
       }
       loader.hideLoader();
       addButton.removeClass('pointer-events-none');
