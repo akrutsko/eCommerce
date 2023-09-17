@@ -1,13 +1,13 @@
 import 'jest-fetch-mock';
 import { Cart, CartDraft } from '@commercetools/platform-sdk';
 import {
-  addToCart,
-  createCart,
-  deleteCart,
-  getActiveCart,
-  getCartById,
-  removeFromCart,
-  updateQuantity,
+  addToMyCart,
+  createMyCart,
+  deleteMyCart,
+  getMyActiveCart,
+  getMyCartById,
+  removeFromMyCart,
+  updateMyCartQuantity,
 } from '../../../app/utils/api/api-cart';
 import { Consumer } from '../../../app/components/consumer/consumer';
 
@@ -21,14 +21,14 @@ describe('Tests for anonymous cart API', () => {
 
   test('Create a cart', async () => {
     const cartDraft: CartDraft = { currency: 'USD' };
-    const cartResponse = await createCart(consumer.apiClient, cartDraft);
+    const cartResponse = await createMyCart(consumer.apiClient, cartDraft);
     consumerCart = cartResponse.body;
 
     expect(cartResponse.statusCode).toBe(201);
   });
 
   test('add a product to the cart', async () => {
-    const cartResponse = await addToCart(
+    const cartResponse = await addToMyCart(
       consumer.apiClient,
       consumerCart.version,
       consumerCart.id,
@@ -40,9 +40,9 @@ describe('Tests for anonymous cart API', () => {
   });
 
   test('Get an active cart', async () => {
-    await consumer.logIn('login@test.com', 'Password1');
+    await consumer.logIn('unit@test.com', 'Password1');
 
-    const cartResponse = await getActiveCart(consumer.apiClient);
+    const cartResponse = await getMyActiveCart(consumer.apiClient);
     const activeCart = cartResponse.body;
 
     expect(cartResponse.statusCode).toBe(200);
@@ -53,19 +53,19 @@ describe('Tests for anonymous cart API', () => {
 describe('Tests for consumer cart API', () => {
   beforeAll(async () => {
     consumer = new Consumer();
-    await consumer.logIn('login@test.com', 'Password1');
+    await consumer.logIn('unit@test.com', 'Password1');
   });
 
   test('Create a cart', async () => {
     const cartDraft: CartDraft = { currency: 'USD', customerId: consumer.consumerData?.id };
-    const cartResponse = await createCart(consumer.apiClient, cartDraft);
+    const cartResponse = await createMyCart(consumer.apiClient, cartDraft);
     consumerCart = cartResponse.body;
 
     expect(cartResponse.statusCode).toBe(201);
   });
 
   test('Get an active cart', async () => {
-    const cartResponse = await getActiveCart(consumer.apiClient);
+    const cartResponse = await getMyActiveCart(consumer.apiClient);
     const activeCart = cartResponse.body;
 
     expect(cartResponse.statusCode).toBe(200);
@@ -73,7 +73,7 @@ describe('Tests for consumer cart API', () => {
   });
 
   test('Get a consumer cart', async () => {
-    const cartResponse = await getCartById(consumer.apiClient, consumerCart.id);
+    const cartResponse = await getMyCartById(consumer.apiClient, consumerCart.id);
     const currentCart = cartResponse.body;
 
     expect(cartResponse.statusCode).toBe(200);
@@ -81,7 +81,7 @@ describe('Tests for consumer cart API', () => {
   });
 
   test('Delete the consumer cart', async () => {
-    const cartResponse = await deleteCart(consumer.apiClient, consumerCart.version, consumerCart.id);
+    const cartResponse = await deleteMyCart(consumer.apiClient, consumerCart.version, consumerCart.id);
 
     expect(cartResponse.statusCode).toBe(200);
   });
@@ -90,12 +90,12 @@ describe('Tests for consumer cart API', () => {
 describe('Tests for manage products in cart API', () => {
   beforeAll(async () => {
     consumer = new Consumer();
-    await consumer.logIn('login@test.com', 'Password1');
-    consumerCart = (await getActiveCart(consumer.apiClient)).body;
+    await consumer.logIn('unit@test.com', 'Password1');
+    consumerCart = (await getMyActiveCart(consumer.apiClient)).body;
   });
 
   test('add a product to the cart', async () => {
-    const cartResponse = await addToCart(
+    const cartResponse = await addToMyCart(
       consumer.apiClient,
       consumerCart.version,
       consumerCart.id,
@@ -110,7 +110,7 @@ describe('Tests for manage products in cart API', () => {
       ?.id;
     if (!lineItemId) throw new Error();
 
-    const cartResponse = await updateQuantity(consumer.apiClient, consumerCart.version, consumerCart.id, lineItemId, 10);
+    const cartResponse = await updateMyCartQuantity(consumer.apiClient, consumerCart.version, consumerCart.id, lineItemId, 10);
     consumerCart = cartResponse.body;
     expect(cartResponse.statusCode).toBe(200);
   });
@@ -120,7 +120,7 @@ describe('Tests for manage products in cart API', () => {
       ?.id;
     if (!lineItemId) throw new Error();
 
-    const cartResponse = await removeFromCart(consumer.apiClient, consumerCart.version, consumerCart.id, lineItemId);
+    const cartResponse = await removeFromMyCart(consumer.apiClient, consumerCart.version, consumerCart.id, lineItemId);
     consumerCart = cartResponse.body;
     expect(cartResponse.statusCode).toBe(200);
   });

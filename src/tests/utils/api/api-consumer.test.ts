@@ -7,7 +7,7 @@ describe('Tests for consumer API', () => {
   test('create a consumer', async () => {
     const shippingAddress: BaseAddress = { country: 'BY', city: 'Minsk', streetName: 'Street1', postalCode: '220000' };
     const billingAddress: BaseAddress = { country: 'PL', city: 'Warsaw', streetName: 'Street2', postalCode: '00-001' };
-    const email = 'test@email.com';
+    const email = 'unit@consumer.com';
     const password = 'password';
     const firstName = 'John';
     const lastName = 'Doe';
@@ -27,7 +27,7 @@ describe('Tests for consumer API', () => {
     };
 
     await getConsumer(getPasswordClient(email, password))
-      .then((res) => deleteConsumer(getPasswordClient(email, password), res.body.id, res.body.version))
+      .then((res) => deleteConsumer(getCtpClient(), res.body.id, res.body.version))
       .catch(() => {});
 
     const consumerResponse = await createConsumer(getCtpClient(), consumerDraft);
