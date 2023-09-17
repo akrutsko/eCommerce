@@ -260,7 +260,7 @@ export class Main implements Observer {
 
   async showGoods(): Promise<void> {
     const { Goods } = await import('../goods/goods');
-    this.mainView.append(new Goods().getElement());
+    this.mainView.append(new Goods(this.consumer).getElement());
   }
 
   async showAboutUs(): Promise<void> {
