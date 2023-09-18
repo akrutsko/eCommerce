@@ -8,6 +8,8 @@ import {
   getRefreshToken,
   getRefreshTokenClient,
   getAnonymousClient,
+  getAccessToken,
+  introspectToken,
 } from '../../utils/api/api-client';
 import { ConsumerClient } from '../../enums/consumer-client';
 import {
@@ -64,10 +66,10 @@ export class Consumer implements Observable {
 
   async init(): Promise<void> {
     let response;
-    const token = localStorage.getItem(Token.Access);
+    const accessToken = localStorage.getItem(Token.Access);
 
-    if (token) {
-      this.apiClient = getTokenClient(token);
+    if (accessToken) {
+      this.apiClient = getTokenClient(accessToken);
       try {
         response = await getConsumer(this.apiClient);
         await this.getCart();
@@ -92,8 +94,28 @@ export class Consumer implements Observable {
     if (response) {
       this.consumerData = response.body;
       this.status = ConsumerClient.Consumer;
+      localStorage.removeItem(Token.Anonymous);
+      this.notify();
+      return;
     }
 
+    const anonymousToken = localStorage.getItem(Token.Anonymous);
+    if (anonymousToken) {
+      try {
+        const accessTokenResponse = await introspectToken(anonymousToken);
+        if ('active' in accessTokenResponse && accessTokenResponse.active === true) {
+          this.apiClient = getTokenClient(anonymousToken);
+          await this.getCart();
+          this.notify();
+          return;
+        }
+        throw new Error();
+      } catch {
+        localStorage.removeItem(Token.Anonymous);
+      }
+    }
+
+    await this.getAccessToken();
     this.notify();
   }
 
@@ -110,6 +132,17 @@ export class Consumer implements Observable {
     }
   }
 
+  async getAccessToken(): Promise<void> {
+    await getAccessToken()
+      .then((res) => {
+        if ('access_token' in res) {
+          localStorage.setItem(Token.Anonymous, String(res.access_token));
+          this.apiClient = getTokenClient(String(res.access_token));
+        }
+      })
+      .catch(() => {});
+  }
+
   async logIn(username: string, password: string): Promise<void> {
     await login(this.apiClient, { email: username, password });
     clearTokenStore();
@@ -122,13 +155,14 @@ export class Consumer implements Observable {
     this.notify();
   }
 
-  logOut(): void {
+  async logOut(): Promise<void> {
     localStorage.clear();
     this.status = ConsumerClient.Anonymous;
     this.consumerData = null;
     this.cart = null;
     clearTokenStore();
     this.apiClient = getAnonymousClient();
+    await this.getAccessToken();
     this.notify();
   }
 
