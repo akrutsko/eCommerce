@@ -4,6 +4,8 @@ module.exports = {
   testEnvironment: 'jest-environment-jsdom',
   moduleNameMapper: {
     '\\.(css|less)$': 'identity-obj-proxy',
+    '^swiper/modules$': '<rootDir>/src/tests/swiper-modules-mock.js',
+    '^swiper': '<rootDir>/src/tests/swiper-modules-mock.js',
   },
   transform: {
     '\\.(svg|png)$': './src/tests/jest.transformer.js',
