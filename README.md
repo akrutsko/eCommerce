@@ -66,6 +66,9 @@ The PeakPulse project utilizes the following technologies:
 - [Tailwind CSS](https://tailwindcss.com/): A utility-first CSS framework for designing modern and responsive user interfaces.
 - [Jest](https://jestjs.io/): A testing framework for running unit tests.
 - [commercetools](https://commercetools.com/): A cloud-based commerce platform used for product management, inventory, and order processing.
+- [commercetools sdk](https://docs.commercetools.com/sdk/): Libraries and tools for integrating commercetools into your project.
+- [Swiper](https://swiperjs.com/):A touch-enabled slider library for creating interactive carousels and sliders.
+- [Toastify](https://apvarun.github.io/toastify-js/): A JavaScript library for displaying user-friendly notification messages.
 
 ### License 📄
 
