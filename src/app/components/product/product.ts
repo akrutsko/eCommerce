@@ -18,7 +18,7 @@ import { ProductModal } from '../modal/product-modal';
 import { getCategoryById, getTreeOfCategories } from '../../utils/api/api-categories';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
-import { addToCart, createCart, removeFromCart } from '../../utils/api/api-cart';
+import { addToMyCart, createMyCart, removeFromMyCart } from '../../utils/api/api-cart';
 
 export class Product {
   router: Router;
@@ -130,17 +130,14 @@ export class Product {
     }
 
     addButton.setHandler('click', async () => {
+      addButton.addClass('pointer-events-none');
+
       if (!this.consumer.cart) {
         try {
-          this.consumer.cart = (await createCart(this.consumer.apiClient, { currency: 'USD' })).body;
-        } catch (err) {
-          if (err instanceof Error) {
-            if (err.message) {
-              new Message(err.message, 'error').showMessage();
-            } else {
-              new Message('Something went wrong. Try later.', 'error').showMessage();
-            }
-          }
+          this.consumer.cart = (await createMyCart(this.consumer.apiClient, { currency: 'USD' })).body;
+        } catch {
+          new Message('Something went wrong. Try later.', 'error').showMessage();
+          addButton.removeClass('pointer-events-none');
         }
       }
 
@@ -148,43 +145,35 @@ export class Product {
 
       try {
         this.consumer.cart = (
-          await addToCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, this.productId)
+          await addToMyCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, this.productId)
         ).body;
         this.lineItemId = this.consumer.cart.lineItems.find((li) => li.productId === this.productId)?.id;
         addButton.addClass('hidden');
         removeButton.removeClass('hidden');
         new Message('Product has been added to cart.', 'info').showMessage();
-      } catch (err) {
-        if (err instanceof Error) {
-          if (err.message) {
-            new Message(err.message, 'error').showMessage();
-          } else {
-            new Message('Something went wrong. Try later.', 'error').showMessage();
-          }
-        }
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
       }
+      addButton.removeClass('pointer-events-none');
     });
 
     removeButton.setHandler('click', async () => {
       if (!this.consumer.cart || !this.lineItemId) return;
 
+      removeButton.addClass('pointer-events-none');
+
       try {
         this.consumer.cart = (
-          await removeFromCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, this.lineItemId)
+          await removeFromMyCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, this.lineItemId)
         ).body;
         this.lineItemId = this.consumer.cart.lineItems.find((li) => li.productId === this.productId)?.id;
         addButton.removeClass('hidden');
         removeButton.addClass('hidden');
         new Message('Product has been removed from cart.', 'info').showMessage();
-      } catch (err) {
-        if (err instanceof Error) {
-          if (err.message) {
-            new Message(err.message, 'error').showMessage();
-          } else {
-            new Message('Something went wrong. Try later.', 'error').showMessage();
-          }
-        }
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
       }
+      removeButton.removeClass('pointer-events-none');
     });
   }
 

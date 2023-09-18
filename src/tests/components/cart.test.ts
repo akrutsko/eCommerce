@@ -1,3 +1,4 @@
+import 'jest-fetch-mock';
 import { Cart } from '../../app/components/cart/cart';
 import { Consumer } from '../../app/components/consumer/consumer';
 
@@ -12,12 +13,12 @@ describe('Cart component', () => {
     const cart = new Cart(consumer);
     document.body.append(cart.getView().getElement());
 
-    expect(document.querySelector('div')).toHaveTextContent('Cart');
+    expect(document.querySelector('div.h4')).toBeInTheDocument();
   });
   test('Cart is added to the DOM - getElement', () => {
     const cart = new Cart(consumer);
     document.body.append(cart.getElement());
 
-    expect(document.querySelector('div')).toHaveTextContent('Cart');
+    expect(document.querySelector('div.h4')).toBeInTheDocument();
   });
 });

@@ -3,5 +3,5 @@ export const enum Store {
   Language = 'en-US',
   Currency = 'USD',
   FractionDigits = 2,
-  CardIncrease = 8,
+  CardsPerPage = 8,
 }

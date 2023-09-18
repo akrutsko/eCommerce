@@ -12,11 +12,16 @@ import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor
 import { Consumer } from '../consumer/consumer';
 import { Store } from '../../enums/store';
 import { getPrice } from '../../utils/price/price';
-import { addDiscount, deleteCart, removeDiscount, removeFromCart, updateQuantity } from '../../utils/api/api-cart';
+import {
+  addMyCartDiscount,
+  deleteMyCart,
+  removeMyCartDiscount,
+  removeFromMyCart,
+  updateMyCartQuantity,
+} from '../../utils/api/api-cart';
 import { Message } from '../../utils/message/toastify-message';
 import { Confirmation } from '../../utils/confirmation/confirmation';
 import { getDiscountCode } from '../../utils/api/api-discount';
-import { getCtpClient } from '../../utils/api/api-client';
 
 export class Cart {
   consumer: Consumer;
@@ -35,6 +40,8 @@ export class Cart {
   }
 
   createView(): void {
+    this.getElement().innerHTML = '';
+
     const title = new ElementCreator({ tag: 'h2', text: 'My shopping cart', classes: 'text-center' });
 
     const orderContainer = new ElementCreator({
@@ -124,25 +131,25 @@ export class Cart {
     const discardButton = new ElementButtonCreator({ classes: 'primary-button py-1 hidden', text: 'discard' });
     promocodeFormContainer.appendNode(promocodeInput, applyButton, discardButton);
 
-    const discountId = this.consumer.cart?.discountCodes[0]?.discountCode.id;
-    if (discountId) {
-      applyButton.addClass('hidden');
-      discardButton.removeClass('hidden');
-      promocodeInput.disabled = true;
-      getDiscountCode(getCtpClient(), discountId)
-        .then((res) => {
-          promocodeInput.value = res.body.code;
-        })
-        .catch((err) => {
-          if (err instanceof Error) {
-            if (err.message) {
-              new Message(err.message, 'error').showMessage();
-            } else {
-              new Message('Something went wrong. Try later.', 'error').showMessage();
-            }
-          }
-        });
-    }
+    const showDiscount = (): void => {
+      const discountId = this.consumer.cart?.discountCodes[0]?.discountCode.id;
+      if (discountId) {
+        applyButton.addClass('hidden');
+        discardButton.removeClass('hidden');
+        promocodeInput.disabled = true;
+        getDiscountCode(this.consumer.apiClient, discountId)
+          .then((res) => {
+            promocodeInput.value = res.body.code;
+          })
+          .catch(() => new Message('Something went wrong. Try later.', 'error').showMessage());
+      } else {
+        discardButton.addClass('hidden');
+        applyButton.removeClass('hidden');
+        promocodeInput.value = '';
+        promocodeInput.disabled = false;
+      }
+    };
+    showDiscount();
 
     promocodeContainer.appendNode(promocodeTitleContainer, promocodeFormContainer);
     orderContainer.appendNode(options, promocodeContainer);
@@ -153,22 +160,14 @@ export class Cart {
 
       try {
         this.consumer.cart = (
-          await addDiscount(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, code)
+          await addMyCartDiscount(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, code)
         ).body;
         new Message('The discount code is successfully applied.', 'info').showMessage();
-        applyButton.addClass('hidden');
-        discardButton.removeClass('hidden');
-        promocodeInput.disabled = true;
+        showDiscount();
         updatePrices();
         setTotal();
-      } catch (err) {
-        if (err instanceof Error) {
-          if (err.message) {
-            new Message(err.message, 'error').showMessage();
-          } else {
-            new Message('Something went wrong. Try later.', 'error').showMessage();
-          }
-        }
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
       }
     });
     discardButton.setHandler('click', async () => {
@@ -176,27 +175,18 @@ export class Cart {
 
       try {
         this.consumer.cart = (
-          await removeDiscount(
+          await removeMyCartDiscount(
             this.consumer.apiClient,
             this.consumer.cart.version,
             this.consumer.cart.id,
             this.consumer.cart.discountCodes[0].discountCode,
           )
         ).body;
-        discardButton.addClass('hidden');
-        applyButton.removeClass('hidden');
-        promocodeInput.value = '';
-        promocodeInput.disabled = false;
+        showDiscount();
         updatePrices();
         setTotal();
-      } catch (err) {
-        if (err instanceof Error) {
-          if (err.message) {
-            new Message(err.message, 'error').showMessage();
-          } else {
-            new Message('Something went wrong. Try later.', 'error').showMessage();
-          }
-        }
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
       }
     });
 
@@ -209,7 +199,7 @@ export class Cart {
     const clearCart = async (): Promise<void> => {
       if (!this.consumer.cart) return;
       try {
-        await deleteCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id);
+        await deleteMyCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id);
         this.consumer.cart = null;
         this.showEmpty();
       } catch {
@@ -313,7 +303,7 @@ export class Cart {
       deleteButton.disabled = true;
       try {
         this.consumer.cart = (
-          await removeFromCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, lineItem.id)
+          await removeFromMyCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, lineItem.id)
         ).body;
         card.getElement().remove();
         updatePrices();
@@ -361,7 +351,13 @@ export class Cart {
 
       try {
         this.consumer.cart = (
-          await updateQuantity(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, item.id, quantity)
+          await updateMyCartQuantity(
+            this.consumer.apiClient,
+            this.consumer.cart.version,
+            this.consumer.cart.id,
+            item.id,
+            quantity,
+          )
         ).body;
         item = this.consumer.cart.lineItems.find((li) => li.id === lineItem.id);
         counter.setContent(`${item?.quantity}`);

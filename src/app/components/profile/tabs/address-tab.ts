@@ -259,15 +259,10 @@ export class AddressTab extends AccordionTab {
     try {
       await this.consumer.removeAddress(selectedAddressId);
       new Message('Address has been removed.', 'info').showMessage();
-
       this.resetState();
     } catch (err) {
       if (err instanceof Error) {
-        if (err.message) {
-          new Message(err.message, 'error').showMessage();
-        } else {
-          new Message('Something went wrong. Try later.', 'error').showMessage();
-        }
+        new Message(err.message || 'Something went wrong. Try later.', 'error').showMessage();
       }
     }
   }
@@ -326,11 +321,7 @@ export class AddressTab extends AccordionTab {
       this.resetState();
     } catch (err) {
       if (err instanceof Error) {
-        if (err.message) {
-          new Message(err.message, 'error').showMessage();
-        } else {
-          new Message('Something went wrong. Try later.', 'error').showMessage();
-        }
+        new Message(err.message || 'Something went wrong. Try later.', 'error').showMessage();
       }
     }
   }

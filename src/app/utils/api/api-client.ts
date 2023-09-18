@@ -13,8 +13,8 @@ import {
 } from '@commercetools/sdk-client-v2';
 
 const projectKey = 'peakpulse';
-const baseHost = 'https://api.europe-west1.gcp.commercetools.com/';
-const authHost = 'https://auth.europe-west1.gcp.commercetools.com/';
+const baseHost = 'https://api.europe-west1.gcp.commercetools.com';
+const authHost = 'https://auth.europe-west1.gcp.commercetools.com';
 const clientId = 'aSH1Qs-X58nIAdx6Dbrw-pvz';
 const clientSecret = 'WgPk-nmbKj2DD1Dk9Aq4m_gFe_Lrv4WO';
 const clientScope = [`manage_project:${projectKey}`];
@@ -113,4 +113,21 @@ export function getApiRoot(client: Client): ByProjectKeyRequestBuilder {
 
 export function clearTokenStore(): void {
   tokenStore = { token: '', refreshToken: '', expirationTime: 0 };
+}
+
+export function getAccessToken(): Promise<Response> {
+  const search = new URLSearchParams();
+  search.append('grant_type', 'client_credentials');
+  search.append('scope', `${consumerScope.join(' ')}`);
+
+  const base64Credentials = btoa(`${consumerId}:${consumerSecret}`);
+
+  return fetch(`${authHost}/oauth/${projectKey}/anonymous/token`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${base64Credentials}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: search,
+  }).then((res) => res.json());
 }
