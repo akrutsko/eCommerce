@@ -373,7 +373,7 @@ export class Catalog {
       const elementCategoriesArrow = new ElementCreator({ tag: 'div', classes: 'relative cursor-pointer', html: arrowDownSVG });
       elementCategoriesName.appendNode(aElementCategoriesName, elementCategoriesArrow);
 
-      const elementCategoriesPanel = new ElementCreator({ tag: 'div', classes: 'w-full hidden' });
+      const elementCategoriesPanel = new ElementCreator({ tag: 'div', classes: 'w-full pl-2 hidden' });
       elementAccordion.appendNode(elementCategoriesName, elementCategoriesPanel);
 
       category.children?.forEach((child) => {
