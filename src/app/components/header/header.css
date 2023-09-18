@@ -28,6 +28,10 @@
   z-index: 20;
 }
 
+.burger.active {
+  transform: rotate(90deg);
+}
+
 .submenu.active {
   display: block;
 }

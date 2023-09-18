@@ -52,16 +52,3 @@
   background-color: var(--main-color);
   color: white;
 }
-
-.add-to-cart:disabled {
-  opacity: 0.4;
-}
-.add-to-cart:disabled path {
-  fill: rgba(57, 62, 77, 0.6);
-}
-.add-to-cart:hover:not(:disabled) circle {
-  fill: #db5743;
-}
-.add-to-cart:hover:not(:disabled) path {
-  fill: #fff;
-}
