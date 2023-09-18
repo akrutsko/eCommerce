@@ -25,7 +25,7 @@ import {
   setDefaultShippingAddress,
 } from '../../utils/api/api-consumer';
 import { Token } from '../../enums/token';
-import { getActiveCart } from '../../utils/api/api-cart';
+import { getMyActiveCart } from '../../utils/api/api-cart';
 
 export class Consumer implements Observable {
   observers: Observer[] = [];
@@ -70,6 +70,7 @@ export class Consumer implements Observable {
       this.apiClient = getTokenClient(token);
       try {
         response = await getConsumer(this.apiClient);
+        await this.getCart();
       } catch {
         localStorage.removeItem(Token.Access);
         const refreshToken = localStorage.getItem(Token.Refresh);
@@ -78,6 +79,7 @@ export class Consumer implements Observable {
           this.apiClient = getRefreshTokenClient(refreshToken);
           try {
             response = await getConsumer(this.apiClient);
+            await this.getCart();
             localStorage.setItem(Token.Access, getToken());
           } catch {
             localStorage.removeItem(Token.Refresh);
@@ -100,16 +102,20 @@ export class Consumer implements Observable {
     return customer.body;
   }
 
+  async getCart(): Promise<void> {
+    try {
+      this.cart = (await getMyActiveCart(this.apiClient)).body;
+    } catch {
+      this.cart = null;
+    }
+  }
+
   async logIn(username: string, password: string): Promise<void> {
     await login(this.apiClient, { email: username, password });
     clearTokenStore();
     this.apiClient = getPasswordClient(username, password);
     this.consumerData = await this.getConsumer();
-    try {
-      this.cart = (await getActiveCart(this.apiClient)).body;
-    } catch {
-      this.cart = null;
-    }
+    await this.getCart();
     localStorage.setItem(Token.Access, getToken());
     localStorage.setItem(Token.Refresh, getRefreshToken());
     this.status = ConsumerClient.Consumer;

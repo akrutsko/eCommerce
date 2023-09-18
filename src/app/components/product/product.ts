@@ -18,7 +18,7 @@ import { ProductModal } from '../modal/product-modal';
 import { getCategoryById, getTreeOfCategories } from '../../utils/api/api-categories';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
-import { addToCart, createCart, removeFromCart } from '../../utils/api/api-cart';
+import { addToMyCart, createMyCart, removeFromMyCart } from '../../utils/api/api-cart';
 
 export class Product {
   router: Router;
@@ -134,7 +134,7 @@ export class Product {
 
       if (!this.consumer.cart) {
         try {
-          this.consumer.cart = (await createCart(this.consumer.apiClient, { currency: 'USD' })).body;
+          this.consumer.cart = (await createMyCart(this.consumer.apiClient, { currency: 'USD' })).body;
         } catch {
           new Message('Something went wrong. Try later.', 'error').showMessage();
           addButton.removeClass('pointer-events-none');
@@ -145,7 +145,7 @@ export class Product {
 
       try {
         this.consumer.cart = (
-          await addToCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, this.productId)
+          await addToMyCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, this.productId)
         ).body;
         this.lineItemId = this.consumer.cart.lineItems.find((li) => li.productId === this.productId)?.id;
         addButton.addClass('hidden');
@@ -164,7 +164,7 @@ export class Product {
 
       try {
         this.consumer.cart = (
-          await removeFromCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, this.lineItemId)
+          await removeFromMyCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, this.lineItemId)
         ).body;
         this.lineItemId = this.consumer.cart.lineItems.find((li) => li.productId === this.productId)?.id;
         addButton.removeClass('hidden');

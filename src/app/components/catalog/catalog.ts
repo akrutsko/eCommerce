@@ -19,7 +19,7 @@ import { getProductProjections, getProductTypes } from '../../utils/api/api-prod
 import { Consumer } from '../consumer/consumer';
 import { CategoryTree } from '../../interfaces/category';
 import { Loader } from '../loader/loader';
-import { addToCart, createCart } from '../../utils/api/api-cart';
+import { addToMyCart, createMyCart } from '../../utils/api/api-cart';
 
 export class Catalog {
   router: Router;
@@ -611,7 +611,7 @@ export class Catalog {
 
       if (!this.consumer.cart) {
         try {
-          this.consumer.cart = (await createCart(this.consumer.apiClient, { currency: 'USD' })).body;
+          this.consumer.cart = (await createMyCart(this.consumer.apiClient, { currency: 'USD' })).body;
         } catch {
           new Message('Something went wrong. Try later.', 'error').showMessage();
           loader.hideLoader();
@@ -623,7 +623,7 @@ export class Catalog {
 
       try {
         this.consumer.cart = (
-          await addToCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, product.id)
+          await addToMyCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, product.id)
         ).body;
         addButton.getElement().disabled = true;
         lineItemId = this.consumer.cart.lineItems.find((li) => li.productId === product.id)?.id;
