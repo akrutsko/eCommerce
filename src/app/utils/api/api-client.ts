@@ -131,3 +131,19 @@ export function getAccessToken(): Promise<Response> {
     body: search,
   }).then((res) => res.json());
 }
+
+export function introspectToken(token: string): Promise<Response> {
+  const search = new URLSearchParams();
+  search.append('token', token);
+
+  const base64Credentials = btoa(`${consumerId}:${consumerSecret}`);
+
+  return fetch(`${authHost}/oauth/introspect`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Basic ${base64Credentials}`,
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: search,
+  }).then((res) => res.json());
+}
