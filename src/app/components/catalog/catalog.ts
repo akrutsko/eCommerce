@@ -21,6 +21,8 @@ import { CategoryTree } from '../../interfaces/category';
 import { Loader } from '../loader/loader';
 import { addToMyCart, createMyCart } from '../../utils/api/api-cart';
 
+const footerHeight = 160;
+
 export class Catalog {
   router: Router;
 
@@ -89,7 +91,7 @@ export class Catalog {
   }
 
   async handleInfiniteScroll(): Promise<void> {
-    const endOfPage = window.innerHeight + window.scrollY >= document.body.offsetHeight;
+    const endOfPage = window.innerHeight + window.scrollY + footerHeight >= document.body.offsetHeight;
     const pageCount = Math.ceil(this.cardLimit / Store.CardsPerPage);
     if (endOfPage && this.currentPage < pageCount && !this.isScrolling) {
       this.isScrolling = true;

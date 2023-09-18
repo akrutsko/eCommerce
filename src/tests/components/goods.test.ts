@@ -1,3 +1,4 @@
+import 'jest-fetch-mock';
 import { Goods } from '../../app/components/goods/goods';
 import { Consumer } from '../../app/components/consumer/consumer';
 
@@ -8,16 +9,18 @@ describe('Goods component', () => {
     document.body.innerHTML = '';
   });
 
-  test('Goods is added to the DOM - getView', () => {
+  test('Goods is added to the DOM - getView', async () => {
     const goods = new Goods(consumer);
-    document.body.append(goods.getView().getElement());
+    await goods.createView();
+    document.body.append(goods.getElement());
 
-    expect(document.querySelector('div')).toHaveTextContent('Goods');
+    expect(document.querySelector('h2')).toBeInTheDocument();
   });
-  test('Cart is added to the DOM - getElement', () => {
-    const cart = new Goods(consumer);
-    document.body.append(cart.getElement());
+  test('Button is added to the DOM - getElement', async () => {
+    const goods = new Goods(consumer);
+    await goods.createView();
+    document.body.append(goods.getElement());
 
-    expect(document.querySelector('div')).toHaveTextContent('Goods');
+    expect(document.querySelector('button')).toBeInTheDocument();
   });
 });

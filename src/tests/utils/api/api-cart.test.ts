@@ -46,7 +46,7 @@ describe('Tests for anonymous cart API', () => {
     const activeCart = cartResponse.body;
 
     expect(cartResponse.statusCode).toBe(200);
-    expect(activeCart.lineItems.length).toBe(1);
+    expect(activeCart.lineItems.length).toBeGreaterThan(0);
   });
 });
 

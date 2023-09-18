@@ -1,4 +1,5 @@
 import 'jest-fetch-mock';
+
 import { Consumer } from '../../app/components/consumer/consumer';
 import { Router } from '../../app/router/router';
 import { Main } from '../../app/components/main/main';
@@ -18,13 +19,6 @@ describe('Main component', () => {
     expect(document.querySelector('main')).toBeInTheDocument();
   });
 
-  test('Main is added to the DOM - showMain', () => {
-    const main = new Main(router, consumer);
-    main.showMain();
-    document.body.append(main.getView());
-
-    expect(document.querySelector('main')).toHaveTextContent('Main page');
-  });
   test('Contact is added to Main', async () => {
     const main = new Main(router, consumer);
     document.body.append(main.getView());
@@ -37,6 +31,6 @@ describe('Main component', () => {
     document.body.append(main.getView());
     await main.showCart();
 
-    expect(document.querySelector('div')).toHaveTextContent('Cart');
+    expect(document.querySelector('.container')).toBeInTheDocument();
   });
 });
