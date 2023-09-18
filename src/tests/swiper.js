@@ -1,1 +1,1 @@
-export class Swiper{}
+export class Swiper {}
