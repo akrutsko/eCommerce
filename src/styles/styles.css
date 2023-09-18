@@ -24,21 +24,6 @@ dialog::backdrop {
   backdrop-filter: blur(2px);
 }
 
-/* ::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(219, 87, 67, 0.4);
-  border: 2px solid hsl(120 75% 50% / 1);;
-  border-radius: 100vw;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(170, 158, 156, 0.627);
-  border-radius: 10px;
-} */
-
 ::-webkit-scrollbar {
   width: 10px;
   height: 1em;
@@ -65,4 +50,17 @@ dialog::backdrop {
 .swiper-button-prev,
 .swiper-button-next {
   --swiper-navigation-color: var(--main-color);
+}
+
+.add-to-cart:disabled {
+  opacity: 0.4;
+}
+.add-to-cart:disabled path {
+  fill: rgba(57, 62, 77, 0.6);
+}
+.add-to-cart:hover:not(:disabled) circle {
+  fill: #db5743;
+}
+.add-to-cart:hover:not(:disabled) path {
+  fill: #fff;
 }
