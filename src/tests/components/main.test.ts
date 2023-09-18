@@ -4,9 +4,6 @@ import { Consumer } from '../../app/components/consumer/consumer';
 import { Router } from '../../app/router/router';
 import { Main } from '../../app/components/main/main';
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { Autoplay, Pagination } = require('swiper/modules');
-
 const router = new Router();
 const consumer = new Consumer();
 
