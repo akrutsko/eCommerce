@@ -84,7 +84,7 @@ export class Goods {
     const image = new ElementImageCreator({ alt: productName, src: mainImgUrl, classes: 'w-full h-full object-cover' });
     productImageBlock.appendNode(image, aCard);
 
-    const infoBlock = new ElementCreator({ tag: 'div', classes: 'p-3 h-full flex flex-col justify-between gap-1' });
+    const infoBlock = new ElementCreator({ tag: 'div', classes: 'p-3 h-[136px] flex flex-col justify-between gap-1' });
     const nameDescriptionBlock = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-1' });
 
     const productNameBlock = new ElementCreator({ tag: 'h4', text: `${productName}`, classes: 'product-name font-medium' });
