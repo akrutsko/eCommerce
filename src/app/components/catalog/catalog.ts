@@ -141,9 +141,14 @@ export class Catalog {
       tag: 'div',
       classes: 'w-full items-top justify-between flex flex-col md:flex-row gap-1',
     });
-    this.categoryTree = await getTreeOfCategories(this.consumer.apiClient);
     const catalogBlock = new ElementAnchorCreator({ href: '/catalog', text: 'All products', classes: 'breadcrumbs' });
     this.breadcrumbsBlock.appendNode(catalogBlock);
+
+    const categories = await getTreeOfCategories(this.consumer.apiClient).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+
+    this.categoryTree = categories || [];
     if (subCategory) {
       const cat = getCategoryBySlug(subCategory, this.categoryTree);
       const catId = cat?.id;
