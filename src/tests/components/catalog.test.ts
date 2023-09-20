@@ -15,7 +15,7 @@ describe('Catalog component', () => {
     await catalog.createView();
     document.body.append(catalog.getView().getElement());
 
-    expect(document.querySelector('h4')).toHaveTextContent('Set filters');
+    expect(document.querySelector('h4')).toHaveTextContent('Categories');
     expect(document.querySelector('h2')).toHaveTextContent('Catalog');
   });
 
@@ -25,6 +25,6 @@ describe('Catalog component', () => {
     await catalog.createView();
     document.body.append(catalog.getElement());
 
-    expect(document.querySelector('h4')).toHaveTextContent('Set filters');
+    expect(document.querySelector('h4')).toHaveTextContent('Categories');
   });
 });

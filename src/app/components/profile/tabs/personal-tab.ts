@@ -60,7 +60,7 @@ export class PersonalTab extends AccordionTab {
 
     const inputsContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-col justify-between gap-2 md:flex-row md:flex-nowrap md:gap-4',
+      classes: 'flex flex-col justify-between lg:flex-row md:flex-nowrap gap-4',
     });
 
     this.nameInputContainer.addLabel('name');
@@ -91,11 +91,7 @@ export class PersonalTab extends AccordionTab {
       this.resetState();
     } catch (err) {
       if (err instanceof Error) {
-        if (err.message) {
-          new Message(err.message, 'error').showMessage();
-        } else {
-          new Message('Something went wrong. Try later.', 'error').showMessage();
-        }
+        new Message(err.message || 'Something went wrong. Try later.', 'error').showMessage();
       }
     }
   }

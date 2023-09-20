@@ -187,9 +187,11 @@ export class AddressTab extends AccordionTab {
 
     const container = this.createInputsContainer(currentAddress);
     const existingContainer = this.getElement().querySelector('.change-addresses');
+    const prevContainer = this.getElement().querySelector('.change-address');
 
     if (existingContainer) {
       existingContainer.append(container);
+      if (prevContainer) prevContainer.remove();
     }
   }
 
@@ -206,10 +208,10 @@ export class AddressTab extends AccordionTab {
   }
 
   createInputsContainer(address?: Address): HTMLElement {
-    const wrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4' });
+    const wrapper = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-4 change-address' });
     const inputsContainer = new ElementCreator({
       tag: 'div',
-      classes: 'flex flex-col justify-between gap-4 md:flex-row md:flex-nowrap',
+      classes: 'flex flex-col justify-between gap-4 lg:flex-row lg:flex-nowrap',
     });
 
     const checkboxContainer = new ElementCreator({ tag: 'div', classes: 'flex gap-2 text-sm' });
@@ -257,15 +259,10 @@ export class AddressTab extends AccordionTab {
     try {
       await this.consumer.removeAddress(selectedAddressId);
       new Message('Address has been removed.', 'info').showMessage();
-
       this.resetState();
     } catch (err) {
       if (err instanceof Error) {
-        if (err.message) {
-          new Message(err.message, 'error').showMessage();
-        } else {
-          new Message('Something went wrong. Try later.', 'error').showMessage();
-        }
+        new Message(err.message || 'Something went wrong. Try later.', 'error').showMessage();
       }
     }
   }
@@ -324,11 +321,7 @@ export class AddressTab extends AccordionTab {
       this.resetState();
     } catch (err) {
       if (err instanceof Error) {
-        if (err.message) {
-          new Message(err.message, 'error').showMessage();
-        } else {
-          new Message('Something went wrong. Try later.', 'error').showMessage();
-        }
+        new Message(err.message || 'Something went wrong. Try later.', 'error').showMessage();
       }
     }
   }

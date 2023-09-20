@@ -2,6 +2,7 @@ import { Category, ProductProjection, ProductType } from '@commercetools/platfor
 import './catalog.css';
 import arrowDownSVG from '../../../assets/svg/arrow-down.svg';
 import searchIcon from '../../../assets/svg/search.svg';
+import addToCartSVG from '../../../assets/svg/cart-add.svg';
 
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { ElementCreator } from '../../utils/element-creator/element-creator';
@@ -17,6 +18,10 @@ import { getPrice } from '../../utils/price/price';
 import { getProductProjections, getProductTypes } from '../../utils/api/api-product';
 import { Consumer } from '../consumer/consumer';
 import { CategoryTree } from '../../interfaces/category';
+import { Loader } from '../loader/loader';
+import { addToMyCart, createMyCart } from '../../utils/api/api-cart';
+
+const footerHeight = 160;
 
 export class Catalog {
   router: Router;
@@ -55,6 +60,12 @@ export class Catalog {
 
   currentSearch = '';
 
+  currentPage = 0;
+
+  isScrolling = false;
+
+  cardLimit = 0;
+
   constructor(router: Router, consumer: Consumer, subCategory?: string) {
     this.router = router;
     this.consumer = consumer;
@@ -62,10 +73,7 @@ export class Catalog {
     this.catalogView = new ElementCreator({ tag: 'div', classes: 'w-full grow flex flex-col items-top gap-2' });
     this.countOfResultsView = new ElementCreator({ tag: 'div', text: '0 results' });
     this.selectedFiltersView = new ElementCreator({ tag: 'div', classes: 'flex gap-2 flex-wrap md:max-w-[55%]' });
-    this.cardsView = new ElementCreator({
-      tag: 'div',
-      classes: 'w-full gap-4 products',
-    });
+    this.cardsView = new ElementCreator({ tag: 'div', classes: 'w-full gap-4 products relative' });
     this.minPriceFilterView = new ElementInputCreator({
       type: 'number',
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] w-0 grow max-w-[90px]',
@@ -75,11 +83,27 @@ export class Catalog {
       classes: 'border-1 rounded-lg border-solid border-[#E8E6E8] w-0 grow max-w-[90px]',
     });
     this.createView(subCategory);
+    this.createInfiniteScroll();
   }
 
-  sort(fieldName: String, method: String): void {
+  createInfiniteScroll(): void {
+    window.addEventListener('scroll', () => this.handleInfiniteScroll());
+  }
+
+  async handleInfiniteScroll(): Promise<void> {
+    const endOfPage = window.innerHeight + window.scrollY + footerHeight >= document.body.offsetHeight;
+    const pageCount = Math.ceil(this.cardLimit / Store.CardsPerPage);
+    if (endOfPage && this.currentPage < pageCount && !this.isScrolling) {
+      this.isScrolling = true;
+      await this.createCards(this.currentFilters, this.currentSortingString, this.currentSearch);
+      this.isScrolling = false;
+    }
+  }
+
+  async sort(fieldName: String, method: String): Promise<void> {
     const sortingString = `${fieldName} ${method}`;
-    this.createCards(this.currentFilters, sortingString, this.currentSearch);
+    this.clearCards();
+    await this.createCards(this.currentFilters, sortingString, this.currentSearch);
     this.currentSortingString = sortingString;
   }
 
@@ -108,7 +132,7 @@ export class Catalog {
     });
     search.getElement().addEventListener('search', () => {
       this.currentSearch = '';
-      this.search(this.currentSearch);
+      this.resetFilters();
     });
     form.appendNode(search, submitButton);
     firstBlock.appendNode(catalogNameBlock, form);
@@ -117,9 +141,14 @@ export class Catalog {
       tag: 'div',
       classes: 'w-full items-top justify-between flex flex-col md:flex-row gap-1',
     });
-    this.categoryTree = await getTreeOfCategories(this.consumer.apiClient);
     const catalogBlock = new ElementAnchorCreator({ href: '/catalog', text: 'All products', classes: 'breadcrumbs' });
     this.breadcrumbsBlock.appendNode(catalogBlock);
+
+    const categories = await getTreeOfCategories(this.consumer.apiClient).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+
+    this.categoryTree = categories || [];
     if (subCategory) {
       const cat = getCategoryBySlug(subCategory, this.categoryTree);
       const catId = cat?.id;
@@ -167,6 +196,17 @@ export class Catalog {
     secondBlock.appendNode(this.selectedFiltersView, resultSortingView);
 
     const thirdBlock = new ElementCreator({ tag: 'div', classes: 'catalog gap-4' });
+    const categoriesPanel = new ElementCreator({
+      tag: 'div',
+      classes: 'w-full h-fit filters gap-2 bg-bg-color border-1 rounded-lg border-solid border-[#fbedec] p-4',
+    });
+    const categoriesPanelHeader = new ElementCreator({
+      tag: 'h4',
+      text: 'Categories',
+      classes: 'h4',
+    });
+    categoriesPanel.appendNode(categoriesPanelHeader);
+
     const filtersPanel = new ElementCreator({
       tag: 'div',
       classes: 'w-full h-fit filters gap-2 bg-bg-color border-1 rounded-lg border-solid border-[#fbedec] p-4',
@@ -178,9 +218,13 @@ export class Catalog {
     });
     filtersPanel.appendNode(filtersPanelHeader);
 
-    this.createFiltersView(filtersPanel);
+    await this.addCategories(categoriesPanel);
+    await this.createFiltersView(filtersPanel);
 
-    thirdBlock.appendNode(filtersPanel, this.cardsView);
+    const options = new ElementCreator({ tag: 'div', classes: 'flex flex-col w-full h-fit gap-2' });
+
+    options.appendNode(categoriesPanel, filtersPanel);
+    thirdBlock.appendNode(options, this.cardsView);
 
     this.catalogView.appendNode(firstBlock, secondBlock, thirdBlock);
   }
@@ -228,8 +272,7 @@ export class Catalog {
     const elementFilterName = new ElementCreator({
       tag: 'h5',
       text: 'Price',
-      classes:
-        'flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-primary-color cursor-pointer',
+      classes: 'flex items-center gap-2 h5 text-base text-primary-color cursor-pointer',
     });
     const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDownSVG });
     elementFilterName.appendNode(elementFilterArrow);
@@ -262,8 +305,7 @@ export class Catalog {
     const elementFilterName = new ElementCreator({
       tag: 'h5',
       text: filterName,
-      classes:
-        'w-full flex items-center gap-2 text-h5 font-ubuntu text-base font-medium leading-6 tracking-normal text-primary-color cursor-pointer',
+      classes: 'w-full flex items-center text-base gap-2 h5 text-primary-color cursor-pointer',
     });
     const elementFilterArrow = new ElementCreator({ tag: 'div', classes: 'relative', html: arrowDownSVG });
     elementFilterName.appendNode(elementFilterArrow);
@@ -318,6 +360,47 @@ export class Catalog {
     return uniqueAttributes;
   }
 
+  async addCategories(container: ElementCreator<HTMLElement>): Promise<void> {
+    const categories = await getTreeOfCategories(this.consumer.apiClient).catch(() => {
+      new Message('Something went wrong. Try later.', 'error').showMessage();
+    });
+    if (!categories || !categories.length) return;
+
+    categories.forEach((category) => {
+      const elementAccordion = new ElementCreator({
+        tag: 'div',
+        classes: 'w-full',
+      });
+      const elementCategoriesName = new ElementCreator({ tag: 'div', classes: 'flex gap-2 items-center' });
+      const aElementCategoriesName = new ElementAnchorCreator({
+        href: `/categories/${category.slug}`,
+        text: category.name,
+        classes: 'h5 text-base text-primary-color cursor-pointer',
+      });
+      const elementCategoriesArrow = new ElementCreator({ tag: 'div', classes: 'relative cursor-pointer', html: arrowDownSVG });
+      elementCategoriesName.appendNode(aElementCategoriesName, elementCategoriesArrow);
+
+      const elementCategoriesPanel = new ElementCreator({ tag: 'div', classes: 'w-full pl-2 hidden' });
+      elementAccordion.appendNode(elementCategoriesName, elementCategoriesPanel);
+
+      category.children?.forEach((child) => {
+        const elementCategoriesWrapper = new ElementCreator({ tag: 'div' });
+        const aCategoryContent = new ElementAnchorCreator({
+          href: `/categories/${child.slug}`,
+          classes: 'h5 text-sm',
+          text: `${child.name}`,
+        });
+        elementCategoriesWrapper.appendNode(aCategoryContent);
+        elementCategoriesPanel.appendNode(elementCategoriesWrapper);
+      });
+      container.appendNode(elementAccordion);
+      elementCategoriesArrow.setHandler('click', () => {
+        elementCategoriesArrow.toggleClass('arrow-active');
+        elementCategoriesPanel.toggleClass('hidden');
+      });
+    });
+  }
+
   async createFiltersView(filtersElementCreator: ElementCreator<HTMLElement>): Promise<void> {
     const productsResponse = await getProductProjections(this.consumer.apiClient).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
@@ -358,7 +441,7 @@ export class Catalog {
     });
   }
 
-  applyFilters(): void {
+  async applyFilters(): Promise<void> {
     const filterArray: string[] = [];
     this.selectedFiltersView.getElement().innerHTML = '';
 
@@ -422,8 +505,8 @@ export class Catalog {
     if (this.currentCategoryFilter) {
       filterArray.push(this.currentCategoryFilter);
     }
-
-    this.createCards(filterArray, this.currentSortingString, this.currentSearch);
+    this.clearCards();
+    await this.createCards(filterArray, this.currentSortingString, this.currentSearch);
   }
 
   resetFilters(): void {
@@ -437,7 +520,7 @@ export class Catalog {
     this.applyFilters();
   }
 
-  search(word: string): void {
+  async search(word: string): Promise<void> {
     this.checkBoxFilterViews.forEach((element) => {
       const checkBox = element.getElement();
       checkBox.checked = false;
@@ -445,11 +528,16 @@ export class Catalog {
     this.selectedCheckBoxFilters = [];
     this.minPriceFilterView.getElement().value = '';
     this.maxPriceFilterView.getElement().value = '';
-    this.createCards([], this.currentSortingString, word);
+    this.clearCards();
+    await this.createCards([], this.currentSortingString, word);
+  }
+
+  clearCards(): void {
+    this.cardsView.getElement().innerHTML = '';
+    this.currentPage = 0;
   }
 
   async createCards(filter?: string | string[], sort?: string, search?: string): Promise<void> {
-    this.cardsView.getElement().innerHTML = '';
     let curFilter = filter;
     if (this.currentCategoryFilter) {
       if (curFilter instanceof Array) {
@@ -462,13 +550,32 @@ export class Catalog {
         curFilter = this.currentCategoryFilter;
       }
     }
-    const productsResponse = await getProductProjections(this.consumer.apiClient, 50, 0, curFilter, sort, search).catch(() => {
+
+    const card = new ElementCreator({ tag: 'div', classes: 'card relative bg-white w-full rounded-lg shadow-md' });
+    const divImg = new ElementCreator({ tag: 'div', classes: 'w-full aspect-square' });
+    const divDesc = new ElementCreator({ tag: 'div', classes: 'h-28' });
+    card.appendNode(divImg, divDesc);
+    const loader = new Loader(card.getElement());
+    this.cardsView.appendNode(card);
+    loader.showLoader();
+
+    const productsResponse = await getProductProjections(
+      this.consumer.apiClient,
+      Store.CardsPerPage,
+      this.currentPage * Store.CardsPerPage,
+      curFilter,
+      sort,
+      search,
+    ).catch(() => {
       new Message('Something went wrong. Try later.', 'error').showMessage();
     });
+    loader.remove();
     if (!productsResponse) return;
 
+    this.currentPage += 1;
     this.products = productsResponse.body.results;
-    this.countOfResultsView.getElement().textContent = `${this.products.length} results`;
+    this.cardLimit = productsResponse.body.total || 0;
+    this.countOfResultsView.getElement().textContent = `${this.cardLimit} results`;
     this.products.forEach((product) => {
       this.addProduct(product);
     });
@@ -485,13 +592,12 @@ export class Catalog {
     const card = new ElementCreator({
       tag: 'div',
       classes:
-        'relative max-w-full sm:max-w-sm card bg-white w-full h-auto mx-auto rounded-lg transition-all shadow-md hover:scale-[1.02] hover:shadow-xl',
+        'relative overflow-hidden max-w-full sm:max-w-sm card bg-white w-full h-auto mx-auto rounded-lg transition-all shadow-md hover:scale-[1.02] hover:shadow-xl',
     });
-    this.cardsView.appendNode(card);
 
     const productImageBlock = new ElementCreator({
       tag: 'div',
-      classes: 'w-full h-auto border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-bg-color',
+      classes: 'relative w-full aspect-square border-2 rounded-lg border-solid border-[#fbedec] p-4 bg-bg-color',
     });
     let url = '';
     let { masterVariant } = product;
@@ -517,8 +623,9 @@ export class Catalog {
         price = priceWithOutDiscount;
       }
     }
+    const aCard = new ElementAnchorCreator({ href: `/product/${product.slug[Store.Language]}`, classes: 'absolute inset-0' });
     const image = new ElementImageCreator({ alt: productName, src: url, classes: 'w-full h-full object-cover' });
-    productImageBlock.appendNode(image);
+    productImageBlock.appendNode(image, aCard);
 
     const infoBlock = new ElementCreator({ tag: 'div', classes: 'p-3 h-full flex flex-col justify-between gap-1' });
     const nameDescriptionBlock = new ElementCreator({ tag: 'div', classes: 'flex flex-col gap-1' });
@@ -550,11 +657,49 @@ export class Catalog {
       productPricesBlock.appendNode(productPriceWithOutDiscountBlock);
     }
 
-    const aCard = new ElementAnchorCreator({ href: `/product/${product.slug[Store.Language]}`, classes: 'absolute inset-0' });
+    const addButton = new ElementButtonCreator({ classes: 'add-to-cart ml-auto scale-125', html: addToCartSVG });
+    productPricesBlock.appendNode(addButton);
+
+    let lineItemId = this.consumer.cart?.lineItems.find((li) => li.productId === product.id)?.id;
+    if (lineItemId) {
+      addButton.getElement().disabled = true;
+    }
+
+    addButton.setHandler('click', async () => {
+      const loader = new Loader(card.getElement());
+      loader.showLoader();
+      addButton.addClass('pointer-events-none');
+
+      if (!this.consumer.cart) {
+        try {
+          this.consumer.cart = (await createMyCart(this.consumer.apiClient, { currency: 'USD' })).body;
+        } catch {
+          new Message('Something went wrong. Try later.', 'error').showMessage();
+          loader.hideLoader();
+          addButton.removeClass('pointer-events-none');
+        }
+      }
+
+      if (!this.consumer.cart) return;
+
+      try {
+        this.consumer.cart = (
+          await addToMyCart(this.consumer.apiClient, this.consumer.cart.version, this.consumer.cart.id, product.id)
+        ).body;
+        addButton.getElement().disabled = true;
+        lineItemId = this.consumer.cart.lineItems.find((li) => li.productId === product.id)?.id;
+        new Message('Product has been added to cart.', 'info').showMessage();
+      } catch {
+        new Message('Something went wrong. Try later.', 'error').showMessage();
+      }
+      loader.hideLoader();
+      addButton.removeClass('pointer-events-none');
+    });
 
     nameDescriptionBlock.appendNode(productNameBlock, productDescriptionBlock);
     infoBlock.appendNode(nameDescriptionBlock, productPricesBlock);
-    card.appendNode(productImageBlock, infoBlock, aCard);
+    card.appendNode(productImageBlock, infoBlock);
+    this.cardsView.appendNode(card);
   }
 
   getView(): ElementCreator<HTMLElement> {

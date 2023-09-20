@@ -5,6 +5,13 @@ export class Router implements Observable {
 
   constructor() {
     window.addEventListener('popstate', () => this.handleLocation());
+    document.body.addEventListener('click', (event) => {
+      if (event.target instanceof HTMLAnchorElement && event.target.host === window.location.host) {
+        event.preventDefault();
+        window.history.pushState({}, '', event.target.href);
+        this.handleLocation();
+      }
+    });
   }
 
   subscribe(observer: Observer): void {

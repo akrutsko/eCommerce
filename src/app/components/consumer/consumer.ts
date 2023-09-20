@@ -1,13 +1,15 @@
 import { Client } from '@commercetools/sdk-client-v2';
-import { Customer } from '@commercetools/platform-sdk';
+import { Cart, Customer } from '@commercetools/platform-sdk';
 import {
-  getCtpClient,
   getPasswordClient,
   getToken,
   getTokenClient,
   clearTokenStore,
   getRefreshToken,
   getRefreshTokenClient,
+  getAnonymousClient,
+  getAccessToken,
+  introspectToken,
 } from '../../utils/api/api-client';
 import { ConsumerClient } from '../../enums/consumer-client';
 import {
@@ -19,11 +21,13 @@ import {
   changePassword,
   changePersonal,
   getConsumer,
+  login,
   removeAddress,
   setDefaultBillingAddress,
   setDefaultShippingAddress,
 } from '../../utils/api/api-consumer';
 import { Token } from '../../enums/token';
+import { getMyActiveCart } from '../../utils/api/api-cart';
 
 export class Consumer implements Observable {
   observers: Observer[] = [];
@@ -34,13 +38,15 @@ export class Consumer implements Observable {
 
   consumerData: Customer | null = null;
 
+  cart: Cart | null = null;
+
   get isConsumer(): boolean {
     return this.status === ConsumerClient.Consumer;
   }
 
   constructor() {
-    this.apiClient = getCtpClient();
-    this.status = ConsumerClient.CommerceTools;
+    this.apiClient = getAnonymousClient();
+    this.status = ConsumerClient.Anonymous;
   }
 
   subscribe(observer: Observer): void {
@@ -60,12 +66,13 @@ export class Consumer implements Observable {
 
   async init(): Promise<void> {
     let response;
-    const token = localStorage.getItem(Token.Access);
+    const accessToken = localStorage.getItem(Token.Access);
 
-    if (token) {
-      this.apiClient = getTokenClient(token);
+    if (accessToken) {
+      this.apiClient = getTokenClient(accessToken);
       try {
         response = await getConsumer(this.apiClient);
+        await this.getCart();
       } catch {
         localStorage.removeItem(Token.Access);
         const refreshToken = localStorage.getItem(Token.Refresh);
@@ -74,9 +81,11 @@ export class Consumer implements Observable {
           this.apiClient = getRefreshTokenClient(refreshToken);
           try {
             response = await getConsumer(this.apiClient);
+            await this.getCart();
             localStorage.setItem(Token.Access, getToken());
           } catch {
             localStorage.removeItem(Token.Refresh);
+            this.apiClient = getAnonymousClient();
           }
         }
       }
@@ -85,7 +94,28 @@ export class Consumer implements Observable {
     if (response) {
       this.consumerData = response.body;
       this.status = ConsumerClient.Consumer;
+      localStorage.removeItem(Token.Anonymous);
+      this.notify();
+      return;
     }
+
+    const anonymousToken = localStorage.getItem(Token.Anonymous);
+    if (anonymousToken) {
+      try {
+        const accessTokenResponse = await introspectToken(anonymousToken);
+        if ('active' in accessTokenResponse && accessTokenResponse.active === true) {
+          this.apiClient = getTokenClient(anonymousToken);
+          await this.getCart();
+          this.notify();
+          return;
+        }
+        throw new Error();
+      } catch {
+        localStorage.removeItem(Token.Anonymous);
+      }
+    }
+
+    await this.getAccessToken();
     this.notify();
   }
 
@@ -94,22 +124,45 @@ export class Consumer implements Observable {
     return customer.body;
   }
 
+  async getCart(): Promise<void> {
+    try {
+      this.cart = (await getMyActiveCart(this.apiClient)).body;
+    } catch {
+      this.cart = null;
+    }
+  }
+
+  async getAccessToken(): Promise<void> {
+    await getAccessToken()
+      .then((res) => {
+        if ('access_token' in res) {
+          localStorage.setItem(Token.Anonymous, String(res.access_token));
+          this.apiClient = getTokenClient(String(res.access_token));
+        }
+      })
+      .catch(() => {});
+  }
+
   async logIn(username: string, password: string): Promise<void> {
+    await login(this.apiClient, { email: username, password });
     clearTokenStore();
     this.apiClient = getPasswordClient(username, password);
     this.consumerData = await this.getConsumer();
+    await this.getCart();
     localStorage.setItem(Token.Access, getToken());
     localStorage.setItem(Token.Refresh, getRefreshToken());
     this.status = ConsumerClient.Consumer;
     this.notify();
   }
 
-  logOut(): void {
+  async logOut(): Promise<void> {
     localStorage.clear();
-    this.status = ConsumerClient.CommerceTools;
+    this.status = ConsumerClient.Anonymous;
     this.consumerData = null;
+    this.cart = null;
     clearTokenStore();
-    this.apiClient = getCtpClient();
+    this.apiClient = getAnonymousClient();
+    await this.getAccessToken();
     this.notify();
   }
 

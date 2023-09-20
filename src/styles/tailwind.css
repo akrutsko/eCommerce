@@ -38,7 +38,11 @@
 
   p {
     font-family: var(--secondary-font-family);
-    @apply text-lg md:text-xl font-normal;
+    @apply text-sm md:text-lg font-normal;
+  }
+
+  .open-sans {
+    font-family: var(--secondary-font-family);
   }
 
   .link {
@@ -56,6 +60,11 @@
     @apply font-bold text-xl text-primary-color;
   }
 
+  .discount {
+    font-family: var(--secondary-font-family);
+    @apply text-us line-through font-semibold text-tertiary-color;
+  }
+
   .primary-button {
     @apply text-sm rounded-full font-medium border-2 border-transparent transition-colors outline-transparent focus:outline-transparent disabled:pointer-events-none disabled:opacity-50 text-white bg-primary-color hover:bg-red-600 px-4 py-2;
   }
@@ -69,7 +78,7 @@
   }
 
   .form-input {
-    @apply max-w-xl w-full rounded-full py-2 px-4 border-gray-300 text-secondary-color border-2 focus:outline-none relative;
+    @apply max-w-xl w-full rounded-full py-2 px-4 outline-gray-300 text-secondary-color outline outline-2 -outline-offset-2 relative;
   }
 
   .search-form button {
@@ -86,6 +95,10 @@
 
   .round-button {
     @apply w-12 h-12 fill-primary-color text-white rounded-full bg-white flex items-center justify-center hover:bg-primary-color hover:fill-white transition-colors;
+  }
+
+  .counter-button {
+    @apply w-10 h-7 rounded-lg bg-primary-color text-white border-2 border-transparent hover:bg-red-600 disabled:border-primary-color disabled:bg-transparent disabled:text-primary-color disabled:opacity-60;
   }
 
   .round-button.big {
@@ -117,7 +130,7 @@
   }
 
   .container {
-    @apply px-4 md:px-10 flex items-center justify-between max-w-full;
+    @apply px-4 md:px-10 flex items-center justify-between max-w-[1400px] mx-auto;
   }
 
   .breadcrumbs {

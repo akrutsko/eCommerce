@@ -8,8 +8,6 @@ import { ElementCreator } from '../../utils/element-creator/element-creator';
 import { ElementAnchorCreator } from '../../utils/element-creator/element-anchor-creator';
 import { ElementButtonCreator } from '../../utils/element-creator/element-button-creator';
 import { Router } from '../../router/router';
-import { getTreeOfCategories } from '../../utils/api/api-categories';
-import { Message } from '../../utils/message/toastify-message';
 import { CategoryTree } from '../../interfaces/category';
 
 export class Header implements Observer {
@@ -56,18 +54,26 @@ export class Header implements Observer {
   }
 
   async createView(): Promise<void> {
-    const burger = new ElementCreator({ tag: 'div', classes: 'burger space-y-2 z-40 block md:hidden cursor-pointer' });
+    const burger = new ElementCreator({
+      tag: 'div',
+      classes: 'burger space-y-2 z-40 block md:hidden cursor-pointer transition-transform',
+    });
     const spanBurger1 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     const spanBurger2 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     const spanBurger3 = new ElementCreator({ tag: 'span', classes: 'block w-8 h-0.5 bg-secondary-color' });
     burger.appendNode(spanBurger1, spanBurger2, spanBurger3);
 
-    const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between mt-5 gap-8' });
+    const nav = new ElementCreator({ tag: 'nav', classes: 'w-full flex items-center justify-between mt-5 gap-4 lg:gap-8' });
     const logo = new ElementAnchorCreator({ href: '/', html: logotype });
+    logo.setHandler('click', (e) => {
+      e.preventDefault();
+      window.history.pushState({}, '', logo.getElement().href);
+      this.router.handleLocation();
+    });
     this.listOfLinks.push(logo.getElement());
     const mobileMenu = new ElementCreator({
       tag: 'div',
-      classes: 'mobile-menu md:w-full md:max-w-full max-w-[390px] hidden justify-between md:flex gap-8',
+      classes: 'mobile-menu md:w-full md:max-w-full max-w-[390px] hidden justify-between md:flex gap-4 lg:gap-8',
     });
     const bg = new ElementCreator({ tag: 'div', classes: 'bg hidden' });
     nav.appendNode(logo, mobileMenu, burger, bg);
@@ -82,11 +88,6 @@ export class Header implements Observer {
     this.listOfLinks.push(aAboutUs.getElement());
     liAboutUs.appendNode(aAboutUs);
 
-    const submenu = new ElementCreator({
-      tag: 'ul',
-      classes: 'submenu relative md:absolute hidden bg-primary-color text-white rounded-xl p-2 pt-1 w-max',
-    });
-
     const tab = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
     const catalog = new ElementAnchorCreator({
       href: '/catalog',
@@ -94,7 +95,7 @@ export class Header implements Observer {
       classes: 'h4 hover:text-primary-color cursor-pointer',
     });
     this.listOfLinks.push(catalog.getElement());
-    tab.appendNode(catalog, submenu);
+    tab.appendNode(catalog);
 
     const linksList = new ElementCreator({ tag: 'ul', classes: 'items-center justify-between flex gap-3 lg:gap-5' });
     linksList.appendNode(liHome, tab, liAboutUs);
@@ -116,8 +117,6 @@ export class Header implements Observer {
     mobileMenu.appendNode(linksList, allBtns);
     this.headerView.appendNode(nav);
 
-    await this.addCategories(submenu);
-
     const closeBurger = (): void => {
       mobileMenu.removeClass('active');
       burger.removeClass('active');
@@ -136,13 +135,6 @@ export class Header implements Observer {
       document.body.classList.toggle('active');
     });
 
-    tab.getElement().addEventListener('mouseenter', () => {
-      if (window.innerWidth > 768) submenu.addClass('active');
-    });
-    tab.getElement().addEventListener('mouseleave', () => {
-      if (window.innerWidth > 768) submenu.removeClass('active');
-    });
-
     this.loginButton.addEventListener('click', () => {
       window.history.pushState({}, '', '/login');
       this.router.handleLocation();
@@ -159,51 +151,6 @@ export class Header implements Observer {
       if (window.innerWidth > 768 && burger.getElement().classList.contains('active')) {
         closeBurger();
       }
-      if (window.innerWidth > 768 && submenu.getElement().classList.contains('active')) {
-        submenu.removeClass('active');
-      }
-    });
-  }
-
-  async addCategories(submenu: ElementCreator<HTMLElement>): Promise<void> {
-    const categories = await getTreeOfCategories(this.consumer.apiClient).catch(() => {
-      new Message('Something went wrong. Try later.', 'error').showMessage();
-    });
-    if (!categories) return;
-
-    this.categories = categories;
-    this.categories.forEach((category) => {
-      const liCategory = new ElementCreator({ tag: 'li', classes: 'relative z-10 group tab' });
-      const aCategory = new ElementAnchorCreator({
-        href: `/categories/${category.slug}`,
-        classes: 'h5 hover:opacity-80',
-        text: `${category.name}`,
-      });
-      this.listOfLinks.push(aCategory.getElement());
-      liCategory.appendNode(aCategory);
-      submenu.appendNode(liCategory);
-      const submenuContent = new ElementCreator({
-        tag: 'ul',
-        classes: 'submenu relative hidden rounded-lg bg-white/25 px-2 py-1 w-max',
-      });
-      liCategory.appendNode(submenuContent);
-      category.children?.forEach((child) => {
-        const liCategoryContent = new ElementCreator({ tag: 'li' });
-        const aCategoryContent = new ElementAnchorCreator({
-          href: `/categories/${child.slug}`,
-          classes: 'h5 hover:opacity-80',
-          text: `${child.name}`,
-        });
-        this.listOfLinks.push(aCategoryContent.getElement());
-        liCategoryContent.appendNode(aCategoryContent);
-        submenuContent.appendNode(liCategoryContent);
-      });
-      liCategory.getElement().addEventListener('mouseenter', () => {
-        submenuContent.addClass('active');
-      });
-      liCategory.getElement().addEventListener('mouseleave', () => {
-        submenuContent.removeClass('active');
-      });
     });
   }
 

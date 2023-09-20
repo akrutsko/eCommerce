@@ -4,6 +4,8 @@ import { validatePassword } from '../../../utils/validation/input-validation';
 import { Consumer } from '../../consumer/consumer';
 import { FormInputPasswordCreator } from '../../../utils/element-creator/form-password-input-creator';
 import { Message } from '../../../utils/message/toastify-message';
+import { getAccessToken, getTokenClient } from '../../../utils/api/api-client';
+import { Token } from '../../../enums/token';
 
 export class PasswordTab extends AccordionTab {
   currentInputContainer: FormInputPasswordCreator;
@@ -28,7 +30,7 @@ export class PasswordTab extends AccordionTab {
   createEdit(): HTMLElement {
     this.resetInputs();
 
-    const container = new ElementCreator({ tag: 'div', classes: 'flex flex-col sm:flex-row gap-4' });
+    const container = new ElementCreator({ tag: 'div', classes: 'flex flex-col md:flex-row gap-4' });
     container.appendNode(this.currentInputContainer.getContainer(), this.newInputContainer.getContainer());
     return container.getElement();
   }
@@ -44,6 +46,14 @@ export class PasswordTab extends AccordionTab {
 
     try {
       await this.consumer.changePassword(currentPassword, newPassword);
+      await getAccessToken()
+        .then((res) => {
+          if ('access_token' in res) {
+            localStorage.setItem(Token.Access, String(res.access_token));
+            this.consumer.apiClient = getTokenClient(String(res.access_token));
+          }
+        })
+        .catch(() => {});
       new Message('Password has been changed.', 'info').showMessage();
 
       if (this.consumer.consumerData) {
@@ -52,11 +62,7 @@ export class PasswordTab extends AccordionTab {
       }
     } catch (err) {
       if (err instanceof Error) {
-        if (err.message) {
-          new Message(err.message, 'error').showMessage();
-        } else {
-          new Message('Something went wrong. Try later.', 'error').showMessage();
-        }
+        new Message(err.message || 'Something went wrong. Try later.', 'error').showMessage();
       }
     }
   }

@@ -20,6 +20,7 @@ export class Modal {
       html: cross,
     });
     closeButton.setHandler('click', () => {
+      document.body.classList.remove('active');
       this.getElement().close();
       this.getElement().remove();
     });
@@ -35,6 +36,7 @@ export class Modal {
   }
 
   showModal(): void {
+    document.body.classList.add('active');
     this.getElement().showModal();
   }
 }
