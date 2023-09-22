@@ -1,0 +1,143 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Ubuntu:wght@400;500;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --main-color: #db4c43;
+    --secondary-color: #393e4d;
+    --tertiary-color: rgba(57, 62, 77, 0.6);
+    --bg-color: #f1efef;
+    --main-font-family: "Ubuntu", sans-serif;
+    --secondary-font-family: "Open Sans", sans-serif;
+  }
+}
+
+@layer components {
+  h1 {
+    @apply text-5xl font-bold text-primary-color;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl font-bold text-primary-color;
+  }
+
+  h3 {
+    @apply text-2xl font-bold;
+  }
+
+  .h4 {
+    @apply text-xl font-medium;
+  }
+
+  .h5 {
+    @apply font-medium text-sm;
+  }
+
+  p {
+    font-family: var(--secondary-font-family);
+    @apply text-sm md:text-lg font-normal;
+  }
+
+  .open-sans {
+    font-family: var(--secondary-font-family);
+  }
+
+  .link {
+    font-family: var(--secondary-font-family);
+    @apply text-lg font-medium text-primary-color hover:underline;
+  }
+
+  .subtitle {
+    font-family: var(--secondary-font-family);
+    @apply text-sm font-semibold text-tertiary-color;
+  }
+
+  .price {
+    font-family: var(--secondary-font-family);
+    @apply font-bold text-xl text-primary-color;
+  }
+
+  .discount {
+    font-family: var(--secondary-font-family);
+    @apply text-us line-through font-semibold text-tertiary-color;
+  }
+
+  .primary-button {
+    @apply text-sm rounded-full font-medium border-2 border-transparent transition-colors outline-transparent focus:outline-transparent disabled:pointer-events-none disabled:opacity-50 text-white bg-primary-color hover:bg-red-600 px-4 py-2;
+  }
+
+  .secondary-button {
+    @apply text-sm rounded-full font-normal border-2 border-primary-color transition-colors outline-transparent focus:outline-transparent disabled:pointer-events-none disabled:opacity-50 text-secondary-color bg-transparent hover:bg-red-600 hover:border-red-600 hover:text-white px-4 py-2;
+  }
+
+  .filter-button {
+    @apply text-sm rounded-full font-normal border-2 border-tertiary-color transition-colors outline-transparent focus:outline-transparent disabled:pointer-events-none disabled:opacity-50 text-secondary-color bg-transparent px-2 py-1 cursor-auto;
+  }
+
+  .form-input {
+    @apply max-w-xl w-full rounded-full py-2 px-4 outline-gray-300 text-secondary-color outline outline-2 -outline-offset-2 relative;
+  }
+
+  .search-form button {
+    @apply absolute focus:outline-none -translate-y-2/4 right-4 top-2/4;
+  }
+
+  .search-form input {
+    @apply border-2 w-full border-gray-200 bg-gray-200 h-10 px-5 pr-16 rounded-full text-sm focus:outline-none;
+  }
+
+  .search-form {
+    @apply relative w-full max-w-xs text-gray-600;
+  }
+
+  .round-button {
+    @apply w-12 h-12 fill-primary-color text-white rounded-full bg-white flex items-center justify-center hover:bg-primary-color hover:fill-white transition-colors;
+  }
+
+  .counter-button {
+    @apply w-10 h-7 rounded-lg bg-primary-color text-white border-2 border-transparent hover:bg-red-600 disabled:border-primary-color disabled:bg-transparent disabled:text-primary-color disabled:opacity-60;
+  }
+
+  .round-button.big {
+    @apply w-24 h-24 bg-primary-color p-2 text-white font-medium hover:bg-red-600;
+  }
+
+  .round-button.active {
+    @apply bg-primary-color fill-white;
+  }
+
+  .nav {
+    @apply flex items-center gap-5;
+  }
+
+  .nav-button {
+    @apply h-fit fill-white bg-primary-color border-2 border-transparent rounded-full px-4 py-2 hover:bg-red-600 disabled:border-primary-color disabled:bg-transparent disabled:fill-primary-color disabled:opacity-50;
+  }
+
+  .nav-number {
+    @apply w-12 h-12 rounded-full flex items-center justify-center bg-primary-color text-white font-medium;
+  }
+
+  .card {
+    @apply max-w-sm flex flex-col gap-1;
+  }
+
+  .card-image {
+    @apply border-2 border-red-500 border-opacity-10 bg-[#F1EFEF] rounded-xl p-10;
+  }
+
+  .container {
+    @apply px-4 md:px-10 flex items-center justify-between max-w-[1400px] mx-auto;
+  }
+
+  .breadcrumbs {
+    @apply text-xs font-medium leading-6 text-left text-[#DB5743] md:text-base;
+  }
+
+  .sorting-button {
+    @apply text-sm font-normal border-2 border-primary-color transition-colors outline-transparent focus:outline-transparent disabled:pointer-events-none disabled:opacity-50 text-secondary-color bg-transparent hover:bg-red-600 hover:border-red-600 hover:text-white px-2 py-1;
+  }
+}

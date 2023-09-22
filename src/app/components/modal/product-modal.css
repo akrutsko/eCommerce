@@ -1,0 +1,9 @@
+.swiper-slide-modal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+dialog::backdrop {
+  backdrop-filter: blur(2px);
+}

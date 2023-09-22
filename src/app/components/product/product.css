@@ -1,0 +1,16 @@
+.swiper-button-prev-product,
+.swiper-button-next-product {
+  --swiper-navigation-sides-offset: -32px;
+  --swiper-navigation-color: var(--main-color);
+}
+
+@media (width >= 768px) {
+  .swiper-button-prev-product,
+  .swiper-button-next-product {
+    display: none;
+  }
+}
+
+.swiper-pagination {
+  --swiper-pagination-right: -32px;
+}

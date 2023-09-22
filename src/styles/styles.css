@@ -1,0 +1,66 @@
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: "Ubuntu", sans-serif;
+  color: var(--secondary-color);
+}
+
+body.active {
+  overflow: hidden;
+}
+
+input[type="checkbox"]:not(:disabled),
+input[type="checkbox"]:not(:disabled) + label {
+  cursor: pointer;
+}
+
+label {
+  user-select: none;
+}
+
+dialog::backdrop {
+  backdrop-filter: blur(2px);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 1em;
+}
+
+::-webkit-scrollbar-track {
+  background: hsla(0, 7%, 94%, 1);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(219, 87, 67, 0.658);
+  border: 2px solid hsla(0, 7%, 94%, 1);
+  border-radius: 100vw;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsla(8, 68%, 56%, 1);
+}
+
+.swiper-pagination {
+  --swiper-pagination-color: var(--main-color);
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  --swiper-navigation-color: var(--main-color);
+}
+
+.add-to-cart:disabled {
+  opacity: 0.4;
+}
+.add-to-cart:disabled path {
+  fill: rgba(57, 62, 77, 0.6);
+}
+.add-to-cart:hover:not(:disabled) circle {
+  fill: #db5743;
+}
+.add-to-cart:hover:not(:disabled) path {
+  fill: #fff;
+}
